@@ -1,0 +1,11 @@
+services:
+  nextjs:
+    build:
+      context: .
+      dockerfile: DockerFile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/my-app
+      - /my-app/node_modules
+    command: npm run dev
