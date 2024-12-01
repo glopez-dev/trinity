@@ -4,27 +4,28 @@ stages:
   - build
   - deploy
 
-# Install dependencies and run tests
-install_dependencies:
-  stage: install
+test:
+  stage: test
   script:
+    - cd frontend
+    - echo "📦 Installing dependencies..."
     - npm install
-    - npm test # Replace with your test command if you have one
-  only:
-    - dev # Run on dev branch
+    - echo "🧪 Running tests..."
+    - npm test
+    - echo "✅ Tests passed successfully"
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^(noah|elone|gabriel|rabieh|geraud)\/.*/ || $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main"
 
-# Build Docker image
 build_docker_image:
   stage: build
   script:
     - docker build -f ./my-app/DockerFile.dev -t my-app .
   only:
-    - main # Only run on the main branch
+    - main
 
-# Simulate deployment (you can add real deployment logic later)
 deploy_application:
   stage: deploy
   script:
     - echo "Deploying application..."
   only:
-    - main # Only run on the main branch
+    - main
