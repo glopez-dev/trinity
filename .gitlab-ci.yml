@@ -19,7 +19,7 @@ test:
 build_docker_image:
   stage: build
   script:
-    - docker build -f ./my-app/DockerFile.dev -t my-app .
+    - docker build -f ./frontend/Dockerfile.dev -t t-dev-701-frontend:dev .
   only:
     - main
 

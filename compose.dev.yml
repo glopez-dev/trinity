@@ -1,0 +1,101 @@
+volumes:
+  postgres_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+
+networks:
+  backend:
+    driver: bridge
+  frontend:
+    driver: bridge
+
+services:
+  postgres:
+    image: 'postgres:15-alpine'
+    container_name: t-dev-701-postgres
+    environment:
+      - POSTGRES_DB=mydatabase
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=secret
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    networks:
+      - backend
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U myuser -d mydatabase" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbit-mq:
+    container_name: t-dev-701-rabbit_mq
+    image: 'rabbitmq:latest'
+    environment:
+      - 'RABBITMQ_DEFAULT_PASS=secret'
+      - 'RABBITMQ_DEFAULT_USER=myuser'
+    ports:
+      - '5672:5672' # Standard AMQP port
+      - '15672:15672' # Management UI port
+    volumes:
+    - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - backend
+    command: >
+      sh -c "rabbitmq-plugins enable --offline rabbitmq_management && rabbitmq-server"
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -f http://localhost:15672 || exit 1"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 30s
+
+  backend-app:
+    container_name: t-dev-701-backend_api
+    build:
+      context: ./backend
+      target: dev
+    image: t-dev-701-api:dev
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    #   rabbit-mq:
+    #     condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase
+      - SPRING_DATASOURCE_USERNAME=myuser
+      - SPRING_DATASOURCE_PASSWORD=secret
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+    #   start_period: 30s
+
+  frontend:
+    container_name: t-dev-701-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    image: t-dev-701-frontend:dev
+    ports:
+      - '3000:3000'
+    command: npm run dev
+    volumes:
+      - ./frontend:/app/frontend
+      - /app/frontend/node_modules
+    networks:
+      - frontend
+      - backend
+    # depends_on:
+    #   backend-app:
+    #     condition: service_healthy
+    environment:
+    - NEXT_PUBLIC_API_URL=http://host.docker.internal:8080
