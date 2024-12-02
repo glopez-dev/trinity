@@ -1,0 +1,31 @@
+stages:
+  - install
+  - test
+  - build
+  - deploy
+
+test:
+  stage: test
+  script:
+    - cd frontend
+    - echo "📦 Installing dependencies..."
+    - npm install
+    - echo "🧪 Running tests..."
+    - npm test
+    - echo "✅ Tests passed successfully"
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^(noah|elone|gabriel|rabieh|geraud)\/.*/ || $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main"
+
+build_docker_image:
+  stage: build
+  script:
+    - docker build -f ./frontend/Dockerfile.dev -t t-dev-701-frontend:dev .
+  only:
+    - main
+
+deploy_application:
+  stage: deploy
+  script:
+    - echo "Deploying application..."
+  only:
+    - main
