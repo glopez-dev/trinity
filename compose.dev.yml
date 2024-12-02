@@ -69,9 +69,9 @@ services:
     #   rabbit-mq:
     #     condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase
-      - SPRING_DATASOURCE_USERNAME=myuser
-      - SPRING_DATASOURCE_PASSWORD=secret
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/mydatabase"
+      SPRING_DATASOURCE_USERNAME: "myuser"
+      SPRING_DATASOURCE_PASSWORD: "secret"
     # healthcheck:
     #   test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
     #   interval: 30s
