@@ -1,0 +1,11 @@
+services:
+  app:
+    image: backend.dev
+    build:
+      target: dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/src:/app/src:ro # Mount the source directory to allow code changes to reflect
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev # Environment-specific profiles
