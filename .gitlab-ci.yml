@@ -1,31 +1,44 @@
+# Each default keyword is copied to every job that doesn’t already have it defined. 
+default:
+  image: eclipse-temurin:21-jdk-jammy
+  cache:
+    paths:
+      - .m2/repository
+      - backend/target/
+
+# Use include to include external YAML files in your CI/CD configuration. 
+include:
+  - local: frontend/frontend-ci.yml
+    rules:
+      - changes: 
+        - frontend/**/*
+
+  - local: backend/backend-ci.yml
+    rules:
+      - changes: 
+        - backend/**/*
+
+# The names and order of the pipeline stages.
 stages:
-  - install
-  - test
+  - setup
   - build
+  - test
+  - package 
+  - publish
+  - clean
   - deploy
 
-test:
-  stage: test
-  script:
-    - cd frontend
-    - echo "📦 Installing dependencies..."
-    - npm install
-    - echo "🧪 Running tests..."
-    - npm test
-    - echo "✅ Tests passed successfully"
+# Control what types of pipeline run. 
+workflow:
   rules:
+    # Run only for MR, tagged or protected branches
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_REF_PROTECTED == "true"
+    # Enforce branch naming rules
     - if: $CI_COMMIT_BRANCH =~ /^(noah|elone|gabriel|rabieh|geraud)\/.*/ || $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main"
 
-build_docker_image:
-  stage: build
-  script:
-    - docker build -f ./frontend/Dockerfile.dev -t t-dev-701-frontend:dev .
-  only:
-    - main
-
-deploy_application:
-  stage: deploy
-  script:
-    - echo "Deploying application..."
-  only:
-    - main
+Logger:
+  stage: setup 
+  script: 
+    - echo "Running the T-DEV-701-DevOps CI"

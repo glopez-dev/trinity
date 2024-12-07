@@ -1,0 +1,157 @@
+# Backend CI pipeline 
+
+# The names and order of the pipeline stages.
+stages:
+  - setup
+  - build
+  - test
+  - package 
+  - publish
+  - clean
+  - deploy
+
+# Define CI/CD variables for all jobs in the pipeline
+variables:
+  # Maven command-line options to use a custom settings file and run in batch mode
+  MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode"
+  # Maven configuration to specify a local repository path within the CI project directory
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  # Name of the backend Docker image including the Docker Hub prefix
+  BACKEND_IMAGE: "${DOCKER_HUB_USERNAME}/t-dev-701-backend"
+
+###############
+# BUILD STAGE #
+###############
+
+Compile Backend code:
+  stage: build 
+  image: eclipse-temurin:21-jdk-jammy
+  script:
+    - cd backend
+    - chmod +x mvnw
+    - ./mvnw compile
+  artifacts:
+    paths:
+      - backend/target/
+
+Build the Backend dev image:
+  stage: build 
+  image: docker:latest
+  script:
+    - docker build 
+      --tag $BACKEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
+      --target dev
+      ./backend 
+    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+    - docker push ${BACKEND_IMAGE}:dev-${CI_COMMIT_SHORT_SHA}
+  needs: ['Compile Backend code'] 
+  rules:
+    - changes:
+        - backend/**/*
+
+##############
+# TEST STAGE #
+##############
+
+Run Backend unit-tests:
+  stage: test
+  image: docker:latest
+  script:
+    - cd backend
+    - docker run --rm ${BACKEND_IMAGE}:dev-${CI_COMMIT_SHORT_SHA} ./mvnw test
+  needs: ['Build the Backend dev image']
+  rules:
+    - changes:
+        - backend/**/*
+
+#################
+# PACKAGE STAGE #
+#################
+Build the Backend prod image:
+  stage: package 
+  image: docker:latest  
+  script:
+    - cd backend
+    - docker build -t $BACKEND_IMAGE:prod-$CI_COMMIT_SHORT_SHA -t $BACKEND_IMAGE:latest --target prod .
+  rules:
+    - changes:
+        - backend/**/*
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+Build the Backend draft image:
+  stage: package 
+  image: docker:latest  
+  script:
+    - cd backend
+    - docker build -t $BACKEND_IMAGE:draft-$CI_MERGE_REQUEST_IID --target prod .
+  rules:
+    - changes:
+        - backend/**/*
+    - if: $CI_MERGE_REQUEST_IID
+
+#################
+# PUBLISH STAGE #
+#################
+
+Publish the Backend prod image:
+  stage: publish 
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+    - docker push $BACKEND_IMAGE:prod-$CI_COMMIT_SHORT_SHA
+    - docker push $BACKEND_IMAGE:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+Publish the Backend draft image:
+  stage: publish 
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+    - docker push $BACKEND_IMAGE:draft-$CI_MERGE_REQUEST_IID
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+
+###############
+# CLEAN STAGE #
+###############
+
+Delete Backend prod artifacts:
+  stage: clean 
+  script:
+    - docker image rm $BACKEND_IMAGE:prod-$CI_COMMIT_SHORT_SHA
+    - docker image rm $BACKEND_IMAGE:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+Delete Backend draft artifacts:
+  stage: clean 
+  script:
+    - docker image rm $BACKEND_IMAGE:draft-$CI_MERGE_REQUEST_IID
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+
+Delete the Backend dev artifacts:
+  stage: clean 
+  script:
+    - docker image rm $BACKEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
+
+################
+# DEPLOY STAGE #
+################
+
+Deploy Backend to production:
+  stage: deploy
+  script:
+    - echo "Deploying to production server"
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  when: manual
