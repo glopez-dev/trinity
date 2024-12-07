@@ -10,6 +10,9 @@ For the staging environment
 - `helm` for helm charts
 - `minikube` for local k8s development
 
+## Project setup
+You'll have to define the `.env` file which is used by the `compose.dev.yml` file for variable substitions.
+
 ## 📦🐋 Docker Image Registry
 Here’s how the tagging system works:
 
