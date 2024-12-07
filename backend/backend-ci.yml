@@ -7,7 +7,6 @@ stages:
   - test
   - package 
   - publish
-  - clean
   - deploy
 
 # Define CI/CD variables for all jobs in the pipeline
@@ -25,25 +24,33 @@ variables:
 
 Compile Backend code:
   stage: build 
+  # Setup
   image: eclipse-temurin:21-jdk-jammy
+  # Scripts
   script:
     - cd backend
     - chmod +x mvnw
     - ./mvnw compile
+  # Caching
   artifacts:
     paths:
       - backend/target/
 
 Build the Backend dev image:
   stage: build 
+  # Setup
   image: docker:latest
-  script:
-    - docker build 
-      --tag $BACKEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
-      --target dev
-      ./backend 
+  variables:
+    BACKEND_IMAGE_TAG_DEV: $BACKEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
+  # Scripts
+  before_script:
     - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
-    - docker push ${BACKEND_IMAGE}:dev-${CI_COMMIT_SHORT_SHA}
+  script:
+    - docker build --tag $BACKEND_IMAGE_TAG_DEV --target dev ./backend 
+    - docker push $BACKEND_IMAGE_TAG_DEV # Publish the image so the others jobs quand pull it.
+  after_script:
+    - docker image rm $BACKEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
+  # Conditions
   needs: ['Compile Backend code'] 
   rules:
     - changes:
@@ -55,10 +62,13 @@ Build the Backend dev image:
 
 Run Backend unit-tests:
   stage: test
+  # Setup
   image: docker:latest
+  # Scripts
   script:
     - cd backend
     - docker run --rm ${BACKEND_IMAGE}:dev-${CI_COMMIT_SHORT_SHA} ./mvnw test
+  # Conditions
   needs: ['Build the Backend dev image']
   rules:
     - changes:
@@ -69,10 +79,13 @@ Run Backend unit-tests:
 #################
 Build the Backend prod image:
   stage: package 
+  # Setup
   image: docker:latest  
+  # Scripts
   script:
     - cd backend
     - docker build -t $BACKEND_IMAGE:prod-$CI_COMMIT_SHORT_SHA -t $BACKEND_IMAGE:latest --target prod .
+  # Conditions
   rules:
     - changes:
         - backend/**/*
@@ -80,10 +93,13 @@ Build the Backend prod image:
 
 Build the Backend draft image:
   stage: package 
+  # Setup
   image: docker:latest  
+  # Scripts
   script:
     - cd backend
     - docker build -t $BACKEND_IMAGE:draft-$CI_MERGE_REQUEST_IID --target prod .
+  # Conditions
   rules:
     - changes:
         - backend/**/*
@@ -95,54 +111,45 @@ Build the Backend draft image:
 
 Publish the Backend prod image:
   stage: publish 
+  # Setup
   image: docker:latest
   services:
     - docker:dind
   variables:
     DOCKER_TLS_CERTDIR: ""
+    BACKEND_IMAGE_TAG_PROD: $BACKEND_IMAGE:prod-$CI_COMMIT_SHORT_SHA
+  # Scripts
+  before_script:
+    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
   script:
-    - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
-    - docker push $BACKEND_IMAGE:prod-$CI_COMMIT_SHORT_SHA
+    - docker push $BACKEND_IMAGE_TAG_PROD
     - docker push $BACKEND_IMAGE:latest
+  after_script:
+    - docker image rm $BACKEND_IMAGE_TAG_PROD 
+    - docker image rm $BACKEND_IMAGE:latest
+  # Conditions
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 Publish the Backend draft image:
   stage: publish 
+  # Setup
   image: docker:latest
   services:
     - docker:dind
   variables:
     DOCKER_TLS_CERTDIR: ""
+    BACKEND_IMAGE_TAG_DRAFT: $BACKEND_IMAGE:draft-$CI_MERGE_REQUEST_IID
+  # Scripts
+  before_script:
+    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
   script:
-    - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
-    - docker push $BACKEND_IMAGE:draft-$CI_MERGE_REQUEST_IID
+    - docker push $BACKEND_IMAGE_TAG_DRAFT
+  after_script:
+    - docker image rm $BACKEND_IMAGE_TAG_DRAFT
+  # Conditions
   rules:
     - if: $CI_MERGE_REQUEST_IID
-
-###############
-# CLEAN STAGE #
-###############
-
-Delete Backend prod artifacts:
-  stage: clean 
-  script:
-    - docker image rm $BACKEND_IMAGE:prod-$CI_COMMIT_SHORT_SHA
-    - docker image rm $BACKEND_IMAGE:latest
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-
-Delete Backend draft artifacts:
-  stage: clean 
-  script:
-    - docker image rm $BACKEND_IMAGE:draft-$CI_MERGE_REQUEST_IID
-  rules:
-    - if: $CI_MERGE_REQUEST_IID
-
-Delete the Backend dev artifacts:
-  stage: clean 
-  script:
-    - docker image rm $BACKEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
 
 ################
 # DEPLOY STAGE #

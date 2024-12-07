@@ -1,21 +1,23 @@
-# Each default keyword is copied to every job that doesn’t already have it defined. 
+# Each default keyword is copied to every job that doesn’t already have it defined.
 default:
-  image: eclipse-temurin:21-jdk-jammy
+  before_script:
+    - docker info
   cache:
     paths:
       - .m2/repository
       - backend/target/
+  
 
-# Use include to include external YAML files in your CI/CD configuration. 
+# Use include to include external YAML files in your CI/CD configuration.
 include:
   - local: frontend/frontend-ci.yml
     rules:
-      - changes: 
+      - changes:
         - frontend/**/*
 
   - local: backend/backend-ci.yml
     rules:
-      - changes: 
+      - changes:
         - backend/**/*
 
 # The names and order of the pipeline stages.
@@ -23,12 +25,11 @@ stages:
   - setup
   - build
   - test
-  - package 
+  - package
   - publish
-  - clean
   - deploy
 
-# Control what types of pipeline run. 
+# Control what types of pipeline run.
 workflow:
   rules:
     # Run only for MR, tagged or protected branches
@@ -38,7 +39,8 @@ workflow:
     # Enforce branch naming rules
     - if: $CI_COMMIT_BRANCH =~ /^(noah|elone|gabriel|rabieh|geraud)\/.*/ || $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main"
 
+# The main Pipeline needs to have at least one job so we keep this one here.
 Logger:
-  stage: setup 
-  script: 
+  stage: setup
+  script:
     - echo "Running the T-DEV-701-DevOps CI"
