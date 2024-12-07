@@ -4,7 +4,7 @@
 
 For the development environment
 - `just` recipe runner for development scripts
-- `docker` and 'docker-compose' v2
+- `docker` and `docker-compose` v2
 
 For the staging environment
 - `helm` for helm charts
