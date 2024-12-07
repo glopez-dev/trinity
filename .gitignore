@@ -1,5 +1,15 @@
 ### VS Code ###
 .vscode/
+
+
+# Don't push SSH keys
+*.pem
+
+### Jetbrains ###
 .idea
 backend/.idea
 frontend/.idea
+
+### Next JS ###
+frontend/.next
+

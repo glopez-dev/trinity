@@ -1,0 +1,49 @@
+stages:
+  - build
+  - test
+  - package
+  - deploy
+
+default:
+  tags: ["aws", "ec2", "docker"]
+
+variables:
+  CI_REGISTRY: t-dev.epitest.eu/par_11/t-dev-701-devops 
+  DOCKER_IMAGE_NAME: springboot-api
+  BACKEND_CONTAINER_ID: backend   
+
+# Build Dev Image
+build_dev:
+  stage: build
+  image: docker:24
+  services:
+    - docker:dind
+  script:
+    - echo "Building the dev image..."
+    - docker build --target=dev -t "$DOCKER_IMAGE_NAME:dev-$CI_COMMIT_SHORT_SHA" ./backend
+
+# Run Tests on Dev Image
+test_dev:
+  stage: test
+  image: docker:24
+  services:
+    - docker:dind
+  script:
+    - echo "Running tests in the dev container..."
+    - export DOCKER_IMAGE_DEV="$DOCKER_IMAGE_NAME:dev-$CI_COMMIT_SHORT_SHA"
+    - docker run --rm -e SPRING_PROFILES_ACTIVE=dev $DOCKER_IMAGE_DEV  ./mvnw $BACKEND_CONTAINER_ID 
+
+build_prod:
+  stage: package
+  image: docker:24
+  services:
+    - docker:dind
+  script:
+    - export DOCKER_PROD_TAG="prod-$CI_COMMIT_SHORT_SHA"
+    - echo "Building the prod image..."
+    - docker build --target=prod -t $DOCKER_IMAGE_NAME:$DOCKER_PROD_TAG ./backend
+    - echo "Pushing the prod image..."
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker tag $DOCKER_IMAGE_NAME:$DOCKER_PROD_TAG $CI_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_PROD_TAG
+    - docker push $CI_REGISTRY/$DOCKER_IMAGE_NAME:$DOCKER_PROD_TAG
+

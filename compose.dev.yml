@@ -1,3 +1,6 @@
+# The .env file should be in the same directory as your Compose file. 
+# Docker Compose will automatically load it.
+
 volumes:
   postgres_data:
     driver: local
@@ -15,10 +18,10 @@ services:
     image: 'postgres:15-alpine'
     container_name: t-dev-701-postgres
     environment:
-      - POSTGRES_DB=mydatabase
-      - POSTGRES_USER=myuser
-      - POSTGRES_PASSWORD=secret
-      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGDATA=${PGDATA}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -26,7 +29,7 @@ services:
     networks:
       - backend
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U myuser -d mydatabase" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -35,11 +38,11 @@ services:
     container_name: t-dev-701-rabbit_mq
     image: 'rabbitmq:latest'
     environment:
-      - 'RABBITMQ_DEFAULT_PASS=secret'
-      - 'RABBITMQ_DEFAULT_USER=myuser'
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
     ports:
-      - '5672:5672' # Standard AMQP port
-      - '15672:15672' # Management UI port
+      - 5672:5672 # Standard AMQP port
+      - 15672:15672 # Management UI port
     volumes:
     - rabbitmq_data:/var/lib/rabbitmq
     networks:
@@ -69,9 +72,9 @@ services:
     #   rabbit-mq:
     #     condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/mydatabase"
-      SPRING_DATASOURCE_USERNAME: "myuser"
-      SPRING_DATASOURCE_PASSWORD: "secret"
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
     # healthcheck:
     #   test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
     #   interval: 30s
@@ -98,4 +101,4 @@ services:
     #   backend-app:
     #     condition: service_healthy
     environment:
-    - NEXT_PUBLIC_API_URL=http://host.docker.internal:8080
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}

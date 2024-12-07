@@ -1,5 +1,15 @@
 # Trinity Project - Technical Documentation
 
+## Requirements
+
+For the development environment
+- `just` recipe runner for development scripts
+- `docker` and 'docker-compose' v2
+
+For the staging environment
+- `helm` for helm charts
+- `minikube` for local k8s development
+
 ## 🎯 Architecture & Technical Stack
 We decided to do an **Event Driven Architecture (EDA)** to manage events throughout the application. We believe it responds correctly to the project we are creating.
 
