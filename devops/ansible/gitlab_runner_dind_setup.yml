@@ -2,6 +2,10 @@
 - name: Install Docker and Docker Compose on Ubuntu 24.04
   hosts: ec2_gitlab_runner
   become: yes
+
+  vars_files:
+    - variables.yml
+
   tasks:
     - name: Update apt cache
       apt:
@@ -82,3 +86,38 @@
     - name: Display Docker Compose version
       debug:
         var: compose_version.stdout
+
+    - name: Run GitLab Runner container
+      shell: |
+        docker run \
+          --detach \
+          --name gitlab-runner-medium \
+          --restart always \
+          -v /srv/gitlab-runner/config:/etc/gitlab-runner \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          gitlab/gitlab-runner:alpine
+      args:
+        executable: /bin/bash
+
+    - name: Register GitLab Runner with Docker DinD
+      shell: |
+        docker run \
+          --rm \
+          -t \
+          -i \
+          -v /srv/gitlab-runner/config:/etc/gitlab-runner \
+          gitlab/gitlab-runner:alpine \
+          register \
+            --non-interactive \
+            --url "https://t-dev.epitest.eu" \
+            --registration-token {{ REGISTRATION_TOKEN }} \
+            --executor "docker" \
+            --docker-image docker:stable \
+            --description "[{{ YOUR_NAME }}] Local Docker DinD runner" \
+            --docker-privileged \
+            --docker-tlsverify \
+            --docker-volumes "/certs/client" \
+            --tag-list "docker-dind" \
+            --run-untagged="false"
+      args:
+        executable: /bin/bash

@@ -35,3 +35,32 @@ destroy ENV:
         echo "Error: Unknown environment '{{ENV}}'. Please specify 'dev' or 'prod'."
         exit 1
     fi
+
+install_docker_dind_runner:
+    docker run \
+        --detach \
+        --name gitlab-runner-medium \
+        --restart always \
+        -v /srv/gitlab-runner/config:/etc/gitlab-runner \
+        -v  /var/run/docker.sock:/var/run/docker.sock \
+        gitlab/gitlab-runner:alpine
+
+register_docker_dind_runner:
+    docker run \
+    --rm \
+    -t \
+    -i \
+    -v /srv/gitlab-runner/config:/etc/gitlab-runner \
+    gitlab/gitlab-runner:alpine \
+    register \
+        --non-interactive \
+        --url "https://t-dev.epitest.eu" \
+        --registration-token $TOKEN \
+        --executor "docker" \
+        --docker-image docker:stable \
+        --description "[Gabriel] Local Docker DinD runner" \
+        --docker-privileged \
+        --docker-tlsverify \
+        --docker-volumes "/certs/client" \
+        --tag-list "docker-dind" \
+        --run-untagged="false"
