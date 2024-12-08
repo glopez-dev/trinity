@@ -1,0 +1,41 @@
+stages:
+  - deploy 
+
+Deploy to AWS EC2:
+  stage: deploy
+  image: docker:latest
+  variables:
+    SECURE_FILES_DOWNLOAD_PATH: './'
+  script:
+    - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
+    - chmod 600 ./aws_gitlab_runner.pem
+
+    - eval $(ssh-agent -s)
+    - ssh-add ./aws_gitlab_runner.pem
+
+    # Create a new Docker context
+    - docker context create aws  --description "AWS context for Docker" --docker "host=ssh://ubuntu@ec2-13-60-216-157.eu-north-1.compute.amazonaws.com,cert=./aws_gitlab_runner.pem"
+
+    # Use the created context
+    - docker context use aws
+
+    # Test the context
+    - docker info
+
+    # Deploy the application
+    - echo "Stopping the production environment..."
+    - docker-compose --file compose.yml --profile production down
+    - echo "Removing unused docker data..."
+    - docker system prune --force # Means no prompt
+    - echo "Deploying to the production environment..."
+    - docker-compose --file compose.yml --profile production pull
+    - docker-compose --file compose.yml --profile production up --detach
+
+  after_script:
+  - rm -f aws_gitlab_runner.pem
+
+  # rules:
+  #   - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+  when: manual
+

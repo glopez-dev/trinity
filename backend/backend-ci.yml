@@ -71,7 +71,7 @@ Run Backend unit-tests:
   # Scripts
   script:
     - cd backend
-    - docker run --rm  $BACKEND_IMAGE_TAG_DEV ./mvnw test
+    - docker run --rm  $BACKEND_IMAGE_TAG_DEV test
   # Conditions
   needs: ['Build the Backend dev image']
 
@@ -113,15 +113,3 @@ Build the Backend draft image:
   # Conditions
   rules:
     - if: $CI_MERGE_REQUEST_IID
-
-################
-# DEPLOY STAGE #
-################
-
-Deploy Backend to production:
-  stage: deploy
-  script:
-    - echo "Deploying to production server"
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-  when: manual
