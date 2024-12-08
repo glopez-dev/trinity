@@ -1,40 +1,38 @@
-deploy ENV: 
+# Bring up a given deployment
+up ENV: 
     #!/bin/bash
+
     just destroy "{{ENV}}"
+
+    echo "Removing unused docker data..."
+    docker system prune --force # Means no prompt
+
     if [[ "{{ENV}}" == "dev" ]]; then
         echo "Deploying to the development environment..."
-        docker-compose \
-            -f compose.dev.yml \
-            up --detach 
-    # elif [[ "{{ENV}}" == "prod" ]]; then
-    #     echo "Deploying to the production environment..."
-    #     docker-compose \
-    #         -f compose.base.yml \
-    #         -f compose.prod.yml \
-    #         up -d
+        docker-compose --file compose.yml --profile development up --detach 
+    elif [[ "{{ENV}}" == "prod" ]]; then
+        echo "Deploying to the production environment..."
+        docker-compose --file compose.yml --profile production pull
+        docker-compose --file compose.yml --profile production up --detach
     else
         echo "Error: Unknown environment '{{ENV}}'. Please specify 'dev' or 'prod'."
         exit 1
     fi
 
-# Bring down the environment
-destroy ENV:
+# Bring down a given deployment 
+down ENV:
     #!/bin/bash
     if [[ "{{ENV}}" == "dev" ]]; then
         echo "Stopping the development environment..."
-        docker-compose \
-            -f compose.dev.yml \
-            down
-    # elif [[ "{{ENV}}" == "prod" ]]; then
-    #     echo "Stopping the production environment..."
-    #     docker-compose \
-    #         -f compose.base.yml \
-    #         -f compose.prod.yml \
-    #         down
+        docker-compose --file compose.yml --profile development down
+    elif [[ "{{ENV}}" == "prod" ]]; then
+        echo "Stopping the production environment..."
+        docker-compose --file compose.yml --profile production down
     else
         echo "Error: Unknown environment '{{ENV}}'. Please specify 'dev' or 'prod'."
         exit 1
     fi
+
 
 install_docker_dind_runner:
     docker run \
@@ -58,7 +56,7 @@ register_docker_dind_runner:
         --registration-token $TOKEN \
         --executor "docker" \
         --docker-image docker:stable \
-        --description "[Gabriel] Local Docker DinD runner" \
+        --description "[${NAME}] Local Docker DinD runner" \
         --docker-privileged \
         --docker-tlsverify \
         --docker-volumes "/certs/client" \
