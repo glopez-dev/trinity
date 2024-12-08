@@ -3,7 +3,7 @@ stages:
   - setup
   - build
   - test
-  - package 
+  - package
   - deploy
 
 variables:
@@ -15,11 +15,12 @@ variables:
 ###############
 
 Build Frontend dev image:
-  stage: build 
+  stage: build
+
   variables:
-    FRONTEND_IMAGE_TAG_DEV: ${FRONTEND_IMAGE}:dev-${CI_COMMIT_SHORT_SHA} 
+    FRONTEND_IMAGE_TAG_DEV: ${FRONTEND_IMAGE}:dev-${CI_COMMIT_SHORT_SHA}
   # Scripts
-  before_script: 
+  before_script:
     - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
   script:
     - cd frontend
@@ -28,9 +29,9 @@ Build Frontend dev image:
         --build-arg NEXT_PUBLIC_ENVIRONMENT=dev
         --file Dockerfile.dev
         .
-    - docker push $FRONTEND_IMAGE_TAG_DEV 
+    - docker push $FRONTEND_IMAGE_TAG_DEV
   after_script:
-    - docker image rm $FRONTEND_IMAGE_TAG_DEV 
+    - docker image rm $FRONTEND_IMAGE_TAG_DEV
 
 ##############
 # TEST STAGE #
@@ -48,7 +49,7 @@ Run Frontend tests:
   variables:
     FRONTEND_IMAGE_DEV_TAG: $FRONTEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
   script:
-    - docker run --rm -e CI=1 $FRONTEND_IMAGE_DEV_TAG  npm run test  
+    - docker run --rm -e CI=1 $FRONTEND_IMAGE_DEV_TAG  npm run test
   needs: ['Build Frontend dev image']
 
 #################
@@ -56,8 +57,8 @@ Run Frontend tests:
 #################
 
 Build Frontend prod image:
-  # Please check the 'default' directives in ../.gitlab-ci.yml to understand the full Job config
-  stage: package 
+  # Please check the 'default' directives in ../.gitlab-ci.yml to understand the full Job configstage: package
+
   variables:
     FRONTEND_IMAGE_TAG_PROD: ${FRONTEND_IMAGE}:prod-${CI_COMMIT_SHORT_SHA}
   # Scripts
@@ -71,30 +72,30 @@ Build Frontend prod image:
         --build-arg NEXT_PUBLIC_ENVIRONMENT=production
         --file Dockerfile.dev
         . # The '.' is the path the Dockerfile directory.
-    - docker push $FRONTEND_IMAGE_TAG_PROD 
+    - docker push $FRONTEND_IMAGE_TAG_PROD
     - docker push ${FRONTEND_IMAGE}:latest
   after_script:
-    - docker image rm $FRONTEND_IMAGE_TAG_PROD 
+    - docker image rm $FRONTEND_IMAGE_TAG_PROD
     - docker image rm ${FRONTEND_IMAGE}:latest
   # Conditions
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 Build Frontend draft image:
-  stage: package 
+  stage: package
   variables:
-    FRONTEND_IMAGE_TAG_DRAFT: ${FRONTEND_IMAGE}:draft-${CI_MERGE_REQUEST_IID} 
+    FRONTEND_IMAGE_TAG_DRAFT: ${FRONTEND_IMAGE}:draft-${CI_MERGE_REQUEST_IID}
 
   before_script:
     - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
   script:
-    - cd frontend 
+    - cd frontend
     - docker build 
         --tag $FRONTEND_IMAGE_TAG_DRAFT
         --build-arg NEXT_PUBLIC_ENVIRONMENT=draft
         --file Dockerfile.dev
         .
-    - docker push $FRONTEND_IMAGE_TAG_DRAFT 
+    - docker push $FRONTEND_IMAGE_TAG_DRAFT
   after_script:
     - docker image rm $FRONTEND_IMAGE_TAG_DRAFT
   rules:
@@ -107,7 +108,7 @@ Build Frontend draft image:
 
 Deploy Frontend to prod env:
   stage: deploy
-  image: 
+  image:
     name: bitnami/kubectl:latest
     entrypoint: ['']
   script:
