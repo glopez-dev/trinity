@@ -38,20 +38,23 @@ Build Frontend dev image:
 ##############
 # TEST STAGE #
 ##############
-
-# Removed for the moment as I can't manage to run it in non interactive mode
-# Lint Frontend codebase:
-#   stage: test 
-#   image: node:${NODE_VERSION}
-#   script:
-#     - docker run --rm -e CI=1 $FRONTEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA npm run lint
+Lint Frontend codebase:
+  stage: test
+  image: node:${NODE_VERSION}
+  variables:
+    FRONTEND_IMAGE_DEV_TAG: $FRONTEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
+  script:
+    - docker run --rm -e CI=1 $FRONTEND_IMAGE_DEV_TAG npm run lint
+  needs: ['Build Frontend dev image']
 
 Run Frontend tests:
   stage: test
   image: node:${NODE_VERSION}
+  variables:
+    FRONTEND_IMAGE_DEV_TAG: $FRONTEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
   script:
-    - docker run --rm -e CI=1 $FRONTEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA npm run test  
-  needs: ['Build Frontend dev image']
+    - docker run --rm -e CI=1 $FRONTEND_IMAGE_DEV_TAG npm run test
+  needs: ['Build Frontend dev image', 'Lint Frontend codebase']
 
 #################
 # PACKAGE STAGE #

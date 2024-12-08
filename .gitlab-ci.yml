@@ -6,7 +6,8 @@ default:
     paths:
       - .m2/repository
       - backend/target/
-  
+  tags:
+    - shell
 
 # Use include to include external YAML files in your CI/CD configuration.
 include:
