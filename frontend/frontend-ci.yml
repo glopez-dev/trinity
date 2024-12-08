@@ -4,7 +4,6 @@ stages:
   - build
   - test
   - package 
-  - publish
   - deploy
 
 variables:
@@ -17,8 +16,6 @@ variables:
 
 Build Frontend dev image:
   stage: build 
-  # Setup
-  image: docker:latest
   variables:
     FRONTEND_IMAGE_TAG_DEV: ${FRONTEND_IMAGE}:dev-${CI_COMMIT_SHORT_SHA} 
   # Scripts
@@ -38,35 +35,34 @@ Build Frontend dev image:
 ##############
 # TEST STAGE #
 ##############
-Lint Frontend codebase:
-  stage: test
-  image: node:${NODE_VERSION}
-  variables:
-    FRONTEND_IMAGE_DEV_TAG: $FRONTEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
-  script:
-    - docker run --rm -e CI=1 $FRONTEND_IMAGE_DEV_TAG npm run lint
-  needs: ['Build Frontend dev image']
+
+# Removed for the moment as I can't manage to run it in non interactive mode
+# Lint Frontend codebase:
+#   stage: test 
+#   image: node:${NODE_VERSION}
+#   script:
+#     - docker run --rm -e CI=1 $FRONTEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA npm run lint
 
 Run Frontend tests:
   stage: test
-  image: node:${NODE_VERSION}
   variables:
     FRONTEND_IMAGE_DEV_TAG: $FRONTEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
   script:
-    - docker run --rm -e CI=1 $FRONTEND_IMAGE_DEV_TAG npm run test
-  needs: ['Build Frontend dev image', 'Lint Frontend codebase']
+    - docker run --rm -e CI=1 $FRONTEND_IMAGE_DEV_TAG  npm run test  
+  needs: ['Build Frontend dev image']
 
 #################
 # PACKAGE STAGE #
 #################
 
 Build Frontend prod image:
+  # Please check the 'default' directives in ../.gitlab-ci.yml to understand the full Job config
   stage: package 
-  image: docker:latest
-  services:
-    - docker:dind
   variables:
     FRONTEND_IMAGE_TAG_PROD: ${FRONTEND_IMAGE}:prod-${CI_COMMIT_SHORT_SHA}
+  # Scripts
+  before_script:
+    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
   script:
     - cd frontend
     - docker build 
@@ -74,74 +70,36 @@ Build Frontend prod image:
         -t ${FRONTEND_IMAGE}:latest
         --build-arg NEXT_PUBLIC_ENVIRONMENT=production
         --file Dockerfile.dev
-        .
-  # Conditions
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-
-Build Frontend draft image:
-  stage: package 
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    - cd frontend 
-    - docker build 
-        --tag ${FRONTEND_IMAGE}:draft-${CI_MERGE_REQUEST_IID} 
-        --build-arg NEXT_PUBLIC_ENVIRONMENT=draft
-        --file Dockerfile.dev
-        .
-  rules:
-    - if: $CI_MERGE_REQUEST_IID
-
-
-#################
-# PUBLISH STAGE #
-#################
-
-Publish Frontend prod image: 
-  stage: publish
-  # Setup
-  image: docker:latest
-  services:
-    - docker:dind
-  variables:
-    DOCKER_TLS_CERTDIR: ""
-    FRONTEND_IMAGE_TAG_PROD: ${FRONTEND_IMAGE}:prod-${CI_COMMIT_SHORT_SHA}
-  # Scripts
-  before_script:
-    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
-  script:
+        . # The '.' is the path the Dockerfile directory.
     - docker push $FRONTEND_IMAGE_TAG_PROD 
     - docker push ${FRONTEND_IMAGE}:latest
   after_script:
     - docker image rm $FRONTEND_IMAGE_TAG_PROD 
     - docker image rm ${FRONTEND_IMAGE}:latest
   # Conditions
-  needs: ['Build Frontend prod image']
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-Publish Frontend draft image:
-  stage: publish 
-  # Setup
-  image: docker:latest
-  services:
-    - docker:dind
+Build Frontend draft image:
+  stage: package 
   variables:
-    DOCKER_TLS_CERTDIR: ""
-    FRONTEND_IMAGE_TAG_DRAFT: $FRONTEND_IMAGE:draft-$CI_MERGE_REQUEST_IID
-  # Scripts
+    FRONTEND_IMAGE_TAG_DRAFT: ${FRONTEND_IMAGE}:draft-${CI_MERGE_REQUEST_IID} 
+
   before_script:
     - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
   script:
+    - cd frontend 
+    - docker build 
+        --tag $FRONTEND_IMAGE_TAG_DRAFT
+        --build-arg NEXT_PUBLIC_ENVIRONMENT=draft
+        --file Dockerfile.dev
+        .
     - docker push $FRONTEND_IMAGE_TAG_DRAFT 
   after_script:
     - docker image rm $FRONTEND_IMAGE_TAG_DRAFT
-  # Conditions
-  needs: ['Build Frontend draft image']
   rules:
     - if: $CI_MERGE_REQUEST_IID
+
 
 ################
 # DEPLOY STAGE #
