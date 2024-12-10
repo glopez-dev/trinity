@@ -11,8 +11,8 @@
 	<groupId>com.devops</groupId>
 	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>demo</name>
-	<description>Demo project for Spring Boot</description>
+	<name>Trinity</name>
+	<description>Trinity project for Epitech</description>
 	<url/>
 	<licenses>
 		<license/>
