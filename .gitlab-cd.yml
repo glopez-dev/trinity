@@ -34,8 +34,8 @@ Deploy to AWS EC2:
   after_script:
   - rm -f aws_gitlab_runner.pem
 
-  # rules:
-  #   - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
   when: manual
 

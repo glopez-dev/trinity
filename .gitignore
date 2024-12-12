@@ -17,3 +17,5 @@ frontend/.next/**
 
 devops/ansible/inventory.yml
 devops/ansible/variables.yml
+
+.secrets/

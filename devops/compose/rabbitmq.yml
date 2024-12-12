@@ -6,8 +6,8 @@ services:
       org.springframework.boot.service-connection: rabbitmq
 
     environment:
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: /run/secrets/rabbitmq_password 
 
     ports:
       - 5672:5672 # Standard AMQP port
