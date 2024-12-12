@@ -117,4 +117,4 @@ Build the Backend draft image:
     - docker image rm $BACKEND_IMAGE_TAG_DRAFT
   # Conditions
   rules:
-    - if: $CI_MERGE_REQUEST_IID
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
