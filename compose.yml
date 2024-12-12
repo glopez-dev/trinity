@@ -13,15 +13,14 @@ x-backend-env: &backend-env
   # We use the service name 'postgres' to leverage Docker Compose DNS resolution
   SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB}"
   SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-  SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+  SPRING_DATASOURCE_PASSWORD: /run/secrets/postgres_password
 
   SPRING_RABBITMQ_HOST: ${RABBITMQ_HOST}
   SPRING_RABBITMQ_PORT: 5672
   SPRING_RABBITMQ_USERNAME: ${RABBITMQ_DEFAULT_USER}
-  SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_DEFAULT_PASS}
+  SPRING_RABBITMQ_PASSWORD: /run/secrets/rabbitmq_password
 
 x-backend-common: &backend-common
-
   networks: 
     - backend
   depends_on:
@@ -29,12 +28,6 @@ x-backend-common: &backend-common
       condition: service_healthy
     rabbitmq:
      condition: service_healthy
-
-  volumes:
-    - "./backend/src:/app/backend/src"
-    - "./backend/pom.xml:/app/backend/pom.xml"
-    - "~/.m2:/root/.m2"
-
 
 ############
 # FRONTEND # 
@@ -70,8 +63,13 @@ networks:
   frontend:
     driver: bridge
 
-services:
+secrets: 
+  postgres_password:
+    file: ./.secrets/postgres_password
+  rabbitmq_password:
+    file: ./.secrets/rabbitmq_password
 
+services:
 ##########
 # COMMON #
 ##########
@@ -119,7 +117,6 @@ services:
     
     ports: 
       - "8080:8080"
-      - "5005:5005"
 
     environment:
       SPRING_PROFILES_ACTIVE: dev 

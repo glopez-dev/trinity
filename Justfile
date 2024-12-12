@@ -33,6 +33,20 @@ down ENV:
         exit 1
     fi
 
+# Display the configuration for a given profile 
+config ENV:
+    #!/bin/bash
+    if [[ "{{ENV}}" == "dev" ]]; then
+        echo "Here's the 'development' compose configuration :"
+        docker compose --profile development config 
+    elif [[ "{{ENV}}" == "prod" ]]; then
+        echo "Here's the 'development' compose configuration :"
+        docker compose --profile production config 
+    else
+        echo "Error: Unknown environment '{{ENV}}'. Please specify 'dev' or 'prod'."
+        exit 1
+    fi
+
 
 install_docker_dind_runner:
     docker run \
