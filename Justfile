@@ -2,18 +2,18 @@
 up ENV: 
     #!/bin/bash
 
-    just destroy "{{ENV}}"
+    just down "{{ENV}}"
 
     echo "Removing unused docker data..."
     docker system prune --force # Means no prompt
 
     if [[ "{{ENV}}" == "dev" ]]; then
         echo "Deploying to the development environment..."
-        docker-compose --file compose.yml --profile development up --detach 
+        docker compose --file compose.yml --profile development up --detach 
     elif [[ "{{ENV}}" == "prod" ]]; then
         echo "Deploying to the production environment..."
-        docker-compose --file compose.yml --profile production pull
-        docker-compose --file compose.yml --profile production up --detach
+        docker compose --file compose.yml --profile production pull
+        docker compose --file compose.yml --profile production up --detach
     else
         echo "Error: Unknown environment '{{ENV}}'. Please specify 'dev' or 'prod'."
         exit 1
@@ -24,10 +24,10 @@ down ENV:
     #!/bin/bash
     if [[ "{{ENV}}" == "dev" ]]; then
         echo "Stopping the development environment..."
-        docker-compose --file compose.yml --profile development down
+        docker compose --file compose.yml --profile development down
     elif [[ "{{ENV}}" == "prod" ]]; then
         echo "Stopping the production environment..."
-        docker-compose --file compose.yml --profile production down
+        docker compose --file compose.yml --profile production down
     else
         echo "Error: Unknown environment '{{ENV}}'. Please specify 'dev' or 'prod'."
         exit 1

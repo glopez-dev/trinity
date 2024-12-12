@@ -7,13 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @RestController
-public class BackendApplication {
-    @GetMapping("/")
-    public String home() {
-        return "Hello World";
-    }
+public class TrinityApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(BackendApplication.class, args);
+        SpringApplication.run(TrinityApplication.class, args);
     }
 }
