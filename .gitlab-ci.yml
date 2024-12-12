@@ -2,7 +2,7 @@
 default:
   # We want to run the Jobs on EC2 VMs with a "docker" type Gitlab runner.
   tags: 
-    - docker-dind
+    - macos
   # As we have Docker installed on the host we can use images with only the docker CLI inside them and use the host server.
   image: docker:stable
   services:
