@@ -16,7 +16,6 @@ variables:
 
 Build Frontend dev image:
   stage: build
-
   variables:
     FRONTEND_IMAGE_TAG_DEV: ${FRONTEND_IMAGE}:dev-${CI_COMMIT_SHORT_SHA}
   # Scripts
@@ -49,16 +48,30 @@ Run Frontend tests:
   variables:
     FRONTEND_IMAGE_DEV_TAG: $FRONTEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
   script:
-    - docker run --rm -e CI=1 $FRONTEND_IMAGE_DEV_TAG  npm run test
+    - mkdir -p frontend/reports
+    - |
+      docker run --rm \
+        -v $(pwd)/frontend/reports:/app/frontend/reports \
+        -e CI=1 \
+        $FRONTEND_IMAGE_DEV_TAG \
+        /bin/sh -c '
+          cd /app/frontend && \
+          npm run test
+        '
+  artifacts:
+    reports:
+      junit: frontend/reports/report.xml
+    expire_in: 1 week
   needs: ['Build Frontend dev image']
 
 #################
 # PACKAGE STAGE #
 #################
 
-Build Frontend prod image:
-  # Please check the 'default' directives in ../.gitlab-ci.yml to understand the full Job configstage: package
 
+Build Frontend prod image:
+  # Please check the 'default' directives in ../.gitlab-ci.yml to understand the full Job config
+  stage: package
   variables:
     FRONTEND_IMAGE_TAG_PROD: ${FRONTEND_IMAGE}:prod-${CI_COMMIT_SHORT_SHA}
   # Scripts
