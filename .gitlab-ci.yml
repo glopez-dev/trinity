@@ -6,7 +6,7 @@ default:
   # As we have Docker installed on the host we can use images with only the docker CLI inside them and use the host server.
   image: docker:stable
   services:
-    - name: docker:27.3-dind 
+    - name: docker:dind
       alias: docker
   # We want to check before each script that docker is available to the job.
   # before_script:
