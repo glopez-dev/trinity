@@ -2,7 +2,7 @@
 default:
   cache:
     paths:
-      - .m1/repository
+      - .m2/repository
       - backend/target/
 
 # The names and order of the pipeline stages.
@@ -45,10 +45,11 @@ Build the Backend dev image:
   # Setup
   variables:
     BACKEND_IMAGE_TAG_DEV: $BACKEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
+    BACKEND_CONTAINER_ID: backend
   # Scripts
   before_script:
     # Connect to the Docker Hub registry using the CI/CD variables defined on Gitlab website.
-    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
   script:
     # Build a developement Docker image with the specific commit codebase.
     - docker build --tag $BACKEND_IMAGE_TAG_DEV --target dev ./backend
