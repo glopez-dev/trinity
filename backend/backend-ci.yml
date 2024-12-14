@@ -48,7 +48,7 @@ Build the Backend dev image:
   # Scripts
   before_script:
     # Connect to the Docker Hub registry using the CI/CD variables defined on Gitlab website.
-    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+    - docker login -u $DOCKER_HUB_USERNAME --password $DOCKER_HUB_PASSWORD 
   script:
     # Build a developement Docker image with the specific commit codebase.
     - docker build --tag $BACKEND_IMAGE_TAG_DEV --target dev ./backend
@@ -89,7 +89,7 @@ Build the Backend prod image:
     BACKEND_IMAGE_TAG_PROD: $BACKEND_IMAGE:prod-$CI_COMMIT_SHORT_SHA
   # Scripts
   before_script:
-    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+    - docker login -u $DOCKER_HUB_USERNAME --password $DOCKER_HUB_PASSWORD 
   script:
     - cd backend
     - docker build -t $BACKEND_IMAGE_TAG_PROD -t $BACKEND_IMAGE:latest --target prod .
@@ -108,7 +108,7 @@ Build the Backend draft image:
     BACKEND_IMAGE_TAG_DRAFT: $BACKEND_IMAGE:draft-$CI_MERGE_REQUEST_IID
   # Scripts
   before_script:
-    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+    - docker login -u $DOCKER_HUB_USERNAME --password $DOCKER_HUB_PASSWORD 
   script:
     - cd backend
     - docker build -t $BACKEND_IMAGE_TAG_DRAFT --target prod .
