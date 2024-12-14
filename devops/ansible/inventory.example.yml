@@ -1,9 +1,0 @@
-all:
-  hosts:
-    ec2_gitlab_runner:
-      ansible_host: <your_aws_ec2_public_dns_name> # ec2-13-51-150-9.eu-north-1.compute.amazonaws.com
-      ansible_user: <you_aws_ec2_hostname> # Should be 'ubuntu'
-      # Use the SSH private key to access the EC2 instance
-      ansible_ssh_private_key_file: <path_to_your_private_key> # ~/.ssh/aws_gitlab_runner.pem
-      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-
