@@ -1,0 +1,123 @@
+---
+- name: Install Docker and Docker Compose on Ubuntu 24.04
+  hosts: ec2_gitlab_runner
+  become: yes
+
+  vars_files:
+    - variables.yml
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required system packages
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+        - python3-pip
+        - virtualenv
+        - python3-setuptools
+        - gnupg
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu noble stable
+        state: present
+
+    - name: Update apt cache (after adding Docker repo)
+      apt:
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+        - docker-buildx-plugin
+        - docker-compose-plugin
+
+    - name: Install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/latest/download/docker-compose-Linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Start and enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Test Docker installation
+      command: docker --version
+      register: docker_version
+      changed_when: false
+
+    - name: Display Docker version
+      debug:
+        var: docker_version.stdout
+
+    - name: Test Docker Compose installation
+      command: docker compose version
+      register: compose_version
+      changed_when: false
+
+    - name: Display Docker Compose version
+      debug:
+        var: compose_version.stdout
+
+    - name: Run GitLab Runner container
+      shell: |
+        docker run \
+          --detach \
+          --name gitlab-runner-medium \
+          --restart always \
+          -v /srv/gitlab-runner/config:/etc/gitlab-runner \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          gitlab/gitlab-runner:alpine
+      args:
+        executable: /bin/bash
+
+    - name: Register GitLab Runner with Docker DinD
+      shell: |
+        docker run \
+          --rm \
+          -t \
+          -i \
+          -v /srv/gitlab-runner/config:/etc/gitlab-runner \
+          gitlab/gitlab-runner:alpine \
+          register \
+            --non-interactive \
+            --url "https://t-dev.epitest.eu" \
+            --registration-token {{ REGISTRATION_TOKEN }} \
+            --executor "docker" \
+            --docker-image docker:stable \
+            --description "[{{ YOUR_NAME }}] Local Docker DinD runner" \
+            --docker-privileged \
+            --docker-tlsverify \
+            --docker-volumes "/certs/client" \
+            --tag-list "docker-dind" \
+            --run-untagged="false"
+      args:
+        executable: /bin/bash

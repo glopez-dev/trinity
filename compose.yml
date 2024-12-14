@@ -1,0 +1,176 @@
+###################
+# YAML extensions #
+###################
+
+# We leverage native YAML langugage functionalities to extract 
+# configuration common to both environments.
+
+###########
+# BACKEND # 
+###########
+
+x-backend-env: &backend-env
+  # We use the service name 'postgres' to leverage Docker Compose DNS resolution
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB}"
+  SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+  SPRING_DATASOURCE_PASSWORD: /run/secrets/postgres_password
+
+  SPRING_RABBITMQ_HOST: rabbitmq
+  SPRING_RABBITMQ_PORT: 5672
+  SPRING_RABBITMQ_USERNAME: ${RABBITMQ_DEFAULT_USER}
+  SPRING_RABBITMQ_PASSWORD: /run/secrets/rabbitmq_password
+
+x-backend-common: &backend-common
+  networks: 
+    - backend
+  depends_on:
+    postgres:
+      condition: service_healthy
+    rabbitmq:
+     condition: service_healthy
+
+############
+# FRONTEND # 
+############
+
+x-frontend-common: &frontend-common
+  labels:
+    org.springframework.boot.service-connection: frontend
+
+  networks:
+    - "frontend"
+  ports:
+    - "3000:3000"
+
+##################
+# DOCKER COMPOSE #
+##################
+
+# The .env file should be in the same directory as your Compose file. 
+# Docker Compose will automatically load it.
+
+name: trinity
+  
+volumes:
+  postgres_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+
+networks:
+  backend:
+    driver: bridge
+  frontend:
+    driver: bridge
+
+secrets: 
+  postgres_password:
+    file: ./.secrets/postgres_password
+  rabbitmq_password:
+    file: ./.secrets/rabbitmq_password
+
+services:
+##########
+# COMMON #
+##########
+
+  postgres:
+    extends:
+      file: ./devops/compose/postgres.yml
+      service: postgres
+    volumes:
+      # Mount the data volume at /var/lib/postgresql/data and not at /var/lib/postgresql.
+      # Mounts at the latter path WILL NOT PERSIST database data when the container is re-created.
+      - "postgres_data:/var/lib/postgresql/data"
+    networks:
+      - "backend"
+  
+  rabbitmq:
+    extends:
+      file: ./devops/compose/rabbitmq.yml
+      service: rabbitmq
+    volumes:
+      - "rabbitmq_data:/var/lib/rabbitmq"
+    networks:
+      - "backend"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    
+###############
+# DEVELOPMENT #
+###############
+
+  backend_dev:
+    profiles: ['development']
+    <<: *backend-common # Insert YAML extension
+
+    image: t-dev-701-backend:dev
+    pull_policy: build
+    build:
+      context: ./backend
+      target: dev
+
+    volumes:
+      - "./backend/src/:/app/backend/src"
+      - "./backend/target/:/app/backend/target"
+    
+    ports: 
+      - "8080:8080"
+
+    environment:
+      SPRING_PROFILES_ACTIVE: dev 
+      <<: *backend-env # Insert YAML extension
+
+  
+  frontend_dev:
+    profiles: ['development']
+    <<: *frontend-common
+
+    image: t-dev-701-frontend:dev
+    pull_policy: build
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: dev
+
+    volumes:
+      - "./frontend:/app"
+      - "/app/node_modules"
+    
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend_dev:8080
+    
+    depends_on:
+      backend_dev:
+        condition: service_healthy
+
+##############
+# PRODUCTION #
+##############
+
+  backend_prod:
+    profiles: ['production']
+    <<: *backend-common # Insert YAML extension
+
+    image: silica5518/t-dev-701-backend:latest
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      <<: *backend-env
+  
+  frontend_prod:
+    profiles: ['production']
+    <<: *frontend-common # Insert YAML extension
+
+    image: silica5518/t-dev-701-frontend:latest 
+
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend_prod:8080/api/v1
+
+    depends_on:
+      backend_prod:
+        condition: service_healthy

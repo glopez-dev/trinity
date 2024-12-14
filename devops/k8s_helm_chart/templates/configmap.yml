@@ -1,0 +1,10 @@
+---
+# configmap.yaml
+# Used to define environment variables shared across services.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-app-config
+data:
+  NEXT_PUBLIC_API_URL: "http://backend-api:8080"

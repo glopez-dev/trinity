@@ -1,0 +1,19 @@
+### VS Code ###
+.vscode/
+
+# Don't push secrets
+.env
+
+# Don't push SSH keys
+*.pem
+
+### Jetbrains ###
+.idea
+backend/.idea
+frontend/.idea
+
+
+devops/ansible/inventory.yml
+devops/ansible/variables.yml
+
+.secrets/
