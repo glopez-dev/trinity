@@ -26,13 +26,7 @@ Build Frontend dev image:
     - echo "FRONTEND_IMAGE: $FRONTEND_IMAGE"
     - echo "FRONTEND_IMAGE_TAG_DEV: $FRONTEND_IMAGE_TAG_DEV"
     - cd frontend
-    - >
-      docker build 
-      --tag $FRONTEND_IMAGE_TAG_DEV
-      --build-arg NEXT_PUBLIC_ENVIRONMENT=dev
-      --file Dockerfile
-      --target dev
-      .
+    - docker build --tag $FRONTEND_IMAGE_TAG_DEV --build-arg NEXT_PUBLIC_ENVIRONMENT=dev --file Dockerfile --target dev .
     - docker push $FRONTEND_IMAGE_TAG_DEV
   after_script:
     - docker image rm $FRONTEND_IMAGE_TAG_DEV
