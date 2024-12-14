@@ -7,7 +7,7 @@ stages:
   - deploy
 
 variables:
-  FRONTEND_IMAGE: "${DOCKER_HUB_USERNAME}/t-dev-701-frontend"
+  FRONTEND_IMAGE: "$CI_REGISTRY_USER/t-dev-701-frontend"
   NODE_VERSION: "20.10.0"
 
 ###############
@@ -17,10 +17,13 @@ variables:
 Build Frontend dev image:
   stage: build
   variables:
-    FRONTEND_IMAGE_TAG_DEV: "${FRONTEND_IMAGE}:dev-${CI_COMMIT_SHORT_SHA}"
+    FRONTEND_IMAGE_TAG_DEV: "$FRONTEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA"
   # Scripts
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - echo "CI_REGISTRY_USER: $CI_REGISTRY_USER"
+    - echo "FRONTEND_IMAGE: $FRONTEND_IMAGE"
+    - echo "FRONTEND_IMAGE_TAG_DEV: $FRONTEND_IMAGE_TAG_DEV"
   script:
     - cd frontend
     - docker build 
