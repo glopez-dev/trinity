@@ -12,8 +12,6 @@
 backend/.idea
 frontend/.idea
 
-### Next JS ###
-frontend/.next/**
 
 devops/ansible/inventory.yml
 devops/ansible/variables.yml
