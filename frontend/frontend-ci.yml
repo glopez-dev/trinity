@@ -20,18 +20,18 @@ Build Frontend dev image:
     FRONTEND_IMAGE_TAG_DEV: ${FRONTEND_IMAGE}:dev-${CI_COMMIT_SHORT_SHA}
   # Scripts
   before_script:
-    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+    - echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin
   script:
     - cd frontend
     - docker build 
-        --tag $FRONTEND_IMAGE_TAG_DEV
+        --tag ${FRONTEND_IMAGE_TAG_DEV}
         --build-arg NEXT_PUBLIC_ENVIRONMENT=dev
         --file Dockerfile
         --target dev
         .
-    - docker push $FRONTEND_IMAGE_TAG_DEV
+    - docker push ${FRONTEND_IMAGE_TAG_DEV}
   after_script:
-    - docker image rm $FRONTEND_IMAGE_TAG_DEV
+    - docker image rm ${FRONTEND_IMAGE_TAG_DEV}
 
 ##############
 # TEST STAGE #
@@ -40,12 +40,12 @@ Build Frontend dev image:
 Lint Frontend codebase:
   stage: test
   variables:
-    FRONTEND_IMAGE_DEV_TAG: $FRONTEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
+    FRONTEND_IMAGE_DEV_TAG: ${FRONTEND_IMAGE}:dev-${CI_COMMIT_SHORT_SHA}
   script:
     - docker run --rm
         -v $(pwd)/frontend/:/app/
         -e CI=1
-        $FRONTEND_IMAGE_DEV_TAG
+        ${FRONTEND_IMAGE_DEV_TAG}
         lint 
   needs: ['Build Frontend dev image']
 
@@ -53,7 +53,7 @@ Lint Frontend codebase:
 Run Frontend tests:
   stage: test
   variables:
-    FRONTEND_IMAGE_DEV_TAG: $FRONTEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
+    FRONTEND_IMAGE_DEV_TAG: ${FRONTEND_IMAGE}:dev-${CI_COMMIT_SHORT_SHA}
   script:
     - mkdir -p frontend/reports
     - docker run --rm
@@ -84,20 +84,20 @@ Build Frontend prod image:
   script:
     - cd frontend
     - docker build 
-        -t $FRONTEND_IMAGE_TAG_PROD 
+        -t ${FRONTEND_IMAGE_TAG_PROD} 
         -t ${FRONTEND_IMAGE}:latest
         --build-arg NEXT_PUBLIC_ENVIRONMENT=production
         --file Dockerfile
         --target prod
         . # The '.' is the path the Dockerfile directory.
-    - docker push $FRONTEND_IMAGE_TAG_PROD
+    - docker push ${FRONTEND_IMAGE_TAG_PROD}
     - docker push ${FRONTEND_IMAGE}:latest
   after_script:
-    - docker image rm $FRONTEND_IMAGE_TAG_PROD
+    - docker image rm ${FRONTEND_IMAGE_TAG_PROD}
     - docker image rm ${FRONTEND_IMAGE}:latest
   # Conditions
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: ${CI_COMMIT_BRANCH} == $CI_DEFAULT_BRANCH
 
 Build Frontend draft image:
   stage: package
@@ -114,11 +114,11 @@ Build Frontend draft image:
         --file Dockerfile
         --target prod
         .
-    - docker push $FRONTEND_IMAGE_TAG_DRAFT
+    - docker push ${FRONTEND_IMAGE_TAG_DRAFT}
   after_script:
-    - docker image rm $FRONTEND_IMAGE_TAG_DRAFT
+    - docker image rm ${FRONTEND_IMAGE_TAG_DRAFT}
   rules:
-    - if: $CI_MERGE_REQUEST_IID
+    - if: ${CI_MERGE_REQUEST_IID}
 
 
 ################
