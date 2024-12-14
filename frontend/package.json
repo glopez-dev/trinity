@@ -6,8 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "test": "vitest --reporter=junit --outputFile=reports/report.xml"
+    "lint": "next lint --strict",
+    "test": "vitest --run --reporter=junit --outputFile=reports/report.xml"
   },
   "dependencies": {
     "@testing-library/react": "^16.0.1",

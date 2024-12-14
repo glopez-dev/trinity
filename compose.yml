@@ -15,7 +15,7 @@ x-backend-env: &backend-env
   SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
   SPRING_DATASOURCE_PASSWORD: /run/secrets/postgres_password
 
-  SPRING_RABBITMQ_HOST: ${RABBITMQ_HOST}
+  SPRING_RABBITMQ_HOST: rabbitmq
   SPRING_RABBITMQ_PORT: 5672
   SPRING_RABBITMQ_USERNAME: ${RABBITMQ_DEFAULT_USER}
   SPRING_RABBITMQ_PASSWORD: /run/secrets/rabbitmq_password
@@ -96,7 +96,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-
+    
 ###############
 # DEVELOPMENT #
 ###############
@@ -128,17 +128,18 @@ services:
     <<: *frontend-common
 
     image: t-dev-701-frontend:dev
+    pull_policy: build
     build:
       context: ./frontend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
+      target: dev
 
     volumes:
-      - "./frontend:/app/frontend"
-      - "/app/frontend/node_modules"
+      - "./frontend:/app"
+      - "/app/node_modules"
     
     environment:
       NEXT_PUBLIC_API_URL: http://backend_dev:8080
-      NEXT_PUBLIC_ENVIRONMENT: dev
     
     depends_on:
       backend_dev:
@@ -169,7 +170,6 @@ services:
 
     environment:
       NEXT_PUBLIC_API_URL: http://backend_prod:8080/api/v1
-      NEXT_PUBLIC_ENVIRONMENT: prod
 
     depends_on:
       backend_prod:
