@@ -22,8 +22,8 @@ Build Frontend dev image:
   before_script:
     - docker login -u "$DOCKER_HUB_USERNAME" -p "$DOCKER_HUB_PASSWORD"
   script:
-    - echo $DOCKER_HUB_USERNAME
-    - echo $FRONTEND_IMAGE_TAG_DEV
+    - echo "$DOCKER_HUB_USERNAME"
+    - echo "$FRONTEND_IMAGE_TAG_DEV"
     - cd frontend
     - docker build --tag $FRONTEND_IMAGE_TAG_DEV --build-arg NEXT_PUBLIC_ENVIRONMENT=dev --file Dockerfile --target dev .
     - docker push $FRONTEND_IMAGE_TAG_DEV
