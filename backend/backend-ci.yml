@@ -20,7 +20,7 @@ variables:
   # Maven configuration to specify a local repository path within the CI project directory
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
   # Name of the backend Docker image including the Docker Hub prefix
-  BACKEND_IMAGE: "${DOCKER_HUB_USERNAME}/t-dev-701-backend"
+  BACKEND_IMAGE: ${DOCKER_HUB_USERNAME}/t-dev-701-backend
 
 ###############
 # BUILD STAGE #
