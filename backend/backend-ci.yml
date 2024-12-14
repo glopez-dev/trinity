@@ -45,7 +45,6 @@ Build the Backend dev image:
   # Setup
   variables:
     BACKEND_IMAGE_TAG_DEV: $BACKEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
-    BACKEND_CONTAINER_ID: backend
   # Scripts
   before_script:
     # Connect to the Docker Hub registry using the CI/CD variables defined on Gitlab website.
