@@ -105,7 +105,7 @@ Build Frontend draft image:
     FRONTEND_IMAGE_TAG_DRAFT: ${FRONTEND_IMAGE}:draft-${CI_MERGE_REQUEST_IID}
 
   before_script:
-    - | docker login -u "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD" 
+    - docker login -u "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD" 
   script:
     - cd frontend
     - docker build 
