@@ -48,7 +48,7 @@ Build the Backend dev image:
   # Scripts
   before_script:
     # Connect to the Docker Hub registry using the CI/CD variables defined on Gitlab website.
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker login -u "$DOCKER_HUB_USERNAME" -p "$DOCKER_HUB_PASSWORD"
   script:
     # Build a developement Docker image with the specific commit codebase.
     - docker build --tag "$BACKEND_IMAGE_TAG_DEV" --target dev ./backend
