@@ -22,7 +22,6 @@ Build Frontend dev image:
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
   script:
-    - echo "Building image: $FRONTEND_IMAGE_TAG_DEV"
     - cd frontend
     - docker build 
         --tag $FRONTEND_IMAGE_TAG_DEV
@@ -30,9 +29,9 @@ Build Frontend dev image:
         --file Dockerfile
         --target dev
         .
-    - docker push "$FRONTEND_IMAGE_TAG_DEV"
+    - docker push $FRONTEND_IMAGE_TAG_DEV
   after_script:
-    - docker image rm "$FRONTEND_IMAGE_TAG_DEV"
+    - docker image rm $FRONTEND_IMAGE_TAG_DEV
 
 ##############
 # TEST STAGE #
