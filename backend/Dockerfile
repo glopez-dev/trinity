@@ -12,22 +12,23 @@ WORKDIR /app/backend
 
 # Arguments pour personnaliser le build
 ARG SKIP_TESTS=true
+ARG MAVEN_OPTS="-T 4 -Dmaven.test.skip=true"
 
 # Copie des fichiers de dépendances
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 
 # Télécharger toutes les dépendances
-RUN chmod +x mvnw && ./mvnw dependency:go-offline
+RUN chmod +x mvnw && ./mvnw $MAVEN_OPTS dependency:go-offline
 
 # Copie du code source
 COPY src src
 
 # Construction conditionnelle des tests
 RUN if [ "$SKIP_TESTS" = "false" ]; then \
-        ./mvnw clean verify; \
+        ./mvnw $MAVEN_OPTS clean verify; \
     else \
-        ./mvnw clean package -DskipTests; \
+        ./mvnw $MAVEN_OPTS clean package -DskipTests; \
     fi
 
 ##############

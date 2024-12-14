@@ -1,9 +1,11 @@
 # Backend CI pipeline 
 default:
   cache:
+    key: ${CI_COMMIT_REF_SLUG}-maven
     paths:
-      - .m1/repository
+      - .m2/repository
       - backend/target/
+    policy: pull-push
 
 # The names and order of the pipeline stages.
 stages:
@@ -18,7 +20,7 @@ variables:
   # Maven command-line options to use a custom settings file and run in batch mode
   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode"
   # Maven configuration to specify a local repository path within the CI project directory
-  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Xmx2g -XX:+UseParallelGC -T 4"
   # Name of the backend Docker image including the Docker Hub prefix
   BACKEND_IMAGE: "${DOCKER_HUB_USERNAME}/t-dev-701-backend"
 
@@ -34,8 +36,10 @@ Compile Backend code:
   script:
     - cd backend
     - chmod +x mvnw
-    - ./mvnw compile
+    - ./mvnw -T 4 compile $MAVEN_CLI_OPTS $MAVEN_OPTS
   # Caching
+  cache:
+    policy: pull-push
   artifacts:
     paths:
       - backend/target/
