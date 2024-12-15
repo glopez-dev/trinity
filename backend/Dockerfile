@@ -3,7 +3,7 @@
 #########
 
 # The first stage is responsible for only resolving dependencies and acts as a kind of cache.
-# This way, when the source code changes but the pom.xml file remains unchanged, 
+# This way, when the source code changes but the pom.xml file remains unchanged,
 # we don’t have to wait for the dependencies to be downloaded again.
 
 FROM eclipse-temurin:21-jdk-jammy AS build
@@ -12,29 +12,31 @@ WORKDIR /app/backend
 
 # Arguments pour personnaliser le build
 ARG SKIP_TESTS=true
+ENV MAVEN_OPTS="-Xmx2g -DthreadCount=4"
 
 # Copie des fichiers de dépendances
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 
 # Télécharger toutes les dépendances
-RUN chmod +x mvnw && ./mvnw dependency:go-offline
+RUN chmod +x mvnw && \
+    ./mvnw -B dependency:go-offline -DskipTests
 
 # Copie du code source
 COPY src src
 
 # Construction conditionnelle des tests
 RUN if [ "$SKIP_TESTS" = "false" ]; then \
-        ./mvnw clean verify; \
+        ./mvnw -B verify; \
     else \
-        ./mvnw clean package -DskipTests; \
+        ./mvnw -B package -DskipTests; \
     fi
 
 ##############
 # PRODUCTION #
 ##############
 
-# Java Runtime Environment (JRE) 
+# Java Runtime Environment (JRE)
 # Doesn't includes the development tools
 FROM eclipse-temurin:21-jre-jammy AS prod
 
@@ -50,8 +52,8 @@ COPY --from=build /app/backend/target/*.jar /app/backend/app.jar
 # Copie du script de lancement du conteneur
 COPY entrypoint.sh /entrypoint.sh
 
-# Modification des permissions 
-RUN  chmod 550 /entrypoint.sh 
+# Modification des permissions
+RUN  chmod 550 /entrypoint.sh
 
 # Utilisateur non-root pour la sécurité
 RUN addgroup --system appgroup && \
