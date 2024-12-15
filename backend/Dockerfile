@@ -3,7 +3,7 @@
 #########
 
 # The first stage is responsible for only resolving dependencies and acts as a kind of cache.
-# This way, when the source code changes but the pom.xml file remains unchanged, 
+# This way, when the source code changes but the pom.xml file remains unchanged,
 # we don’t have to wait for the dependencies to be downloaded again.
 
 FROM eclipse-temurin:21-jdk-jammy AS build
@@ -36,7 +36,7 @@ RUN if [ "$SKIP_TESTS" = "false" ]; then \
 # PRODUCTION #
 ##############
 
-# Java Runtime Environment (JRE) 
+# Java Runtime Environment (JRE)
 # Doesn't includes the development tools
 FROM eclipse-temurin:21-jre-jammy AS prod
 
@@ -52,8 +52,8 @@ COPY --from=build /app/backend/target/*.jar /app/backend/app.jar
 # Copie du script de lancement du conteneur
 COPY entrypoint.sh /entrypoint.sh
 
-# Modification des permissions 
-RUN  chmod 550 /entrypoint.sh 
+# Modification des permissions
+RUN  chmod 550 /entrypoint.sh
 
 # Utilisateur non-root pour la sécurité
 RUN addgroup --system appgroup && \

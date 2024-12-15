@@ -17,18 +17,16 @@ variables:
 Build Frontend dev image:
   stage: build
   variables:
-    FRONTEND_IMAGE_TAG_DEV: ${FRONTEND_IMAGE}:dev-${CI_COMMIT_SHORT_SHA}
+    FRONTEND_IMAGE_TAG_DEV: "${FRONTEND_IMAGE}:dev-${CI_COMMIT_SHORT_SHA}"
   # Scripts
   before_script:
-    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+    - echo $DOCKER_HUB_USERNAME
+    - echo $DOCKER_HUB_PASSWORD | docker login --username $DOCKER_HUB_USERNAME --password-stdin
   script:
+    - echo $DOCKER_HUB_USERNAME
+    - echo $FRONTEND_IMAGE_TAG_DEV
     - cd frontend
-    - docker build 
-        --tag $FRONTEND_IMAGE_TAG_DEV
-        --build-arg NEXT_PUBLIC_ENVIRONMENT=dev
-        --file Dockerfile
-        --target dev
-        .
+    - docker build --tag $FRONTEND_IMAGE_TAG_DEV --build-arg NEXT_PUBLIC_ENVIRONMENT=dev --file Dockerfile --target dev .
     - docker push $FRONTEND_IMAGE_TAG_DEV
   after_script:
     - docker image rm $FRONTEND_IMAGE_TAG_DEV
@@ -46,7 +44,7 @@ Lint Frontend codebase:
         -v $(pwd)/frontend/:/app/
         -e CI=1
         $FRONTEND_IMAGE_DEV_TAG
-        lint 
+        lint
   needs: ['Build Frontend dev image']
 
 
