@@ -34,7 +34,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-COPY public/ src/ jsconfig.json next.config.mjs /app/
+COPY public/ src/ tsconfig.json next.config.ts /app/
 
 RUN npm ci --omit=dev && npm cache clean --force
 

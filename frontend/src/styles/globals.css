@@ -1,0 +1,56 @@
+@font-face {
+    font-family: "DM Sans";
+    src: url("/fonts/DMSans-VariableFont_opsz-wght.ttf");
+}
+
+@font-face {
+    font-family: "Cabinet Grotesk";
+    src: url("/fonts/CabinetGrotesk-Variable.ttf");
+}
+
+:root {
+    --background: #ffffff;
+    --foreground: #2D2D2D;
+    --primary: #4A6741;
+    --secondary: #F5F1E8;
+    --accent: #C7522A;
+    --text-color: #2D2D2D;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #2D2D2D;
+        --foreground: var(--secondary);
+    }
+}
+
+html,
+body {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+body {
+    color: var(--foreground);
+    background: var(--background);
+    font-family: "DM Sans", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    html {
+        color-scheme: dark;
+    }
+}
