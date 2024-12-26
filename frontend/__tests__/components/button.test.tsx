@@ -1,7 +1,6 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
-import {render, screen, fireEvent, cleanup} from '@testing-library/react';
-import Button from '@/components/buttons/Button';
-import {randomInt} from "node:crypto";
+import {afterEach, describe, expect, it, vi} from 'vitest';
+import {cleanup, fireEvent, render, screen} from '@testing-library/react';
+import Button from '@/components/ui/buttons/Button';
 
 describe('Button', () => {
 
@@ -16,7 +15,7 @@ describe('Button', () => {
     });
 
     it('applies different variants correctly', () => {
-        const { rerender } = render(<Button
+        const {rerender} = render(<Button
             title={'Button Primary'}
             action={() => console.log('Button Primary')}
             type={'primary'}
@@ -40,13 +39,13 @@ describe('Button', () => {
 
 
     it('applies fullWidth class when specified', () => {
-        render(<Button title={'Button Full'} size="full" />);
+        render(<Button title={'Button Full'} size="full"/>);
         expect(screen.getByRole('button').getAttribute('class')).toContain('full');
     });
 
     it('handles click events', () => {
         const handleClick = vi.fn();
-        render(<Button title={'Click me'} action={handleClick} />);
+        render(<Button title={'Click me'} action={handleClick}/>);
 
         fireEvent.click(screen.getByRole('button'));
         expect(handleClick).toHaveBeenCalledTimes(1);

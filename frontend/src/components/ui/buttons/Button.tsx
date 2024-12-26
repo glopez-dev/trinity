@@ -1,6 +1,6 @@
 import {FC, MouseEvent} from 'react';
 import styles from './button.module.css';
-import Icon from '@/components/icons/Icon';
+import Icon from '@/components/ui/icons/Icon';
 import {icons} from "lucide-react";
 
 type ButtonType = 'primary' | 'secondary' | 'accent';
