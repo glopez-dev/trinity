@@ -1,0 +1,40 @@
+.container {
+    min-height: 100vh;
+    background-color: var(--secondary);
+}
+
+.mainContent {
+    padding: 1.5rem;
+    margin-left: 260px;
+    transition: margin 300ms ease;
+}
+
+.mainContent.shifted {
+    margin-left: 80px;
+}
+
+.content {
+    padding: 1.5rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .mainContent {
+        margin-left: 0;
+        margin-top: 64px;
+        padding-top: 1rem;
+    }
+
+    .mainContent.shifted {
+        margin-left: 0;
+    }
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #111827;
+}
