@@ -1,5 +1,5 @@
 import React from 'react';
-import {icons, LogOut} from 'lucide-react';
+import {icons} from 'lucide-react';
 import styles from '../styles/NavigationContent.module.css';
 import NavItem from "@/components/ui/navigation/NavItem";
 
