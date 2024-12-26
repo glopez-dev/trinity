@@ -17,12 +17,6 @@
     --text-color: #2D2D2D;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: #2D2D2D;
-        --foreground: var(--secondary);
-    }
-}
 
 html,
 body {
@@ -32,7 +26,7 @@ body {
 
 body {
     color: var(--foreground);
-    background: var(--background);
+    background: var(--secondary);
     font-family: "DM Sans", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -47,10 +41,4 @@ body {
 a {
     color: inherit;
     text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-    html {
-        color-scheme: dark;
-    }
 }

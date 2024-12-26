@@ -19,22 +19,29 @@ describe('Button', () => {
         const { rerender } = render(<Button
             title={'Button Primary'}
             action={() => console.log('Button Primary')}
-            type={'button-primary'}
+            type={'primary'}
         />);
-        expect(screen.getByRole('button').getAttribute('class')).toContain('button-primary');
+        expect(screen.getByRole('button').getAttribute('class')).toContain('primary');
 
         rerender(<Button
             title={'Button Secondary'}
             action={() => console.log('Button Secondary')}
-            type={'button-secondary'}
+            type={'secondary'}
         />);
-        expect(screen.getByRole('button').getAttribute('class')).toContain('button-secondary');
+        expect(screen.getByRole('button').getAttribute('class')).toContain('secondary');
+
+        rerender(<Button
+            title={'Button Accent'}
+            action={() => console.log('Button Accent')}
+            type={'accent'}
+        />);
+        expect(screen.getByRole('button').getAttribute('class')).toContain('accent');
     });
 
 
     it('applies fullWidth class when specified', () => {
-        render(<Button title={'Button Full'} size="button-full" />);
-        expect(screen.getByRole('button').getAttribute('class')).toContain('button-full');
+        render(<Button title={'Button Full'} size="full" />);
+        expect(screen.getByRole('button').getAttribute('class')).toContain('full');
     });
 
     it('handles click events', () => {
