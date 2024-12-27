@@ -11,5 +11,7 @@ export const NavLogo: React.FC<NavLogoProps> = ({ isCollapsed }) => (
         src="/images/logo-svg-trinity.svg"
         alt="Trinity Logo"
         className={`${styles.logo} ${isCollapsed ? styles.collapsed : ''}`}
+        width={144}
+        height={32}
     />
 );
