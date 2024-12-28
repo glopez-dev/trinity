@@ -1,0 +1,14 @@
+.mainContainer {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    overflow: hidden;
+}
+
+.container {
+    padding: 12px 24px;
+    min-height: 100vh;
+    width: 100%;
+    background-color: var(--secondary);
+    overflow-y: scroll;
+}

@@ -1,0 +1,8 @@
+.logo {
+    height: 32px;
+    transition: opacity 300ms;
+}
+
+.logo.collapsed {
+    display: none;
+}
