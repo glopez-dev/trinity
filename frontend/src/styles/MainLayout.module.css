@@ -1,6 +1,7 @@
 .mainContainer {
-    height: 100vh;
+    height: calc(100vh - 64px);
     width: 100vw;
+    margin-top: 64px;
     display: flex;
     overflow: hidden;
 }
@@ -10,5 +11,12 @@
     min-height: 100vh;
     width: 100%;
     background-color: var(--secondary);
-    overflow-y: scroll;
+    overflow-y: auto;
+}
+
+@media (min-width: 768px) {
+    .mainContainer {
+        height: 100vh;
+        margin-top: 0;
+    }
 }
