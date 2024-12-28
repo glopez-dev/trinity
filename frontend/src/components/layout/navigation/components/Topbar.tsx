@@ -13,7 +13,7 @@ export const Topbar: React.FC<TopbarProps> = ({ isOpen, onToggle }) => {
     return (
         <div className={styles.topbar}>
             <div className={styles.header}>
-                <NavLogo isCollapsed={!isOpen} />
+                <NavLogo />
                 <button
                     onClick={onToggle}
                     className={styles.menuButton}
