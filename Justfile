@@ -76,3 +76,10 @@ register_docker_dind_runner:
         --docker-volumes "/certs/client" \
         --tag-list "docker-dind" \
         --run-untagged="false"
+
+# Run a shell in the given container of the given environment(dev|prod) and project(backend|frontend)
+sh ENV PROJECT:
+    docker exec -it trinity-{{PROJECT}}_{{ENV}}-1 sh
+# Run and watch the tests
+test-watch-frontend:
+    docker exec -it trinity-frontend_dev-1 npm run test:watch

@@ -20,9 +20,9 @@ variables:
   # Maven command-line options to use a custom settings file and run in batch mode
   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode"
   # Maven configuration to specify a local repository path within the CI project directory
-  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Xmx2g -XX:+UseParallelGC -T 4"
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -DthreadCount=4 -Xmx2g"
   # Name of the backend Docker image including the Docker Hub prefix
-  BACKEND_IMAGE: "${DOCKER_HUB_USERNAME}/t-dev-701-backend"
+  BACKEND_IMAGE: $DOCKER_HUB_USERNAME/t-dev-701-backend
 
 ###############
 # BUILD STAGE #
@@ -36,10 +36,8 @@ Compile Backend code:
   script:
     - cd backend
     - chmod +x mvnw
-    - ./mvnw -T 4 compile $MAVEN_CLI_OPTS $MAVEN_OPTS
+    - ./mvnw compile
   # Caching
-  cache:
-    policy: pull-push
   artifacts:
     paths:
       - backend/target/
@@ -52,12 +50,12 @@ Build the Backend dev image:
   # Scripts
   before_script:
     # Connect to the Docker Hub registry using the CI/CD variables defined on Gitlab website.
-    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+    - docker login -u "$DOCKER_HUB_USERNAME" -p "$DOCKER_HUB_PASSWORD"
   script:
     # Build a developement Docker image with the specific commit codebase.
-    - docker build --tag $BACKEND_IMAGE_TAG_DEV --target dev ./backend
+    - docker build --tag "$BACKEND_IMAGE_TAG_DEV" --target dev ./backend
     # Publish the image so the others jobs can pull it.
-    - docker push $BACKEND_IMAGE_TAG_DEV
+    - docker push "$BACKEND_IMAGE_TAG_DEV"
   # Delete the image from the host Docker's registry after pushing to Docker Hub.
   after_script:
     - docker image rm $BACKEND_IMAGE_TAG_DEV
