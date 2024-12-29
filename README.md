@@ -27,7 +27,11 @@ The project aims to improve customer experience and internal operations for a gr
 ### Developer Documentation
 - [Working with User Stories](docs/developeur/work_with_user_stories.md)
 - [Working with Gitlab Issues in Agile](docs/developeur/issues.md)
-- [Domain Driven Design](docs/developeur/domain_driven_design.md)
+#### Domain Driven Design
+- [Strategic Design (Bounded Contexts)](docs/developeur/domain_driven_design/1_strategic_design.md)
+- [Tactical Patterns (Domain Models)](docs/developeur/domain_driven_design/3_tactical_patterns.md)
+- [C4 Diagrams (System Design)](docs/developeur/domain_driven_design/2_c4_diagrams.md)
+
 
 ### DevOps Documentation
 - [Setup Docker DinD Gitlab Runners on a Cloud VM](docs/devops/setup_gitlab_runners.md)
