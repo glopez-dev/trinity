@@ -1,4 +1,4 @@
-# Personas Utilisateurs - Application de Gestion de Magasin
+# Trinity - Personas Utilisateurs
 
 ## 1. Sophie Dupont - Gestionnaire de Magasin
 
