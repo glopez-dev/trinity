@@ -14,7 +14,6 @@ interface User {
 
 
 
-
 const usersData: User[] = [
   { id: 1,firstName: 'John', lastName: 'Doe', email: 'john.doe@example.com' },
   { id: 2,firstName: 'Jane', lastName: 'Smith', email: 'jane.smith@example.com' },
@@ -65,7 +64,7 @@ const handleDelete = (user: User) => {
   
 };
 
-// Gérer l’édition
+
 const handleEdit = (user: User) => {
   console.log('Édition de l’utilisateur:', user);
  
@@ -75,7 +74,7 @@ const UserTable: React.FC = () => {
   const [filterText, setFilterText] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(usersData);
 
-  // Gérer la recherche
+
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchText = event.target.value;
     setFilterText(searchText);
@@ -107,6 +106,7 @@ const UserTable: React.FC = () => {
         />
 
         <icons.Filter className={styles.filterIcon} />
+        <icons.Plus className={styles.plusIcon} />
 
         </div>
 
@@ -120,8 +120,10 @@ const UserTable: React.FC = () => {
         pagination
         highlightOnHover
         striped
+
         customStyles={{
 
+        
           headRow: {
             style: {
               backgroundColor: '#4A6741',
@@ -131,6 +133,10 @@ const UserTable: React.FC = () => {
             },
           },
           pagination: {
+           
+            
+            
+
             style: {
               backgroundColor: '#4A6741',
               color: 'white',
