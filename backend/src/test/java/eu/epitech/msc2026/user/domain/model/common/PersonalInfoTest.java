@@ -6,7 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import eu.epitech.msc2026.user.domain.exception.InvalidUserDataException;
-import eu.epitech.msc2026.user.domain.model.common.PersonalInfo;
 
 @DisplayName("PersonalInfo Tests")
 class PersonalInfoTest {
