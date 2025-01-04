@@ -1,4 +1,4 @@
-package eu.epitech.msc2026.user.domain.common;
+package eu.epitech.msc2026.user.domain.model.common;
 
 import java.util.Objects;
 import org.jmolecules.ddd.annotation.ValueObject;

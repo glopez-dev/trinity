@@ -1,4 +1,4 @@
-package eu.epitech.msc2026.user.domain.common;
+package eu.epitech.msc2026.user.domain.model.common;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
@@ -6,6 +6,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import eu.epitech.msc2026.user.domain.model.common.Address;
 
 class AddressTest {
 
