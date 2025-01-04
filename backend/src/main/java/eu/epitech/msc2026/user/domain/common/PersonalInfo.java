@@ -33,14 +33,21 @@ public class PersonalInfo {
      * @throws InvalidUserDataException if the data is invalid
      */
     public static PersonalInfo of(String firstName, String lastName, String phoneNumber) {
+
+        if (firstName == null || lastName == null || phoneNumber == null) {
+            throw new InvalidUserDataException("None of the fields can be null");
+        }
+
         validateFirstName(firstName);
         validateLastName(lastName);
-        validatePhoneNumber(phoneNumber);
+        
+        String normalizedPhone = normalizePhoneNumber(phoneNumber);
+        validateNormalizedPhoneNumber(normalizedPhone);
 
         return new PersonalInfo(
             firstName.trim(),
             lastName.trim(),
-            normalizePhoneNumber(phoneNumber)
+            normalizedPhone
         );
     }
 
@@ -68,19 +75,37 @@ public class PersonalInfo {
         }
     }
 
-    private static void validatePhoneNumber(String phoneNumber) {
-        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
-            throw new InvalidUserDataException("Phone number is required");
-        }
-        // International format: +XX-XXXXXXXXX
-        if (!phoneNumber.matches("^\\+?[1-9]\\d{1,2}-?\\d{6,12}$")) {
-            throw new InvalidUserDataException("Invalid phone number format");
-        }
-    }
 
     private static String normalizePhoneNumber(String phoneNumber) {
         // Remove all non-numeric characters except +
         return phoneNumber.replaceAll("[^+0-9]", "");
+    }
+
+    /**
+     * Validates a normalized phone number format.
+    * The phone number should already be normalized (containing only '+' and digits)
+    * before calling this method.
+    * 
+    * Valid format:
+    * - Must start with '+' followed by a non-zero digit
+    * - Must contain between 8 and 15 digits after the '+'
+    * - Must not contain any separators or special characters
+    * 
+    * Examples of valid normalized numbers:
+    * - +33612345678
+    * - +14155552671
+    * 
+    * @param normalizedPhoneNumber The phone number to validate, already normalized
+    * @throws InvalidUserDataException if the phone number is null, empty, or doesn't match the required format
+    */
+    private static void validateNormalizedPhoneNumber(String normalizedPhoneNumber) {
+        if (normalizedPhoneNumber == null || normalizedPhoneNumber.trim().isEmpty()) {
+            throw new InvalidUserDataException("Phone number is required");
+        }
+    
+        if (!normalizedPhoneNumber.matches("^\\+[1-9]\\d{7,14}$")) {
+            throw new InvalidUserDataException("Invalid phone number format");
+        }
     }
 
     // Getters
