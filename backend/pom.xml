@@ -8,10 +8,10 @@
 		<version>3.3.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.devops</groupId>
+	<groupId>eu.epitech.msc2026</groupId>
 	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>trinity</name>
+	<name>Trinity</name>
 	<description>Trinity project for Epitech</description>
 	<url/>
 	<licenses>
