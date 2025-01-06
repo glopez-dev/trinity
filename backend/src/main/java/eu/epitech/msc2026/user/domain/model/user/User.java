@@ -5,13 +5,13 @@ import eu.epitech.msc2026.user.domain.model.common.PersonalInfo;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import org.jmolecules.ddd.annotation.Entity;
+import org.jmolecules.ddd.annotation.AggregateRoot;
 
 /**
  * Abstract base class for all user types in the system.
  * Implements core user functionality and attributes.
  */
-@Entity
+@AggregateRoot
 public abstract class User {
     private final UserId id;
     private PersonalInfo personalInfo;
