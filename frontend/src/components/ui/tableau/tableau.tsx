@@ -133,17 +133,25 @@ const UserTable: React.FC = () => {
             },
           },
           pagination: {
-           
-            
-            
 
             style: {
               backgroundColor: '#4A6741',
               color: 'white',
-              border: '1px solid black', 
-              borderRadius: '0  0 5px 5px',
+            
               
             },
+
+            pageButtonsStyle: {
+            
+             
+              "&:disabled": {
+                color : "white", 
+                fill : "white" 
+              },
+              
+            }
+            
+
 
 
           },
