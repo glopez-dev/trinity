@@ -4,6 +4,7 @@ import eu.epitech.msc2026.user.domain.model.common.PersonalInfo;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
@@ -13,33 +14,37 @@ import org.jmolecules.ddd.annotation.AggregateRoot;
  */
 @AggregateRoot
 public abstract class User {
-    private final UserId id;
-    private PersonalInfo personalInfo;
+    private final UUID id;
     private String email;
+    private String hashedPassword;
+    private PersonalInfo personalInfo;
     private UserStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
     private LocalDateTime lastLoginAt;
 
-    protected User(UserId id, 
-                  PersonalInfo personalInfo, 
-                  String email, 
-                  UserStatus status) {
+    protected User(
+        UUID id, 
+        String email, 
+        String hashedPassword,
+        PersonalInfo personalInfo, 
+        UserStatus status
+    ) {
         this.id = Objects.requireNonNull(id, "User ID cannot be null");
-        this.personalInfo = Objects.requireNonNull(personalInfo, "Personal info cannot be null");
         setEmail(email);
+        this.hashedPassword = Objects.requireNonNull(hashedPassword, "Hashed password cannot be null");
+        this.personalInfo = Objects.requireNonNull(personalInfo, "Personal info cannot be null");
         this.status = Objects.requireNonNull(status, "Status cannot be null");
         this.createdAt = LocalDateTime.now();
         this.lastModifiedAt = this.createdAt;
+        this.lastLoginAt = null; 
     }
 
     /**
-     * Updates the user's personal information
+     * Updates the user's last login time
      */
-    public void updatePersonalInfo(PersonalInfo newPersonalInfo) {
-        Objects.requireNonNull(newPersonalInfo, "Personal info cannot be null");
-        this.personalInfo = newPersonalInfo;
-        updateLastModified();
+    private void updateLastModified() {
+        this.lastModifiedAt = LocalDateTime.now();
     }
 
     /**
@@ -57,45 +62,67 @@ public abstract class User {
     }
 
     /**
+     * Updates the user's password
+     */
+    public void setHashedPassword(String hashedPassword) {
+        this.hashedPassword = hashedPassword;
+        updateLastModified();
+    }
+
+    /**
+     * Updates the user's personal information
+     */
+    public void setPersonalInfo(PersonalInfo newPersonalInfo) {
+        Objects.requireNonNull(newPersonalInfo, "Personal info cannot be null");
+        this.personalInfo = newPersonalInfo;
+        updateLastModified();
+    }
+
+    /**
      * Updates the user's status
      */
-    public void setStatus(UserStatus newStatus) {
+    private void setStatus(UserStatus newStatus) {
         Objects.requireNonNull(newStatus, "Status cannot be null");
         this.status = newStatus;
         updateLastModified();
     }
 
     /**
-     * Records a user login
+     * Activates the user account
      */
-    public void recordLogin() {
-        this.lastLoginAt = LocalDateTime.now();
+    public void activate() {
+        this.setStatus(UserStatus.ACTIVE);
     }
 
     /**
      * Deactivates the user account
      */
     public void deactivate() {
-        this.status = UserStatus.INACTIVE;
-        updateLastModified();
+        this.setStatus(UserStatus.INACTIVE);
     }
 
-    private void updateLastModified() {
-        this.lastModifiedAt = LocalDateTime.now();
-    }
-
+    
     // Getters
-    public UserId getId() {
+    public UUID getId() {
         return id;
     }
 
+    
+    public String getEmail() {
+        return email;
+    }
+
+    public String getHashedPassword() {
+        return hashedPassword;
+    }
+
+    /**
+     * Returns the user's personal information 
+     */
     public PersonalInfo getPersonalInfo() {
         return personalInfo;
     }
 
-    public String getEmail() {
-        return email;
-    }
 
     public UserStatus getStatus() {
         return status;
