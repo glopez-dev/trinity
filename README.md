@@ -1,4 +1,4 @@
-# Trinity Project Documentation
+# Trinity (T-DEV-70X)
 
 ## Overview
 
@@ -109,8 +109,14 @@ Please read through our developer documentation before making contributions:
 
 ## License
 
-[Your License Information Here]
+License informations are available [here](LICENSE.md)
 
 ## Contact
 
-[Your Contact Information Here]
+For any request contact the team members using their Epitech mail :
+
+- elone.meimoun@epitech.eu
+- gabriel.lopez@epitech.eu
+- geraud.deltour@epitech.eu
+- noah.daen@epitech.eu
+- rabieh.sassi@epitech.eu
