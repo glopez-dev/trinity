@@ -125,10 +125,6 @@
     		<artifactId>h2</artifactId>
     		<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.jmolecules</groupId>
-			<artifactId>jmolecules-ddd</artifactId>
-		</dependency>
 		<!-- Testing dependencies -->
 		<dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -154,8 +150,11 @@
             <version>${assertj.version}</version>
             <scope>test</scope>
         </dependency>
-
-
+		<dependency>
+  			<groupId>org.jmolecules</groupId>
+  			<artifactId>jmolecules-ddd</artifactId>
+  			<version>1.10.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
