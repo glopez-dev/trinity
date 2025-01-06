@@ -5,10 +5,7 @@ package eu.epitech.msc2026.user.domain.model.user;
  */
 public enum UserStatus {
     ACTIVE("Active user with full access"),
-    PENDING("User pending email verification"),
-    INACTIVE("Deactivated user account"),
-    LOCKED("Temporarily locked account"),
-    SUSPENDED("Administratively suspended account");
+    INACTIVE("Deactivated user account");
 
     private final String description;
 
