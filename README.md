@@ -1,83 +1,105 @@
-# Trinity Project - Technical Documentation
+# Trinity Project Documentation
 
-## Requirements
+## Overview
 
-For the development environment
-- `just` recipe runner for development scripts
-- `docker` and `docker-compose` v2
+Trinity is a comprehensive retail management solution composed of three distinct parts:
+- DevOps infrastructure
+- Web application with RESTful API
+- Mobile application
 
-For the staging environment
-- `helm` for helm charts
-- `minikube` for local k8s development
+The project aims to improve customer experience and internal operations for a grocery chain through:
+- Enhanced customer purchasing process via an intuitive mobile application
+- Optimized product management and sales supervision through a web application
+- Streamlined decision-making with key performance indicators visualization
 
-## Project setup
-You'll have to define the `.env` file which is used by the `compose.dev.yml` file for variable substitions.
+## Documentation Structure
 
-## 📦🐋 Docker Image Registry
-Here’s how the tagging system works:
+### Agile user-centered Design
+- [User Personas](docs/user_personas.md)
+- [User Stories](docs/user_stories.md)
+- [User Needs Analysis](docs/user_needs.md)
+- [User Needs Prioritization Matrix](docs/user_needs_priorization_matrix.md)
 
-- 📝 `draft-X` tags: These are builds for your Merge Requests (MRs). The image is built and tagged `draft-X` each time you push to a branch that has an open MR. So there is one image for each MR that is overriden at each push. It can be used to test deployment of an MR.
-- 🔧 `dev-SHA` tags: These are builds created on every push, regardless if the branch is an MR. Each tag is based on the commit SHA. It is used by the CI pipeline to share the codebase between jobs.
-- 🚢 `prod-SHA` tags: These are builds created for every push to the main branch, tagged with the commit SHA. So understand that after a fresh merge a new version of the image is built. It is used for deployment in production.
+### Project Requirements
+- [Functional Requirements](docs/functional_requirements.md)
+- [Non-Functional Requirements](docs/non_functional_requirements.md)
 
-Find all images in our registry here: 👉 [Docker Hub Repository](https://hub.docker.com/repositories/silica5518)
+### Developer Documentation
+- [Working with User Stories](docs/developeur/work_with_user_stories.md)
+- [Working with Gitlab Issues in Agile](docs/developeur/issues.md)
+- [Domain Driven Design](docs/developeur/domain_driven_design.md)
 
-## 🎯 Architecture & Technical Stack
-We decided to do an **Event Driven Architecture (EDA)** to manage events throughout the application. We believe it responds correctly to the project we are creating.
+### DevOps Documentation
+- [Setup Docker DinD Gitlab Runners on a Cloud VM](docs/devops/setup_gitlab_runners.md)
+- [Understand the Docker images produced by the CI](docs/devops/docker_images.md)
 
-## What is the project ?
-
-Trinity is a comprehensive retail management system, designed to modernize grocery chain operations through three interconnected components:
-1. Customer mobile application
-2. Web-based back office & API
-3. DevOps infrastructure
-
-Trinity is provided with a back-office, intended to manager of a team and admin of the application to check analytics of products, total products sold, benefits of the day / month / year and so on.
-The front-office is designed for clients, providing the best user experience and astonishing interfaces (UX/UI design).
-
-## 🔑 Key Features
-
-1. **Authentication & Authorization**
-    - Secure user authentication
-    - Role-based access control
-    - API security
-
-2. **Inventory Management**
-    - Stock tracking
-    - Inventory updates
-    - Stock alerts
-
-3. **Team Management**
-    - User roles and permissions
-    - Team performance metrics
-    - Activity tracking
-
-4. **Messaging System**
-    - Real-time notifications
-    - Automated alerts
-    - System events handling
+### Documentation provided by Epitech
+- [Project Kickoff Document](docs/project/T-DEV-70x-kickoff.pdf)
+- [Complete Project Specification](docs/project/T-DEV-70x-project.pdf)
+- [DevOps Kickoff Documentation](docs/devops/T-DEV-701-devOps_kickoff.pdf)
+- [DevOps Bootstrap Guide](docs/devops/T-DEV-701-devOps_bootstrap.pdf)
 
 
+## Key Features
 
-### Prerequisites
-- Java 21
-- PostgreSQL
-- RabbitMQ
-- Docker & Docker Compose
-- Gitlab Runner
+### Web Application & API
+- Product stock management with Open Food Facts API integration
+- Customer and sales management
+- Key performance indicators visualization
+- Secured REST API with JWT authentication
+- Comprehensive reporting system
 
-### Environment Configuration
-Key configurations needed:
-- Database connection settings
-- RabbitMQ credentials
-- Security parameters
-- Application-specific configurations
+### Mobile Application
+- User authentication system
+- Product barcode scanning
+- Shopping cart management
+- PayPal payment integration
+- Purchase history tracking
 
-## 📝 Testing Strategy
+### DevOps Infrastructure
+- Containerized environments (development and production)
+- Automated CI/CD pipeline
+- Integrated testing
+- Zero-downtime deployment
+- Security measures for sensitive data
 
-Our testing approach covers:
-- Unit tests for business logic
-- Integration tests for APIs
-- Security testing
-- Performance testing
-- Module integration testing
+## Technology Stack
+
+### Backend
+- RESTful API with JWT authentication
+- PostgreSQL database
+- RabbitMQ for message queuing
+- Integration with external APIs (PayPal, Open Food Facts)
+
+### Frontend
+- Web application built with React.js
+- Mobile application built with React Native
+- Responsive and intuitive user interfaces
+
+### DevOps
+- GitLab CI/CD pipeline
+- Docker containerization
+- Automated testing and deployment
+- Virtual machine runners
+
+## Getting Started
+
+For detailed setup and contribution guidelines, please refer to:
+1. DevOps bootstrap guide for infrastructure setup
+2. Developer documentation for coding standards and practices
+3. Project specifications for detailed requirements
+
+## Contributing
+
+Please read through our developer documentation before making contributions:
+- Follow the domain-driven design principles outlined in the documentation
+- Review the work with user stories guide
+- Check the known issues document for common problems and solutions
+
+## License
+
+[Your License Information Here]
+
+## Contact
+
+[Your Contact Information Here]
