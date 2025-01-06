@@ -4,18 +4,22 @@
 
 }
 
-.input{padding: 5px;
+.input{
+    padding: 5px;
     border-radius: 5px;
     border: 1px solid #ccc;
-    width: 30%;
     font-size: 16px;
-    outline: none;}
+    outline: none;
+    max-width: 400px;
+    width: 100%;
+}
 
 .inputContainer{
     display: flex;
     flex-direction: column;
     gap: 10px;
     margin-top: 30px;
+  
 }
 
 .button{

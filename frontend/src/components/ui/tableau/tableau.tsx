@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import {icons} from 'lucide-react';
 import styles from './styles.module.css';
+import Button from '../buttons/Button';
 
 
 interface User {
@@ -105,8 +106,7 @@ const UserTable: React.FC = () => {
           className={styles.searchInput}
         />
 
-        <icons.Filter className={styles.filterIcon} />
-        <icons.Plus className={styles.plusIcon} />
+        <Button icon={'Filter'} title='Filtrer'  action={() => {}} />
 
         </div>
 
@@ -120,10 +120,7 @@ const UserTable: React.FC = () => {
         pagination
         highlightOnHover
         striped
-
         customStyles={{
-
-        
           headRow: {
             style: {
               backgroundColor: '#4A6741',
@@ -138,13 +135,10 @@ const UserTable: React.FC = () => {
               backgroundColor: '#4A6741',
               color: 'white',
             
-              
             },
-
             pageButtonsStyle: {
-            
-             
               "&:disabled": {
+                
                 color : "white", 
                 fill : "white" 
               },

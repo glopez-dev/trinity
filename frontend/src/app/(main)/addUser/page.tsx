@@ -1,14 +1,20 @@
+'use client';
 import React from 'react';
-import AddUser from '@/components/ui/tableau/addUser';
+import styles  from './styles.module.css';
+import Form from '@/components/ui/form/formUser';
 
-const page = () => {
+
+const Page = () => {
+    const handleAddUser = (userData: { firstName: string; lastName: string; email: string }) => {
+        console.log('User Data:', userData);
+    };
+
     return (
         <div>
-
-            <AddUser />
-            
+            <h1 className={styles.title}>Ajouter un utilisateur</h1>
+            <Form onSubmit={handleAddUser} />
         </div>
     );
 };
 
-export default page;
+export default Page;
