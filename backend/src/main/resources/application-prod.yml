@@ -1,0 +1,70 @@
+spring:
+  # Application Name
+  application:
+    name: ${SPRING_APP_NAME:t-dev-701-backend-api}
+
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_DB_HOST}:${POSTGRES_DB_PORT:5432}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+  # RabbitMQ Configuration
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_DEFAULT_USER}
+    password: ${RABBITMQ_DEFAULT_PASS}
+
+  # JPA/Hibernate Configuration
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+
+  # Web Configuration
+  web:
+    resources:
+      add-mappings: false
+
+# Server Configuration
+server:
+  error:
+    whitelabel:
+      enabled: false
+
+# Management (Actuator) Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+# Logging Configuration
+logging:
+  level:
+    org:
+      springframework: DEBUG
+      hibernate: ERROR
+
+# JWT Configuration (New)
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+# API URL Configuration
+api:
+  url: ${NEXT_PUBLIC_API_URL}
+
+# Swagger/OpenAPI Configuration (New)
+springdoc:
+  api-docs:
+    enabled: false  # Désactivé en production pour la sécurité
+  swagger-ui:
+    enabled: false  # Désactivé en production pour la sécurité
