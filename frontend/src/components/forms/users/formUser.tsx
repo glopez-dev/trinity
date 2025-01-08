@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import styles from './stylesAddUser.module.css';
 import Input from '@/components/ui/input/input';
-import Button from '@/components/ui/buttons/Button';
+import Button from '@/components/ui/buttons/button/Button';
 
 interface AddUserProps {
   onSubmit: (userData: { firstName: string; lastName: string; email: string }) => void;
