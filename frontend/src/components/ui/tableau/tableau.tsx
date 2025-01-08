@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import DataTable, { TableColumn } from 'react-data-table-component';
 import {icons} from 'lucide-react';
 import styles from './styles.module.css';
-import Button from '../buttons/Button';
+import Button from '@/components/ui/buttons/button/Button';
 
 
 interface User {

@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import styles  from './styles.module.css';
-import Form from '@/components/ui/form/formUser';
+import Form from '@/components/forms/users/formUser';
 
 
 const Page = () => {
