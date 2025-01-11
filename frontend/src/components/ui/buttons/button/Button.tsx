@@ -1,4 +1,4 @@
-import {FC, MouseEvent} from 'react';
+import {FC} from 'react';
 import styles from './button.module.css';
 import Icon from '@/components/ui/icons/Icon';
 import {icons} from "lucide-react";
@@ -9,7 +9,7 @@ type ButtonSize = 'full';
 interface ButtonProps {
     title: string;
     type?: ButtonType;
-    action?: (event: MouseEvent<HTMLButtonElement>) => void;
+    action?: () => void;
     size?: ButtonSize;
     icon?: keyof typeof icons | null;
     disabled?: boolean;

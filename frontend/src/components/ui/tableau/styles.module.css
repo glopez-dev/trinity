@@ -1,0 +1,79 @@
+
+.title{
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+
+.ctn{
+    display: flex;
+    flex-direction: column;
+   
+  
+   
+}
+
+.searchInput{
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 30%;
+    font-size: 16px;
+  
+    
+    outline: none;
+}
+
+.editIcon{
+    cursor: pointer;
+    background-color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 5px;
+  margin-right: 5px;    
+   
+
+
+}
+
+.plusIcon{
+  cursor: pointer;
+    background-color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 5px;
+  margin-right: 5px;  }
+
+.ctn1{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.deleteIcon{
+    cursor: pointer;
+    background-color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 5px;
+  margin-right: 5px;    
+   
+}
+
+.filterIcon{
+    cursor: pointer;
+    background-color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 5px;
+  margin-right: 5px; 
+}
+
+
+
+
+
+
