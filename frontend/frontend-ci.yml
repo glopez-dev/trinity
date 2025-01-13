@@ -60,12 +60,6 @@ Run Frontend tests:
         -e CI=1
         $FRONTEND_IMAGE_DEV_TAG
         test
-    - docker run --rm
-        -v $(pwd)/frontend/reports:/app/reports/
-        -v $(pwd)/frontend/:/app/
-        -e CI=1
-        $FRONTEND_IMAGE_DEV_TAG
-        test:coverage
   artifacts:
     reports:
       junit: frontend/reports/report.xml
