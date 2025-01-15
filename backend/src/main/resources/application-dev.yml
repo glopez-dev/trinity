@@ -8,15 +8,16 @@ spring:
     url: jdbc:postgresql://${POSTGRES_DB_HOST:localhost}:${POSTGRES_DB_PORT:5432}/${POSTGRES_DB:trinity}
     username: ${POSTGRES_USER:trinity}
     password: ${POSTGRES_PASSWORD:trinity}
+    driver-class-name: org.postgresql.Driver
   
   # JPA/Hibernate Configuration
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop 
+    show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true
 
   # RabbitMQ Configuration
   rabbitmq:
@@ -59,7 +60,8 @@ management:
 logging:
   level:
     org:
-      springframework: DEBUG
+      springframework:
+        security: trace 
       hibernate: ERROR
 
 # JWT Configuration (New)
