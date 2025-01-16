@@ -35,7 +35,7 @@ const Input: FC<InputProps> = ({
 
     return (
         <div className={styles.inputContainer}>
-            {label && <label className={styles.label}>{label}</label>}
+            {label && <label aria-label={name} className={styles.label}>{label}</label>}
             <input
                 role={'inputComponent'}
                 type={type}

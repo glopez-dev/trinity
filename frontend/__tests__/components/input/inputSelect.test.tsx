@@ -6,6 +6,11 @@ describe('SearchableSelect', () => {
     afterEach(() => {
         cleanup();
     });
+    
+    const mockOptions = [
+        { value: '1', label: 'Option 1' },
+        { value: '2', label: 'Option 2' }
+    ];
 
     it('renders correctly with default props', () => {
         render(<SearchableSelect options={[]}/>);
@@ -14,7 +19,7 @@ describe('SearchableSelect', () => {
     });
 
     it('displays options when input is focused', () => {
-        render(<SearchableSelect options={[{value: '1', label: 'Option 1'}, {value: '2', label: 'Option 2'}]}/>);
+        render(<SearchableSelect options={mockOptions}/>);
         const input = screen.getByRole('textbox');
         fireEvent.change(input, {target: {value: 'Option'}});
         expect(screen.getByText('Option 1')).toBeDefined();
@@ -23,7 +28,7 @@ describe('SearchableSelect', () => {
 
     it('calls onSelect when an option is selected', () => {
         const handleSelect = vi.fn();
-        render(<SearchableSelect options={[{value: '1', label: 'Option 1'}, {value: '2', label: 'Option 2'}]}
+        render(<SearchableSelect options={mockOptions}
                                  onSelect={handleSelect}/>);
         const input = screen.getByRole('textbox');
         fireEvent.change(input, {target: {value: 'Option'}});
@@ -32,9 +37,40 @@ describe('SearchableSelect', () => {
     });
 
     it('displays placeholder when input is empty', () => {
-        render(<SearchableSelect options={[{value: '1', label: 'Option 1'}, {value: '2', label: 'Option 2'}]}
+        render(<SearchableSelect options={mockOptions}
                                  placeholder={'Rechercher...'}/>);
         const input = screen.getByRole('textbox');
         expect(input.getAttribute('placeholder')).toBe('Rechercher...');
+    });
+
+    it('should close search when mouseclicked outside', () => {
+        render(<SearchableSelect options={mockOptions}/>);
+        const input = screen.getByRole('textbox');
+        
+        fireEvent.change(input, {target: {value: 'Option'}});
+        expect(screen.getByText('Option 1')).toBeDefined();
+        expect(screen.getByText('Option 2')).toBeDefined();
+
+        fireEvent.mouseDown(document.body);
+        expect(screen.queryByText('Option 1')).toBeNull();
+        expect(screen.queryByText('Option 2')).toBeNull();
+    });
+
+    it('should render option on click on input', () => {
+        const handleSelect = vi.fn();
+        render(<SearchableSelect options={mockOptions} onSelect={handleSelect}/>);
+        const input = screen.getByRole('textbox');
+        expect(input).toBeDefined();
+
+        fireEvent.click(input!);
+
+        expect(screen.getByText('Option 1')).toBeDefined();
+        expect(screen.getByText('Option 2')).toBeDefined();
+
+        fireEvent.click(screen.getByText('Option 1'));
+
+        const selectSpy = vi.spyOn(HTMLInputElement.prototype, 'select');
+        fireEvent.click(input!);
+        expect(selectSpy).toHaveBeenCalled();
     });
 });

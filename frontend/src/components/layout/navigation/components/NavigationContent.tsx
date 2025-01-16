@@ -2,12 +2,8 @@ import React from 'react';
 import {icons} from 'lucide-react';
 import styles from '../styles/NavigationContent.module.css';
 import NavItem from "@/components/ui/navigation/NavItem";
+import {NavigationContentProps, NavItemProps} from "@/components/layout/navigation/components/types";
 
-interface NavItemProps {
-    name: string;
-    icon: keyof typeof icons;
-    path: string;
-}
 
 const navItems: NavItemProps[] = [
     {name: 'Dashboard', icon: "LayoutDashboard", path: '/dashboard'},
@@ -16,11 +12,6 @@ const navItems: NavItemProps[] = [
     {name: 'Factures', icon: "FileText", path: '/invoices'},
     {name: 'Rapports', icon: "ChartNoAxesColumnIncreasing", path: '/reports'},
 ];
-
-interface NavigationContentProps {
-    isCollapsed?: boolean;
-    onToggle?: () => void;
-}
 
 export const NavigationContent: React.FC<NavigationContentProps> = ({isCollapsed, onToggle}) => {
 

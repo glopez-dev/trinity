@@ -9,7 +9,8 @@ describe('Icon Button', () => {
     });
 
     it('renders correctly with default props', () => {
-        render(<IconButton icon={'Filter'} onClick={() => console.log('valide')}/>);
+        const onClick = vi.fn();
+        render(<IconButton icon={'Filter'} onClick={onClick}/>);
         const button = screen.getByRole('icon-button');
         expect(button).toBeDefined();
     });
