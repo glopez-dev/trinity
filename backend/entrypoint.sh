@@ -115,7 +115,7 @@ run_spring_boot() {
 
 run_tests() {
     echo "[entrypoint.sh] Running tests with CI profile and Flyway migrations..."
-    exec ./mvnw clean initialize flyway:migrate -Pci test
+    exec ./mvnw initialize flyway:migrate -Pci test
 }
 
 

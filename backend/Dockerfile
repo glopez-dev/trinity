@@ -97,7 +97,7 @@ VOLUME /app/backend/src
 VOLUME /app/backend/target
 
 # Test command to fake migration into a database
-CMD ["mvn", "clean", "initialize", "flyway:migrate", "-Pci", "test"]
+CMD ["mvn", "initialize", "flyway:migrate", "-Pci", "test"]
 
 # Entry point for the container
 ENTRYPOINT ["/app/entrypoint.sh"]
