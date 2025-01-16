@@ -53,7 +53,9 @@ public abstract class AbstractUser implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    private Instant lastLoginAt;
+    @Builder.Default
+    @Column(nullable = false)
+    private Instant lastLoginAt = Instant.now();
 
     @Builder.Default
     @Column(nullable = false)
