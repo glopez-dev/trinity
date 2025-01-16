@@ -30,18 +30,21 @@ public class Customer extends AbstractUser {
     @Column(unique = true, nullable = false)
     private String paypalUserId;
 
+    @Column(nullable = false)
     private Instant tokenExpiresAt; 
 
+    @Column(nullable = false)
     private String paypalAccessToken;
 
+    @Column(nullable = false)
     private String paypalRefreshToken;
 
     @Builder.Default 
     private UserRole role = UserRole.CUSTOMER;
 
     public boolean isTokenExpired() {
-        boolean expirationDateIsDefined = tokenExpiresAt != null;
-        boolean expirationDateIsPassed = Instant.now().isAfter(tokenExpiresAt);
+        boolean expirationDateIsDefined = this.getTokenExpiresAt() != null;
+        boolean expirationDateIsPassed = Instant.now().isAfter(this.getTokenExpiresAt());
 
         return expirationDateIsDefined && expirationDateIsPassed; 
     }
