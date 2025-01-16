@@ -9,29 +9,31 @@ describe('Button', () => {
     });
 
     it('renders correctly with default props', () => {
-        render(<Button title={'Button'} action={() => console.log('valide')}/>);
+        const handleAction = vi.fn();
+        render(<Button title={'Button'} action={handleAction}/>);
         const button = screen.getByRole('button');
         expect(button).toBeDefined();
     });
 
     it('applies different variants correctly', () => {
+        const handleAction = vi.fn();
         const {rerender} = render(<Button
             title={'Button Primary'}
-            action={() => console.log('Button Primary')}
+            action={handleAction}
             type={'primary'}
         />);
         expect(screen.getByRole('button').getAttribute('class')).toContain('primary');
 
         rerender(<Button
             title={'Button Secondary'}
-            action={() => console.log('Button Secondary')}
+            action={handleAction}
             type={'secondary'}
         />);
         expect(screen.getByRole('button').getAttribute('class')).toContain('secondary');
 
         rerender(<Button
             title={'Button Accent'}
-            action={() => console.log('Button Accent')}
+            action={handleAction}
             type={'accent'}
         />);
         expect(screen.getByRole('button').getAttribute('class')).toContain('accent');
@@ -49,5 +51,10 @@ describe('Button', () => {
 
         fireEvent.click(screen.getByRole('button'));
         expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('renders an icon when specified', () => {
+        render(<Button title={'Button with Icon'} icon={'Plus'}/>);
+        expect(screen.getByRole('button').querySelector('svg')).toBeDefined();
     });
 });

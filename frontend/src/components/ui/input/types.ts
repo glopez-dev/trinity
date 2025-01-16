@@ -7,7 +7,7 @@ export interface InputProps {
     label?: string;
     onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
     value?: string | number;
-    name?: string;
+    name: string;
     required?: boolean;
     regex?: RegExp;
 }

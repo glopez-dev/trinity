@@ -20,10 +20,12 @@ const AddUser: React.FC<AddUserProps> = ({onSubmit}) => {
 
     return (
         <div className={styles.form}>
-            <Input label={'Prénom'} type='text' placeholder='Prénom...' value={firstName}
+            <Input label={'Prénom'} type='text' placeholder='Prénom...' value={firstName} name={'firstName'}
                    onChange={(e) => setFirstName(e.target.value)}/>
-            <Input label={'Nom'} type='text' placeholder='Nom...' value={lastName} onChange={(e) => setLastName(e.target.value)}/>
-            <Input label={'Email'} type='email' placeholder='Email...' value={email} onChange={(e) => setEmail(e.target.value)}/>
+            <Input label={'Nom'} type='text' placeholder='Nom...' value={lastName} name={'lastName'}
+                   onChange={(e) => setLastName(e.target.value)}/>
+            <Input label={'Email'} type='email' placeholder='Email...' value={email} name={'email'}
+                   onChange={(e) => setEmail(e.target.value)}/>
             <Button title='Ajouter' action={handleClick} type='primary' size='full'/>
         </div>
     );

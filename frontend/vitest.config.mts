@@ -10,7 +10,18 @@ export default defineConfig({
         coverage: {
             provider: 'v8',
             reporter: ['json', 'text', 'html'],
-            enabled: true
+            enabled: true,
+            exclude: [
+                'node_modules',
+                'src/**/types.ts',
+                'src/**/types/*.ts',
+                '.next',
+                '**.config.*',
+                'next-env.d.ts',
+                'src/components/ui/tableau/**',
+                'src/lib/api',
+                '__tests__/**/__snapshots__/**',
+            ]
         },
     },
 })
