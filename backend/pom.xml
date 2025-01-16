@@ -123,6 +123,27 @@
             <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <spring.datasource.url>jdbc:postgresql://localhost:5432/trinity</spring.datasource.url>
+                <spring.datasource.username>trinity</spring.datasource.username>
+                <spring.datasource.password>trinity</spring.datasource.password>
+            </properties>
+        </profile>
+        <profile>
+            <id>ci</id>
+            <properties>
+                <spring.datasource.url>jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1</spring.datasource.url>
+                <spring.datasource.username>sa</spring.datasource.username>
+                <spring.datasource.password></spring.datasource.password>
+            </properties>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
@@ -150,13 +171,43 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <configuration>
-                    <url>jdbc:postgresql://localhost:5433/trinity</url>
-                    <user>myuser</user>
-                    <password>secret</password>
+                    <url>${spring.datasource.url}</url>
+                    <user>${spring.datasource.username}</user>
+                    <password>${spring.datasource.password}</password>
                     <cleanDisabled>false</cleanDisabled>
                 </configuration>
+                <dependencies>
+                    <!-- Ajout des dépendances des drivers -->
+                    <dependency>
+                        <groupId>com.h2database</groupId>
+                        <artifactId>h2</artifactId>
+                        <version>2.2.224</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgresql.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.1.0</version>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>src/main/resources/application-dev.properties</file>
+							</files>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
         </plugins>
     </build>
-
 </project>
