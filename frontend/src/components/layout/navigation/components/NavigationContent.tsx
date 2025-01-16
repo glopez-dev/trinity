@@ -1,5 +1,4 @@
 import React from 'react';
-import {icons} from 'lucide-react';
 import styles from '../styles/NavigationContent.module.css';
 import NavItem from "@/components/ui/navigation/NavItem";
 import {NavigationContentProps, NavItemProps} from "@/components/layout/navigation/components/types";
