@@ -104,7 +104,7 @@ public abstract class AbstractUser implements UserDetails {
     /* Spring security UserDetails interface implementation */
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority(this.getRole().name()));
     }
 
     @Override
