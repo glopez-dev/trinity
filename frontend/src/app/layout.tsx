@@ -17,13 +17,11 @@ export default function RootLayout({
             <meta name="description" content="La plateforme de gestion de vos produits, factures et clients"/>
             <link rel="icon" href="images/web-icon-trinity.svg"/>
         </head>
-
         <body>
         <FlashProvider>
             {children}
         </FlashProvider>
         </body>
-
         </html>
     );
 }

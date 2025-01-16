@@ -1,6 +1,6 @@
 @font-face {
     font-family: "DM Sans";
-    src: url("/fonts/DMSans-VariableFont_opsz-wght.ttf");
+    src: url("/fonts/DMSans-VariableFont.ttf");
 }
 
 @font-face {
@@ -15,6 +15,7 @@
     --secondary: #F5F1E8;
     --accent: #C7522A;
     --text-color: #2D2D2D;
+    --green-gradient: linear-gradient(135deg, #567A4C 0%, #4A6741 50%, #3E5436 100%);
 }
 
 

@@ -1,51 +1,49 @@
-
-.title{
+.title {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 10px;
 }
 
-
-.ctn{
+.ctn {
     display: flex;
     flex-direction: column;
-   
-  
-   
 }
 
-.searchInput{
+.actionIcons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+.searchInput {
     padding: 5px;
     border-radius: 5px;
     border: 1px solid #ccc;
     width: 30%;
     font-size: 16px;
-  
-    
     outline: none;
 }
 
-.editIcon{
+.editIcon {
     cursor: pointer;
     background-color: white;
-  border: 1px solid black;
-  border-radius: 5px;
-  padding: 5px;
-  margin-right: 5px;    
-   
-
-
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px;
+    margin-right: 5px;
 }
 
-.plusIcon{
-  cursor: pointer;
+.plusIcon {
+    cursor: pointer;
     background-color: white;
-  border: 1px solid black;
-  border-radius: 5px;
-  padding: 5px;
-  margin-right: 5px;  }
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px;
+    margin-right: 5px;
+}
 
-.ctn1{
+.ctn1 {
     display: flex;
     flex-direction: row;
     gap: 10px;
@@ -53,23 +51,22 @@
     margin-bottom: 10px;
 }
 
-.deleteIcon{
+.deleteIcon {
     cursor: pointer;
     background-color: white;
-  border: 1px solid black;
-  border-radius: 5px;
-  padding: 5px;
-  margin-right: 5px;    
-   
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px;
+    margin-right: 5px;
 }
 
-.filterIcon{
+.filterIcon {
     cursor: pointer;
     background-color: white;
-  border: 1px solid black;
-  border-radius: 5px;
-  padding: 5px;
-  margin-right: 5px; 
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px;
+    margin-right: 5px;
 }
 
 

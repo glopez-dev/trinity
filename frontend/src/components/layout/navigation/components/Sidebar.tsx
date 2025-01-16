@@ -3,13 +3,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { NavigationContent } from './NavigationContent';
 import styles from '../styles/Sidebar.module.css';
 import {NavLogo} from "@/components/ui/navigation/NavLogo";
+import {NavProps} from "@/components/layout/navigation/components/types";
 
-interface SidebarProps {
-    isOpen: boolean;
-    onToggle: () => void;
-}
-
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
+export const Sidebar: React.FC<NavProps> = ({ isOpen, onToggle }) => {
     return (
         <div className={`${styles.sidebar} ${!isOpen ? styles.collapsed : ''}`}>
             <div className={styles.header}>

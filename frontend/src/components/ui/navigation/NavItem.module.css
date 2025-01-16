@@ -15,6 +15,10 @@
     background-color: #5a7850;
 }
 
+.navButtonActive {
+    background-color: #5a7850;
+}
+
 .navIcon {
     flex-shrink: 0;
     stroke-width: 2;

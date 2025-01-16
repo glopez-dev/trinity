@@ -4,7 +4,7 @@ import styles  from './styles.module.css';
 import Form from '@/components/forms/users/formUser';
 
 
-const Page = () => {
+const AddUserPage = () => {
     const handleAddUser = (userData: { firstName: string; lastName: string; email: string }) => {
         console.log('User Data:', userData);
     };
@@ -17,4 +17,4 @@ const Page = () => {
     );
 };
 
-export default Page;
+export default AddUserPage;
