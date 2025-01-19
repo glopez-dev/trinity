@@ -1,37 +1,36 @@
 package com.trinity.auth.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.Instant;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import com.trinity.auth.model.Customer;
+import com.trinity.auth.model.Employee;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class TestCustomerRepository {
+class EmployeeRepositoryTest {
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private EmployeeRepository employeeRepository;
 
-    private Customer customer;
+    private Employee employee;
 
     @BeforeEach
     public void setUp() {
-        customer = Customer.builder()
+        employee = Employee.builder()
             .email("test@example.com")
             .hashedPassword("superSecretPassword")
-            .paypalUserId("paypalUserId")
-            .paypalAccessToken("accessToken")
-            .paypalRefreshToken("refreshToken")
-            .tokenExpiresAt(Instant.now().plusSeconds(3600))
+            .hireDate(Instant.now())
             .build();
-        customerRepository.save(customer);
+
+        employeeRepository.save(employee);
     }
 
     @Test
@@ -40,10 +39,10 @@ class TestCustomerRepository {
         String email = "test@example.com";
 
         // When
-        Optional<Customer> foundCustomer = customerRepository.findByEmail(email);
+        Optional<Employee> foundEmployee = employeeRepository.findByEmail(email);
 
         // Then
-        assertThat(foundCustomer).isPresent();
-        assertThat(foundCustomer.get().getEmail()).isEqualTo(email);
+        assertThat(foundEmployee).isPresent();
+        assertThat(foundEmployee.get().getEmail()).isEqualTo(email);
     }
 }
