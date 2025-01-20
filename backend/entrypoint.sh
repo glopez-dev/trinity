@@ -113,20 +113,9 @@ run_spring_boot() {
     esac
 }
 
-run_tests() {
-    echo "[entrypoint.sh] Running tests with CI profile and Flyway migrations..."
-    exec ./mvnw initialize flyway:migrate -Pci test
-}
-
-
 main() {
 
     trap 'echo "[entrypoint.sh] Stopping Spring Boot..."; exit 0' SIGTERM SIGINT
-
-    if [ "${1:-}" = "test" ]; then
-        run_tests
-        return
-    fi
 
     validate_env_vars
 
@@ -139,4 +128,4 @@ main() {
     run_spring_boot
 }
 
-main "$@"
+main
