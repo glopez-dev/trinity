@@ -1,47 +1,38 @@
-import {FC, MouseEvent} from 'react';
+import {FC} from 'react';
 import styles from './button.module.css';
 import Icon from '@/components/ui/icons/Icon';
-import {icons} from "lucide-react";
+import {ButtonProps} from "@/components/ui/buttons/button/types";
 
-type ButtonType = 'primary' | 'secondary' | 'accent';
-type ButtonSize = 'full';
-
-interface ButtonProps {
-    title: string;
-    type?: ButtonType;
-    action?: (event: MouseEvent<HTMLButtonElement>) => void;
-    size?: ButtonSize;
-    icon?: keyof typeof icons | null;
-    disabled?: boolean;
-}
 
 const Button: FC<ButtonProps> = ({
                                      title,
-                                     type = 'primary',
+                                     color = 'primary',
                                      action,
                                      size = '',
                                      icon = null,
-                                     disabled = false
+                                     disabled = false,
+                                     type = 'button'
                                  }) => {
-    let color = '';
-    switch (type) {
+    let iconColor = '';
+    switch (color) {
         case 'secondary':
-            color = '#4A6741';
+            iconColor = '#4A6741';
             break;
         default:
-            color = '#F5F1E8';
+            iconColor = '#F5F1E8';
             break;
     }
+
     return (
         <div>
             <button
-                className={`${styles[type]} ${size ? styles.full : ''}`}
+                className={`${styles[color]} ${size ? styles.full : ''}`}
                 onClick={action}
-                type="button"
+                type={type}
                 disabled={disabled}
             >
                 <p>{title}</p>
-                {icon && <Icon name={icon} size={20} color={color}/>}
+                {icon && <Icon name={icon} size={20} color={iconColor}/>}
             </button>
         </div>
     );

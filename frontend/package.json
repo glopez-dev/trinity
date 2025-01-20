@@ -8,17 +8,21 @@
     "start": "next start",
     "lint": "next lint --strict",
     "test": "vitest --run --reporter=junit --outputFile=reports/report.xml",
-    "test:watch": "vitest --watch"
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest run --coverage --reporter=junit --outputFile=coverage/lcov.json",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
     "axios": "^1.7.9",
     "lucide-react": "^0.469.0",
-    "next": "15.1.0",
+    "next": "15.1.2",
     "next-router-mock": "^0.9.13",
     "react": "^19.0.0",
+    "react-data-table-component": "^7.6.2",
     "react-dom": "^19.0.0",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -26,6 +30,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^2.1.8",
+    "@vitest/ui": "^2.1.8",
     "eslint": "^9",
     "eslint-config-next": "15.1.0",
     "jsdom": "^25.0.1",

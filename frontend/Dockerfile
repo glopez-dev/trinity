@@ -41,8 +41,6 @@ COPY next.config.ts /app/
 
 RUN npm ci --omit=dev && npm cache clean --force
 
-RUN ls -la && ls -la src
-
 RUN npm run build
 
 ####################
