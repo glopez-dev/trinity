@@ -61,7 +61,8 @@ logging:
   level:
     org:
       springframework:
-        security: trace 
+        web: DEBUG
+        security: TRACE 
       hibernate: ERROR
 
 # JWT Configuration (New)
