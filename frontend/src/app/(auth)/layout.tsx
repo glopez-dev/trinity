@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "@/styles/auth/AuthLayout.module.css";
 
 export default function AuthLayout({
                                        children,
@@ -6,8 +7,7 @@ export default function AuthLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <div>
-            <h1>Auth Layout</h1>
+        <div className={styles.container}>
             {children}
         </div>
     );

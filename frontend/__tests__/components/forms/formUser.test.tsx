@@ -2,28 +2,32 @@ import {afterEach, describe, expect, it, vi} from 'vitest';
 import {cleanup, fireEvent, render, screen} from '@testing-library/react';
 import AddUser from '@/components/forms/users/formUser';
 import {InputProps} from "@/components/ui/input/types";
+import {ButtonProps} from "@/components/ui/buttons/button/types";
 
 
 vi.mock('@/components/ui/input/input', () => ({
-    default: ({label, type, placeholder, value, onChange, name}: InputProps) => (
+    default: ({label, type, placeholder, value, name, onChange}: InputProps) => (
         <input
-            role="inputComponent"
             name={name}
             type={type}
             value={value}
             placeholder={placeholder}
-            onChange={onChange}
             aria-label={label}
+            role={'inputComponent'}
+            onChange={(e) => {
+                onChange(e.target.value);
+            }}
         />
     )
 }));
 
+
 vi.mock('@/components/ui/buttons/button/Button', () => ({
-    default: ({title, action, type, size}: any) => (
+    default: ({title, action, type, size}: ButtonProps) => (
         <button
             onClick={action}
-            data-type={type}
             data-size={size}
+            type={type}
         >
             {title}
         </button>
@@ -45,7 +49,6 @@ const getInputs = (inputs: HTMLInputElement[]) => {
 
     return {firstNameInput, lastNameInput, emailInput};
 }
-
 
 
 describe('getInputs function', () => {
@@ -104,8 +107,8 @@ describe('AddUser Component', () => {
     })
 
     it('should render all form inputs and button', () => {
-        const onSumbit = vi.fn();
-        render(<AddUser onSubmit={onSumbit}/>);
+        const onSubmit = vi.fn();
+        render(<AddUser onSubmit={onSubmit}/>);
 
         const inputs = screen.getAllByRole<HTMLInputElement>('inputComponent');
         const {firstNameInput, lastNameInput, emailInput} = getInputs(inputs);
@@ -117,8 +120,8 @@ describe('AddUser Component', () => {
     });
 
     it('should update input values when typing', () => {
-        const onSumbit = vi.fn();
-        render(<AddUser onSubmit={onSumbit}/>);
+        const onSubmit = vi.fn();
+        render(<AddUser onSubmit={onSubmit}/>);
 
         const inputs = screen.getAllByRole<HTMLInputElement>('inputComponent');
         const {firstNameInput, lastNameInput, emailInput} = getInputs(inputs);
@@ -130,15 +133,15 @@ describe('AddUser Component', () => {
         fireEvent.change(firstNameInput, {target: {value: 'John'}});
         fireEvent.change(lastNameInput, {target: {value: 'Doe'}});
         fireEvent.change(emailInput, {target: {value: 'john.doe@example.com'}});
-
+        console.log(firstNameInput?.getAttribute('value'));
         expect(firstNameInput?.getAttribute('value')).toBe('John');
         expect(lastNameInput?.getAttribute('value')).toBe('Doe');
         expect(emailInput?.getAttribute('value')).toBe('john.doe@example.com');
     });
 
     it('should call onSubmit with form data when button is clicked', () => {
-        const mockOnSubmit = vi.fn();
-        render(<AddUser onSubmit={mockOnSubmit}/>);
+        const onSubmit = vi.fn();
+        render(<AddUser onSubmit={onSubmit}/>);
 
         const inputs = screen.getAllByRole<HTMLInputElement>('inputComponent');
         const {firstNameInput, lastNameInput, emailInput} = getInputs(inputs);
@@ -153,8 +156,8 @@ describe('AddUser Component', () => {
         fireEvent.change(emailInput, {target: {value: 'john.doe@example.com'}});
         fireEvent.click(submitButton);
 
-        expect(mockOnSubmit).toHaveBeenCalledTimes(1);
-        expect(mockOnSubmit).toHaveBeenCalledWith({
+        expect(onSubmit).toHaveBeenCalledTimes(1);
+        expect(onSubmit).toHaveBeenCalledWith({
             firstName: 'John',
             lastName: 'Doe',
             email: 'john.doe@example.com'
@@ -162,13 +165,13 @@ describe('AddUser Component', () => {
     });
 
     it('should submit form with empty values when no input is provided', () => {
-        const mockOnSubmit = vi.fn();
-        render(<AddUser onSubmit={mockOnSubmit}/>);
+        const onSubmit = vi.fn();
+        render(<AddUser onSubmit={onSubmit}/>);
 
         const submitButton = screen.getByText('Ajouter');
         fireEvent.click(submitButton);
 
-        expect(mockOnSubmit).toHaveBeenCalledWith({
+        expect(onSubmit).toHaveBeenCalledWith({
             firstName: '',
             lastName: '',
             email: ''
@@ -176,8 +179,8 @@ describe('AddUser Component', () => {
     });
 
     it('should have correct input types', () => {
-        const mockOnSubmit = vi.fn();
-        render(<AddUser onSubmit={mockOnSubmit}/>);
+        const onSubmit = vi.fn();
+        render(<AddUser onSubmit={onSubmit}/>);
 
         const inputs = screen.getAllByRole<HTMLInputElement>('inputComponent');
         const {firstNameInput, lastNameInput, emailInput} = getInputs(inputs);

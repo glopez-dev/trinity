@@ -1,13 +1,14 @@
-import {ChangeEvent} from "react";
+import { z } from "zod";
 
+export type InputValueTypes = string | number;
 
 export interface InputProps {
     type?: string;
     placeholder?: string;
     label?: string;
-    onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
-    value?: string | number;
+    onChange: (value: InputValueTypes) => void;
+    value: InputValueTypes;
     name: string;
     required?: boolean;
-    regex?: RegExp;
+    schema?: z.ZodString;
 }

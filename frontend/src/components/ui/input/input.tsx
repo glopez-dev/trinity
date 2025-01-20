@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FC, useState} from 'react';
+import React, {FC, useState} from 'react';
 import styles from './styles.module.css';
 import {InputProps} from "@/components/ui/input/types";
 
@@ -10,25 +10,25 @@ const Input: FC<InputProps> = ({
                                    onChange,
                                    value,
                                    name,
-                                   regex,
                                    required = false,
+                                   schema
                                }) => {
 
     const [error, setError] = useState<string | null>(null);
 
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = e.target.value;
+        if (schema) {
+            const parsed = schema.safeParse(inputValue);
+            if (!parsed.success) {
+                setError(parsed.error.issues[0].message);
+            } else {
+                setError(null);
+            }
 
-        if (required && !inputValue) {
-            setError('Ce champ est obligatoire.');
-        } else if (regex && !regex.test(inputValue)) {
-            setError('Le format est invalide.');
-        } else {
-            setError(null);
-        }
-
-        if (onChange) {
-            onChange(e);
+            if(onChange) {
+                onChange(inputValue);
+            }
         }
     };
 
@@ -45,7 +45,6 @@ const Input: FC<InputProps> = ({
                 value={value}
                 name={name}
                 required={required}
-                pattern={regex?.source}
             />
             {error && <span className={styles.error}>{error}</span>}
         </div>
