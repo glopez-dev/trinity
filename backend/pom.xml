@@ -151,7 +151,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.devops.backend.TrinityApplication</mainClass>
+                    <mainClass>com.trinity.TrinityApplication</mainClass>
                 </configuration>
             </plugin>
             <plugin>
