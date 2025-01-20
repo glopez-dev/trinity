@@ -1,6 +1,5 @@
-package com.devops.backend.rabbitmq;
+package com.trinity.rabbitmq;
 
-import com.devops.backend.TrinityApplication;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.CommandLineRunner;
 

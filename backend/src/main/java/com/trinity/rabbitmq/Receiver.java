@@ -1,4 +1,4 @@
-package com.devops.backend.rabbitmq;
+package com.trinity.rabbitmq;
 
 import org.springframework.stereotype.Component;
 

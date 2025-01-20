@@ -1,4 +1,4 @@
-package com.devops.backend.controllers;
+package com.trinity.controllers;
 
 
 import org.springframework.http.ResponseEntity;

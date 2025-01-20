@@ -1,6 +1,6 @@
-package com.devops.backend.controllers;
+package com.trinity.controllers;
 
-import com.devops.backend.rabbitmq.Sender;
+import com.trinity.rabbitmq.Sender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

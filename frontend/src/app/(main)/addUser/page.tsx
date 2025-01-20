@@ -1,18 +1,19 @@
 'use client';
 import React from 'react';
 import styles  from './styles.module.css';
-import Form from '@/components/forms/users/formUser';
+import AddUser from "@/components/forms/users/formUser";
+import {InputValueTypes} from "@/components/ui/input/types";
 
 
 const AddUserPage = () => {
-    const handleAddUser = (userData: { firstName: string; lastName: string; email: string }) => {
+    const handleAddUser = (userData: { firstName: InputValueTypes; lastName: InputValueTypes; email: InputValueTypes }) => {
         console.log('User Data:', userData);
     };
 
     return (
         <div>
             <h1 className={styles.title}>Ajouter un utilisateur</h1>
-            <Form onSubmit={handleAddUser} />
+            <AddUser onSubmit={handleAddUser} />
         </div>
     );
 };

@@ -21,10 +21,10 @@ describe('Sidebar Component', () => {
         cleanup()
     });
 
-    it('should render SideBar correctly', () => {
+    it('should render SideBar correctly', async () => {
         render(<Sidebar isOpen={true} onToggle={vi.fn()}/>);
         const sidebar = screen.getByRole('navigation');
-        expect(sidebar).toMatchFileSnapshot('./__snapshots__/sidebarTest.tsx');
+        await expect(sidebar).toMatchFileSnapshot('./__snapshots__/sidebarTest.tsx');
     });
 
     it('should handle toggle interactions', () => {

@@ -16,9 +16,9 @@ describe('Topbar Component', () => {
         return {toggleSpy, ...utils};
     };
 
-    it('should render the topbar correctly', () => {
+    it('should render the topbar correctly', async () => {
         const {container} = renderTopbar();
-        expect(container).toMatchFileSnapshot('./__snapshots__/topbarTest.tsx');
+        await expect(container).toMatchFileSnapshot('./__snapshots__/topbarTest.tsx');
     });
 
     it('should toggle mobile menu visibility', async () => {
