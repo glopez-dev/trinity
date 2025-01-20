@@ -10,14 +10,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Builder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "customer")
-@Getter
+@Data
 @SuperBuilder
 @NoArgsConstructor // Hibernate needs a no-args constructor.
 @EqualsAndHashCode(callSuper = false)
@@ -54,9 +54,9 @@ public class Customer extends AbstractUser {
         Assert.notNull(refreshToken, "Refresh token must not be null");
         Assert.notNull(expiresIn, "Expiration time must not be null");
 
-        this.paypalAccessToken = accessToken;
-        this.paypalRefreshToken = refreshToken;
-        this.tokenExpiresAt = Instant.now().plusSeconds(expiresIn);
+        this.setPaypalAccessToken(accessToken);
+        this.setPaypalRefreshToken(refreshToken);
+        this.setTokenExpiresAt(Instant.now().plusSeconds(expiresIn));
     }
 
 }
