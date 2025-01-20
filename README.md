@@ -13,6 +13,18 @@ For the staging environment
 ## Project setup
 You'll have to define the `.env` file which is used by the `compose.dev.yml` file for variable substitions.
 
+```bash
+# Run the following command and custom the .env file values
+cp .env.example .env
+```
+
+You have to define the Docker compose secrets :
+
+```bash
+# Copy the .secrets.example directory recursively and define your own values
+cp -r .secrets.example .secrets
+```
+
 ## 📦🐋 Docker Image Registry
 Here’s how the tagging system works:
 
