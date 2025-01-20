@@ -73,11 +73,14 @@ Run Backend unit-tests:
   # Scripts
   script:
     - cd backend
-    - docker run --rm -v $(pwd)/target:/app/backend/target $BACKEND_IMAGE_TAG_DEV test
+    - docker run --rm -v $(pwd)/target:/app/backend/target $BACKEND_IMAGE_TAG_DEV clean test jacoco:report 
   artifacts:
     when: always
     reports:
       junit: backend/target/surefire-reports/TEST-*.xml
+      coverage_report:
+        coverage_format: jacoco
+        path: backend/target/site/jacoco/jacoco.xml
     expire_in: 1 week
   # Conditions
   needs: ['Build the Backend dev image']
