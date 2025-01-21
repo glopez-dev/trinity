@@ -2,7 +2,8 @@ package com.trinity.cart.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -16,13 +17,14 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Entity
 public class Cart {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @NonNull
     @Column(nullable = false)
     private UUID customerId;
 
@@ -40,11 +42,7 @@ public class Cart {
 
 
     @Embedded
-    private Money totalAmount;
-
-    public Cart(UUID customerId) {
-        this.customerId = customerId;
-    }
+    private Money totalAmount = new Money(BigDecimal.ZERO, "USD");
 
     public void addItem(UUID productId, String productName, BigDecimal unitPrice, int quantity) {
         if (status != CartStatus.ACTIVE) {

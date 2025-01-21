@@ -1,7 +1,6 @@
 package com.trinity.cart.service;
 
 import com.trinity.cart.domain.Cart;
-import com.trinity.cart.domain.Money;
 import com.trinity.cart.repository.CartRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;

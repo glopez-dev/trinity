@@ -13,8 +13,8 @@ import java.math.BigDecimal;
 @EqualsAndHashCode
 @Embeddable
 public class Money {
-    // @Column(nullable = false)
+    @Column(nullable = false)
     private BigDecimal price = BigDecimal.ZERO;
-    // @Column(nullable = false)
+    @Column(nullable = false)
     private String currency = "USD";
 }
