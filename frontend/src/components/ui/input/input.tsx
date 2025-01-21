@@ -25,10 +25,9 @@ const Input: FC<InputProps> = ({
             } else {
                 setError(null);
             }
-
-            if(onChange) {
-                onChange(inputValue);
-            }
+        }
+        if(onChange) {
+            onChange(inputValue);
         }
     };
 
