@@ -14,12 +14,13 @@ export default defineConfig({
             exclude: [
                 'node_modules',
                 'src/**/types.ts',
-                'src/**/types/*.ts',
+                'src/**/types/**/*.ts',
                 '.next',
                 '**.config.*',
                 'next-env.d.ts',
                 'src/components/ui/tableau/**',
                 'src/lib/api',
+                'src/lib/schemas/**',
                 '__tests__/**/__snapshots__/**',
             ]
         },

@@ -3,7 +3,7 @@ import styles from './badge.module.css';
 
 type BadgeType = 'success' | 'warning' | 'error' | 'info';
 
-interface BadgeProps {
+export interface BadgeProps {
     text: string;
     type: BadgeType;
 }
