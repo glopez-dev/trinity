@@ -17,7 +17,6 @@ import com.trinity.auth.constant.UserStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -28,11 +27,11 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor // Builder pattern requires all args constructor.
 @MappedSuperclass // This class is not an entity, but its attributes are inherited by entities.
 /**
-* Base abstract class for authentication entities.
-* Provides common fields and functionality for all auth types.
-*/
+ * Base abstract class for authentication entities.
+ * Provides common fields and functionality for all auth types.
+ */
 public abstract class AbstractUser implements UserDetails {
-   
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -53,11 +52,9 @@ public abstract class AbstractUser implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @Builder.Default
     @Column(nullable = false)
     private Instant lastLoginAt = Instant.now();
 
-    @Builder.Default
     @Column(nullable = false)
     private UserStatus status = UserStatus.ACTIVE;
 
@@ -68,7 +65,7 @@ public abstract class AbstractUser implements UserDetails {
     @UpdateTimestamp
     @Column(nullable = false)
     private Instant updatedAt;
-    
+
     @Version
     private Long version;
 
@@ -123,7 +120,7 @@ public abstract class AbstractUser implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return !this.accountIsExpired(); 
+        return !this.accountIsExpired();
     }
 
     @Override
@@ -133,6 +130,6 @@ public abstract class AbstractUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true; 
+        return true;
     }
 }

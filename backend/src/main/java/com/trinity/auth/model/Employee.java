@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import com.trinity.auth.constant.UserRole;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,12 @@ public class Employee extends AbstractUser {
     private Instant terminationDate;
 
     @Builder.Default
+    @Column(nullable = false)
     private UserRole role = UserRole.EMPLOYEE;
+
+    @Override
+    public UserRole getRole() {
+        return this.role;
+    }
 
 }

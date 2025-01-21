@@ -1,5 +1,6 @@
 package com.trinity.auth.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,15 +17,18 @@ import com.trinity.auth.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
-@RequiredArgsConstructor
 public class ApplicationConfig {
 
     private final EmployeeRepository employeeRepository;
 
-    @Bean 
+    public ApplicationConfig(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
+
+    @Bean
     public UserDetailsService userDetailsService() {
         return username -> this.employeeRepository.findByEmail(username)
-            .orElseThrow(() -> new UsernameNotFoundException("User with email " + username + " not found."));
+                .orElseThrow(() -> new UsernameNotFoundException("User with email " + username + " not found."));
     }
 
     @Bean
@@ -46,5 +50,5 @@ public class ApplicationConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-    
+
 }

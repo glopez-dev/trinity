@@ -1,7 +1,9 @@
 package com.trinity.auth.model;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import java.time.Instant;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import com.trinity.auth.constant.UserRole;
@@ -21,13 +23,14 @@ class CustomerTest {
 
         // When
         Customer customer = Customer.builder()
-            .email(email)
-            .hashedPassword(hashedPassword)
-            .paypalUserId(paypalUserId)
-            .paypalAccessToken(paypalAccessToken)
-            .paypalRefreshToken(paypalRefreshToken)
-            .tokenExpiresAt(tokenExpiresAt)
-            .build();
+                .email(email)
+                .hashedPassword(hashedPassword)
+                .paypalUserId(paypalUserId)
+                .paypalAccessToken(paypalAccessToken)
+                .paypalRefreshToken(paypalRefreshToken)
+                .tokenExpiresAt(tokenExpiresAt)
+                .role(UserRole.CUSTOMER)
+                .build();
 
         // Then
         assertNotNull(customer);
@@ -54,8 +57,8 @@ class CustomerTest {
     void testTokenNotExpired() {
         // Given
         Customer customer = Customer.builder()
-            .tokenExpiresAt(Instant.now().plusSeconds(3600))
-            .build();
+                .tokenExpiresAt(Instant.now().plusSeconds(3600))
+                .build();
 
         // When
         boolean isTokenExpired = customer.isTokenExpired();
@@ -68,8 +71,8 @@ class CustomerTest {
     void testTokenExpired() {
         // Given
         Customer customer = Customer.builder()
-            .tokenExpiresAt(Instant.now().minusSeconds(3600))
-            .build();
+                .tokenExpiresAt(Instant.now().minusSeconds(3600))
+                .build();
 
         // When
         boolean isTokenExpired = customer.isTokenExpired();
@@ -98,8 +101,8 @@ class CustomerTest {
         Customer customer = new Customer();
 
         // When & Then
-        assertThrows(IllegalArgumentException.class, () -> 
-            customer.updatePayPalToken(null, "refreshToken", 3600L));
+        assertThrows(IllegalArgumentException.class, () ->
+                customer.updatePayPalToken(null, "refreshToken", 3600L));
     }
 
     @Test
@@ -108,8 +111,8 @@ class CustomerTest {
         Customer customer = new Customer();
 
         // When & Then
-        assertThrows(IllegalArgumentException.class, () -> 
-            customer.updatePayPalToken("accessToken", null, 3600L));
+        assertThrows(IllegalArgumentException.class, () ->
+                customer.updatePayPalToken("accessToken", null, 3600L));
     }
 
     @Test
@@ -118,8 +121,8 @@ class CustomerTest {
         Customer customer = new Customer();
 
         // When & Then
-        assertThrows(IllegalArgumentException.class, () -> 
-            customer.updatePayPalToken("accessToken", "refreshToken", null));
+        assertThrows(IllegalArgumentException.class, () ->
+                customer.updatePayPalToken("accessToken", "refreshToken", null));
     }
 
     @Test
@@ -134,16 +137,16 @@ class CustomerTest {
         assertEquals(UserRole.CUSTOMER, role);
 
         assertTrue(customer.getAuthorities().contains(
-            new SimpleGrantedAuthority(UserRole.CUSTOMER.name())));
+                new SimpleGrantedAuthority(UserRole.CUSTOMER.name())));
     }
 
     @Test
     void testUserDetailsImplementation() {
         // Given
         Customer customer = Customer.builder()
-            .email("test@example.com")
-            .hashedPassword("hashedPassword")
-            .build();
+                .email("test@example.com")
+                .hashedPassword("hashedPassword")
+                .build();
 
         // When
         String username = customer.getUsername();

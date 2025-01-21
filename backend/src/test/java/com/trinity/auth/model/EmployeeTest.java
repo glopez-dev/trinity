@@ -1,7 +1,9 @@
 package com.trinity.auth.model;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import java.time.Instant;
+
 import org.junit.jupiter.api.Test;
 import com.trinity.auth.constant.UserRole;
 
@@ -17,11 +19,12 @@ class EmployeeTest {
 
         // When
         Employee employee = Employee.builder()
-            .email(email)
-            .hashedPassword(hashedPassword)
-            .hireDate(hireDate)
-            .terminationDate(terminationDate)
-            .build();
+                .email(email)
+                .hashedPassword(hashedPassword)
+                .hireDate(hireDate)
+                .terminationDate(terminationDate)
+                .role(UserRole.EMPLOYEE)
+                .build();
 
         // Then
         assertNotNull(employee);

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.Instant;
 import java.util.Optional;
 
+import com.trinity.auth.constant.UserStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import com.trinity.auth.model.Employee;
+import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ActiveProfiles("test")
 class EmployeeRepositoryTest {
 
     @Autowired
@@ -25,10 +28,12 @@ class EmployeeRepositoryTest {
     @BeforeEach
     public void setUp() {
         employee = Employee.builder()
-            .email("test@example.com")
-            .hashedPassword("superSecretPassword")
-            .hireDate(Instant.now())
-            .build();
+                .email("test@example.com")
+                .hashedPassword("superSecretPassword")
+                .hireDate(Instant.now())
+                .lastLoginAt(Instant.now())
+                .status(UserStatus.ACTIVE)
+                .build();
 
         employeeRepository.save(employee);
     }

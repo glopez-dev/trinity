@@ -2,6 +2,7 @@ package com.trinity.auth.model;
 
 import java.time.Instant;
 
+import lombok.*;
 import org.springframework.util.Assert;
 
 import com.trinity.auth.constant.UserRole;
@@ -9,10 +10,6 @@ import com.trinity.auth.constant.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -20,6 +17,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder
 @NoArgsConstructor // Hibernate needs a no-args constructor.
+@AllArgsConstructor // Builder pattern requires all args constructor.
 @EqualsAndHashCode(callSuper = false)
 /**
  * Entity representing a customer authenticated through PayPal OAuth
@@ -31,7 +29,7 @@ public class Customer extends AbstractUser {
     private String paypalUserId;
 
     @Column(nullable = false)
-    private Instant tokenExpiresAt; 
+    private Instant tokenExpiresAt;
 
     @Column(nullable = false)
     private String paypalAccessToken;
@@ -39,16 +37,17 @@ public class Customer extends AbstractUser {
     @Column(nullable = false)
     private String paypalRefreshToken;
 
-    @Builder.Default 
+    @Builder.Default
+    @Column(nullable = false)
     private UserRole role = UserRole.CUSTOMER;
 
     public boolean isTokenExpired() {
         boolean expirationDateIsDefined = this.getTokenExpiresAt() != null;
         boolean expirationDateIsPassed = Instant.now().isAfter(this.getTokenExpiresAt());
 
-        return expirationDateIsDefined && expirationDateIsPassed; 
+        return expirationDateIsDefined && expirationDateIsPassed;
     }
-    
+
     public void updatePayPalToken(String accessToken, String refreshToken, Long expiresIn) {
         Assert.notNull(accessToken, "Access token must not be null");
         Assert.notNull(refreshToken, "Refresh token must not be null");
@@ -57,6 +56,11 @@ public class Customer extends AbstractUser {
         this.setPaypalAccessToken(accessToken);
         this.setPaypalRefreshToken(refreshToken);
         this.setTokenExpiresAt(Instant.now().plusSeconds(expiresIn));
+    }
+
+    @Override
+    public UserRole getRole() {
+        return this.role;
     }
 
 }
