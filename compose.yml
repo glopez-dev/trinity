@@ -133,8 +133,7 @@ services:
 
     volumes:
       - "./backend/src/:/app/backend/src"
-      - "./backend/target/:/app/backend/target"
-    
+
     ports: 
       - "8080:8080"
 

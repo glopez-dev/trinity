@@ -17,13 +17,10 @@ import com.trinity.auth.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
+@RequiredArgsConstructor
 public class ApplicationConfig {
 
     private final EmployeeRepository employeeRepository;
-
-    public ApplicationConfig(EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
-    }
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -32,14 +29,14 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-
-        authProvider.setUserDetailsService(this.userDetailsService());
-        authProvider.setPasswordEncoder(this.passwordEncoder());
-
-        return authProvider;
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService());
+        provider.setPasswordEncoder(passwordEncoder());
+        provider.setHideUserNotFoundExceptions(true);
+        return provider;
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

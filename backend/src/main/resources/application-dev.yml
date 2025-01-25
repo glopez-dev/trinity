@@ -12,6 +12,7 @@ spring:
   
   # JPA/Hibernate Configuration
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: update
     show-sql: true
@@ -69,6 +70,7 @@ logging:
 jwt:
   secret: ${JWT_SECRET:your_jwt_secret_key_here}
   expiration: ${JWT_EXPIRATION:86400000}  # 24 hours in milliseconds
+
 
 # Swagger/OpenAPI Configuration (New)
 springdoc:
