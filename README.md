@@ -1,6 +1,4 @@
-# Trinity (T-DEV-70X)
-
-## Overview
+# Trinity Project - Technical Documentation
 
 Trinity is a comprehensive retail management solution composed of three distinct parts:
 - DevOps infrastructure
@@ -20,9 +18,20 @@ The project aims to improve customer experience and internal operations for a gr
 - [User Needs Analysis](docs/user_needs.md)
 - [User Needs Prioritization Matrix](docs/user_needs_priorization_matrix.md)
 
-### Project Requirements
-- [Functional Requirements](docs/functional_requirements.md)
-- [Non-Functional Requirements](docs/non_functional_requirements.md)
+```bash
+# Run the following command and custom the .env file values
+cp .env .env
+```
+
+You have to define the Docker compose secrets :
+
+```bash
+# Copy the .secrets.example directory recursively and define your own values
+cp -r .secrets.example .secrets
+```
+
+## 📦🐋 Docker Image Registry
+Here’s how the tagging system works:
 
 ### Developer Documentation
 - [Working with User Stories](docs/developeur/work_with_user_stories.md)
@@ -50,6 +59,10 @@ The project aims to improve customer experience and internal operations for a gr
 - [DevOps Kickoff Documentation](docs/devops/T-DEV-701-devOps_kickoff.pdf)
 - [DevOps Bootstrap Guide](docs/devops/T-DEV-701-devOps_bootstrap.pdf)
 
+Trinity is a comprehensive retail management system, designed to modernize grocery chain operations through three interconnected components:
+1. Customer mobile application
+2. Web-based back office & API
+3. DevOps infrastructure
 
 ## Key Features
 
@@ -82,16 +95,7 @@ The project aims to improve customer experience and internal operations for a gr
 - RabbitMQ for message queuing
 - Integration with external APIs (PayPal, Open Food Facts)
 
-### Frontend
-- Web application built with React.js
-- Mobile application built with React Native
-- Responsive and intuitive user interfaces
 
-### DevOps
-- GitLab CI/CD pipeline
-- Docker containerization
-- Automated testing and deployment
-- Virtual machine runners
 
 ## Getting Started
 
