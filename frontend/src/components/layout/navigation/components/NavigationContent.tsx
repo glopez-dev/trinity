@@ -7,7 +7,8 @@ import {NavigationContentProps, NavItemProps} from "@/components/layout/navigati
 const navItems: NavItemProps[] = [
     {name: 'Dashboard', icon: "LayoutDashboard", path: '/dashboard'},
     {name: 'Produits', icon: "Package", path: '/products'},
-    {name: 'Clients', icon: "Users", path: '/users'},
+    {name: 'Employés', icon: "UserCog", path: '/users/employees'},
+    {name: 'Clients', icon: "Users", path: '/users/customers'},
     {name: 'Factures', icon: "FileText", path: '/invoices'},
     {name: 'Rapports', icon: "ChartNoAxesColumnIncreasing", path: '/reports'},
 ];
