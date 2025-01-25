@@ -9,16 +9,36 @@
 # BACKEND # 
 ###########
 
+# Backend environment configuration anchor
+# This anchor defines common environment variables used across backend services
 x-backend-env: &backend-env
-  # We use the service name 'postgres' to leverage Docker Compose DNS resolution
+  # PostgreSQL Database Configuration
+  # Maps to spring.datasource.url in application.properties
   SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB}"
+  # Maps to spring.datasource.username in application.properties
   SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+  # Maps to spring.datasource.password in application.properties
+  # Using Docker secret for security
   SPRING_DATASOURCE_PASSWORD: /run/secrets/postgres_password
 
+  # RabbitMQ Configuration
+  # Maps to spring.rabbitmq.host in application.properties
   SPRING_RABBITMQ_HOST: rabbitmq
+  # Maps to spring.rabbitmq.port in application.properties
   SPRING_RABBITMQ_PORT: 5672
+  # Maps to spring.rabbitmq.username in application.properties
   SPRING_RABBITMQ_USERNAME: ${RABBITMQ_DEFAULT_USER}
+  # Maps to spring.rabbitmq.password in application.properties
+  # Using Docker secret for security
   SPRING_RABBITMQ_PASSWORD: /run/secrets/rabbitmq_password
+
+  # Custom JWT Configuration
+  # Maps to jwt.secret in application.properties
+  # Using Docker secret for security
+  JWT_SECRET: /run/secrets/jwt_secret
+  # Maps to jwt.expiration in application.properties
+  # Value in milliseconds (24 hours)
+  JWT_EXPIRATION: 86400000
 
 x-backend-common: &backend-common
   networks: 
