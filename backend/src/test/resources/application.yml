@@ -21,8 +21,38 @@ spring:
       path: /h2-console
   main:
     banner-mode: off
-  # flyway:
-  #   enabled: false
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_DEFAULT_USER:trinity_rabbit}
+    password: ${RABBITMQ_DEFAULT_PASS:trinity_rabbit}
+
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java,src/main/resources
+      exclude: static/**,public/**
+    livereload:
+      enabled: true
+
+  web:
+    resources:
+      add-mappings: false
+
+server:
+  error:
+    whitelabel:
+      enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
 
 logging:
   level:
@@ -32,3 +62,18 @@ logging:
       hibernate: DEBUG
       hibernate.SQL: DEBUG
       hibernate.type.descriptor.sql: TRACE
+
+jwt:
+  secret: ${JWT_SECRET:your_jwt_secret_key_here}
+  expiration: ${JWT_EXPIRATION:86400000}  # 24 hours in milliseconds
+
+springdoc:
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+  show-actuator: true
+  packages-to-scan: com.trinity.controller
