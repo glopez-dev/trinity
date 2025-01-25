@@ -1,6 +1,6 @@
 import {describe, it, expect, vi, afterEach} from 'vitest';
 import {cleanup, render} from '@testing-library/react';
-import Home from '@/app/(main)/users/page';
+import Home from '@/app/(main)/users/customers/page';
 
 vi.mock('@/components/ui/tableau/tableau', () => ({
     default: () => <div data-testid="user-table">Mocked User Table</div>

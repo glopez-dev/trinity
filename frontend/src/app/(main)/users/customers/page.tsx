@@ -2,7 +2,7 @@ import React from 'react';
 import UserTable from '@/components/ui/tableau/tableau';
 
 
-const Home: React.FC = () => {
+const CustomersHome: React.FC = () => {
   return (
     <div className="container">
       <UserTable />
@@ -10,4 +10,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default CustomersHome;

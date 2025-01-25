@@ -103,6 +103,69 @@
         class="_navIcon_66a9d8"
       >
         <svg
+          class="lucide lucide-user-cog"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="18"
+            cy="15"
+            r="3"
+          />
+          <circle
+            cx="9"
+            cy="7"
+            r="4"
+          />
+          <path
+            d="M10 15H6a4 4 0 0 0-4 4v2"
+          />
+          <path
+            d="m21.7 16.4-.9-.3"
+          />
+          <path
+            d="m15.2 13.9-.9-.3"
+          />
+          <path
+            d="m16.6 18.7.3-.9"
+          />
+          <path
+            d="m19.1 12.2.3-.9"
+          />
+          <path
+            d="m19.6 18.7-.4-1"
+          />
+          <path
+            d="m16.8 12.3-.4-1"
+          />
+          <path
+            d="m14.3 16.6 1-.4"
+          />
+          <path
+            d="m20.7 13.8 1-.4"
+          />
+        </svg>
+      </span>
+      <span
+        class="_navText_66a9d8"
+      >
+        Employés
+      </span>
+    </button>
+    <button
+      class="_navButton_66a9d8 false"
+    >
+      <span
+        class="_navIcon_66a9d8"
+      >
+        <svg
           class="lucide lucide-users"
           fill="none"
           height="24"

@@ -19,7 +19,6 @@ const usersData: User[] = [
     {id: 2, firstName: 'Jane', lastName: 'Smith', email: 'jane.smith@example.com'},
     {id: 3, firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@example.com'},
     {id: 3, firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@example.com'},
-
 ];
 
 
