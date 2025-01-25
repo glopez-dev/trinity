@@ -94,7 +94,6 @@ RUN chmod 755 /app/entrypoint.sh /app/backend/mvnw
 
 # Set volume for hot-reloadable source code
 VOLUME /app/backend/src
-VOLUME /app/backend/target
 
 # Entry point for the container
 ENTRYPOINT ["/app/entrypoint.sh"]

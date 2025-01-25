@@ -12,7 +12,6 @@ import com.trinity.auth.dto.RegisterRequest;
 import com.trinity.auth.service.AuthenticationService;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -33,6 +32,5 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
-
 
 }

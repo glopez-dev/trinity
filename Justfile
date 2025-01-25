@@ -5,7 +5,7 @@ up ENV:
     just down "{{ENV}}"
 
     echo "Removing unused docker data..."
-    docker system prune --force # Means no prompt
+    docker system prune --volumes --force # Means no prompt
 
     if [[ "{{ENV}}" == "dev" ]]; then
         echo "Deploying to the development environment..."

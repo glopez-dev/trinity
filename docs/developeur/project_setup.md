@@ -23,7 +23,7 @@ apt install just
 
 1. Create a `.env` file in the project root:
 ```bash
-cp .env .env
+cp .env.example .env
 ```
 
 > **Be careful** the file should be named exactly `.env` and nothing else to be used by the `compose.yml` file for interpolation.
@@ -83,7 +83,7 @@ cd T-DEV-702-Api
 
 2. Set up the environment file:
 ```bash
-cp .env .env
+cp .env.example .env
 ```
 
 3. Start the development environment:

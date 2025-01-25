@@ -20,7 +20,7 @@ The project aims to improve customer experience and internal operations for a gr
 
 ```bash
 # Run the following command and custom the .env file values
-cp .env .env
+cp .env.example .env
 ```
 
 You have to define the Docker compose secrets :

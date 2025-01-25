@@ -17,6 +17,7 @@ import com.trinity.auth.constant.UserStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -52,9 +53,11 @@ public abstract class AbstractUser implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
+    @Builder.Default
     @Column(nullable = false)
     private Instant lastLoginAt = Instant.now();
 
+    @Builder.Default
     @Column(nullable = false)
     private UserStatus status = UserStatus.ACTIVE;
 
