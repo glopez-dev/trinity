@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchRequest {
+public class TrinitySearchRequest {
 
     @NotEmpty(message = "Search term must not be empty")
     @Pattern(regexp = "^[a-zA-Z]+$", message = "Search term must contain only alphabetic characters")

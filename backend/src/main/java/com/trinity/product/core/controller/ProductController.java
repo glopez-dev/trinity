@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.trinity.product.core.dto.SearchRequest;
+import com.trinity.product.core.dto.TrinitySearchRequest;
 import com.trinity.product.core.dto.TrinitySearchResponse;
 import com.trinity.product.core.service.OpenFoodFactsService;
 
@@ -22,17 +22,17 @@ public class ProductController {
     private final OpenFoodFactsService openFoodFactsService;
 
     /**
-    public TrinitySearchResponse searchProducts(@Valid @RequestBody SearchRequest request) {
+     * Handles the search request for products.
      *
      * @param request the search request containing the search term
-     * @return a response containing the search results
+     * @return a ResponseEntity containing the search response
      */
     @PostMapping("/search")
-    public ResponseEntity<TrinitySearchResponse> searchProducts(@Valid @RequestBody SearchRequest request) {
+    public ResponseEntity<TrinitySearchResponse> searchProducts(@Valid @RequestBody TrinitySearchRequest request) {
 
         String searchTerm = request.getSearchTerm();
         TrinitySearchResponse response = openFoodFactsService.searchProducts(searchTerm);
         return ResponseEntity.ok(response);
     }
- 
+
 }

@@ -2,7 +2,7 @@ package com.trinity.product.core.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import com.trinity.product.core.dto.SearchRequest;
+import com.trinity.product.core.dto.TrinitySearchRequest;
 import com.trinity.product.core.dto.TrinitySearchResponse;
 import com.trinity.product.core.service.OpenFoodFactsService;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +30,7 @@ class ProductControllerTest {
     void testSearchProducts_Success() {
         // Given
         String searchTerm = "test";
-        SearchRequest request = new SearchRequest();
+        TrinitySearchRequest request = new TrinitySearchRequest();
         request.setSearchTerm(searchTerm);
         TrinitySearchResponse expectedResponse = new TrinitySearchResponse();
 
@@ -48,7 +48,7 @@ class ProductControllerTest {
     void testSearchProducts_Failure() {
         // Given
         String searchTerm = "test";
-        SearchRequest request = new SearchRequest();
+        TrinitySearchRequest request = new TrinitySearchRequest();
         request.setSearchTerm(searchTerm);
 
         when(openFoodFactsService.searchProducts(searchTerm)).thenThrow(new RuntimeException("API error"));
