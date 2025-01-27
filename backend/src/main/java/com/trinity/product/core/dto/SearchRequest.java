@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SearchRequest {
 
-    @NotEmpty
+    @NotEmpty(message = "Search term must not be empty")
     @Pattern(regexp = "^[a-zA-Z]+$", message = "Search term must contain only alphabetic characters")
     private String searchTerm;
 }

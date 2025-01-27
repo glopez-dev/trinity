@@ -49,14 +49,14 @@ class SearchRequestTest {
     @Test
     void testSearchTermNotEmpty() {
         // Given
-        SearchRequest request = new SearchRequest("");
+        SearchRequest request = new SearchRequest();
 
         // When
         Set<ConstraintViolation<SearchRequest>> violations = validator.validate(request);
 
         // Then
         assertThat(violations).isNotEmpty();
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("must not be empty");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo("Search term must not be empty");
     }
 
     @Test
