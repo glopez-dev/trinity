@@ -56,7 +56,7 @@ const stockLevelsData: Record<string, StockData> = {
 
 const StockLevelsChart = () => {
     const formattedData: FormattedStockData[] = Object.entries(stockLevelsData).map(([id, info]) => ({
-        name: 'Stock ' + getStockStatus(info.currentStock, info.minThreshold),
+        name: 'Stock ' + getStockStatus(info.currentStock, info.minThreshold) + ' (' + id + ')',
         stock: info.currentStock,
         threshold: info.minThreshold,
         fullName: info.fullName

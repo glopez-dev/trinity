@@ -1,4 +1,4 @@
-const data = {
+export const data = {
     "stockLevels": {
         "Bio Organic Quinoa": {
             "currentStock": 35,
