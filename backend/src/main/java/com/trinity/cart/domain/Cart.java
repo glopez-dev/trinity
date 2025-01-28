@@ -1,29 +1,41 @@
 package com.trinity.cart.domain;
 
 import com.trinity.cart.constant.CartStatus;
+import com.trinity.cart.domain.Money;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
-
 
 @Data
 @RequiredArgsConstructor
+@Builder
 public class Cart {
     @NonNull
     private UUID customerId;
 
-    private List<CartItem> items = new ArrayList<>();
+    @Builder.Default
+    private Set<CartItem> items = new HashSet<>(); // Use Set instead of List
 
-    //cart status
+    // Cart status
+    @Builder.Default
     private CartStatus status = CartStatus.CREATED;
 
+    @Builder.Default
     private Money totalAmount = new Money(BigDecimal.ZERO, "USD");
+
+    public Cart(UUID customerId, Set<CartItem> items, CartStatus status, Money totalAmount) {
+        this.customerId = customerId;
+        this.items = items != null ? items : new HashSet<>();
+        this.status = status != null ? status : CartStatus.CREATED;
+        this.totalAmount = totalAmount != null ? totalAmount : new Money(BigDecimal.ZERO, "USD");
+    }
 
     public void addItem(CartItem item) {
         CartItem existingItem = findItem(item.getProductId());
@@ -36,18 +48,18 @@ public class Cart {
         this.status = CartStatus.EDITED;
     }
 
-    public void removeItem(UUID productId, int quantity) {
-        CartItem existingItem = findItem(productId);
+    public void removeItem(CartItem item) {
+        CartItem existingItem = findItem(item.getProductId());
         if (existingItem == null) {
             throw new IllegalStateException("Item not found in the cart.");
         }
-        if (quantity > existingItem.getQuantity()) {
+        if (item.getQuantity() > existingItem.getQuantity()) {
             throw new IllegalStateException("Quantity to remove is greater than the existing quantity.");
         }
-        if (quantity == existingItem.getQuantity()) {
+        if (item.getQuantity() == existingItem.getQuantity()) {
             items.remove(existingItem);
         } else {
-            existingItem.updateQuantity(existingItem.getQuantity() - quantity);
+            existingItem.updateQuantity(existingItem.getQuantity() - item.getQuantity());
         }
         calculateTotal();
         this.status = CartStatus.EDITED;

@@ -3,12 +3,16 @@ package com.trinity.cart.service;
 import com.trinity.cart.domain.Cart;
 import com.trinity.cart.domain.CartItem;
 import com.trinity.cart.domain.Money;
+import com.trinity.cart.dto.CartItemRequest;
+import com.trinity.cart.dto.CartRequest;
+
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -17,28 +21,63 @@ public class CartService {
     // In-memory storage for carts
     private final Map<UUID, Cart> carts = new ConcurrentHashMap<>();
 
-    public Cart createCart(UUID customerId) {
-        Cart cart = new Cart(customerId);
+    public void createCart(UUID customerId) {
+        Cart cart = Cart.builder()
+                .customerId(customerId)
+                .build();
         carts.put(customerId, cart);
+    }
+    
+    public CartRequest getCart(UUID customerId) {
+        Cart cart = getCartForCustomer(customerId);
+        return CartRequest.builder()
+                .customerId(cart.getCustomerId())
+                .items(setCartItemToSetCartItemRequest(cart.getItems()))
+                .totalAmount(cart.getTotalAmount().getAmount())
+                .currency(cart.getTotalAmount().getCurrency())
+                .build();
+    }
+
+    private Set<CartItemRequest> setCartItemToSetCartItemRequest(Set<CartItem> cartItems) {
+        return cartItems.stream()
+                .map(this::cartItemtoCartItemRequest)
+                .collect(Collectors.toSet());
+    }
+
+    private CartItemRequest cartItemtoCartItemRequest(CartItem cartItem) {
+        return CartItemRequest.builder()
+                .productId(cartItem.getProductId())
+                .productName(cartItem.getProductName())
+                .quantity(cartItem.getQuantity())
+                .unitPrice(cartItem.getUnitPrice())
+                .build();
+    }
+
+    private Cart getCartForCustomer(UUID customerId) {
+        Cart cart = carts.get(customerId);
+        if (cart == null) {
+            throw new IllegalArgumentException("Cart not found for customer: " + customerId);
+        }
         return cart;
     }
 
-    public Cart getCart(UUID customerId) {
-        return carts.getOrDefault(customerId, new Cart(customerId));
+    private CartItem toCartItem(CartItemRequest cartItemRequest) {
+        return CartItem.builder()
+                .productId(cartItemRequest.getProductId())
+                .productName(cartItemRequest.getProductName())
+                .quantity(cartItemRequest.getQuantity())
+                .unitPrice(cartItemRequest.getUnitPrice())
+                .build();
     }
 
-
-    public void addItemToCart(UUID customerId, CartItem cartItem) {
-        Cart cart = carts.computeIfAbsent(customerId, Cart::new);
-        cart.addItem(cartItem);
+    public void addItemToCart(UUID customerId, CartItemRequest cartItem) {
+        Cart cart = getCartForCustomer(customerId);
+        cart.addItem(toCartItem(cartItem));
     }
-
-
-    public void removeItemFromCart(UUID customerId, UUID productId, int quantity) {
-        Cart cart = carts.get(customerId);
-        if (cart != null) {
-            cart.removeItem(productId, quantity);
-        }
+    
+    public void removeItemFromCart(UUID customerId, CartItemRequest cartItem) {
+        Cart cart = getCartForCustomer(customerId);
+        cart.removeItem(toCartItem(cartItem));
     }
 
     public void validateCart(UUID customerId) {
@@ -53,24 +92,17 @@ public class CartService {
     }
 
     public void removeCart(UUID customerId) {
-        Cart cart = carts.get(customerId);
-        if (cart != null) {
-            carts.remove(customerId);
-        }
+        getCartForCustomer(customerId);
+        carts.remove(customerId);
     }
 
     public void cancelCart(UUID customerId) {
-        Cart cart = carts.get(customerId);
-        if (cart != null) {
-            cart.cancel();
-        }
+        Cart cart = getCartForCustomer(customerId);
+        cart.cancel();
     }
 
     public Money getTotalAmount(UUID customerId) {
-        Cart cart = carts.get(customerId);
-        if (cart != null) {
-            return cart.getTotalAmount();
-        }
-        return new Money(BigDecimal.ZERO, "USD");
+        Cart cart = getCartForCustomer(customerId);
+        return cart.getTotalAmount();
     }
 }
