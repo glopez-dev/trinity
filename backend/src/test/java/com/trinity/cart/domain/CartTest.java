@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
-
 class CartTest {
 
     private Cart cart;
@@ -35,13 +34,12 @@ class CartTest {
         assertEquals(new BigDecimal("20.00"), cart.getTotalAmount().getAmount());
     }
 
-
     @Test
     void testAddSameItem() {
         cart.addItem(item);
         cart.addItem(item);
         assertEquals(1, cart.getItems().size());
-        assertEquals(4, cart.getItems().get(0).getQuantity());
+        assertEquals(4, cart.getItems().iterator().next().getQuantity());
         assertEquals(CartStatus.EDITED, cart.getStatus());
         assertEquals(new BigDecimal("40.00"), cart.getTotalAmount().getAmount());
     }
@@ -49,10 +47,39 @@ class CartTest {
     @Test
     void testRemoveItem() {
         cart.addItem(item);
-        cart.removeItem(productId, quantity);
+        cart.removeItem(item);
         assertEquals(0, cart.getItems().size());
         assertEquals(CartStatus.EDITED, cart.getStatus());
         assertEquals(BigDecimal.ZERO, cart.getTotalAmount().getAmount());
+    }
+
+    @Test
+    void testRemoveItemWithPartialQuantity() {
+        cart.addItem(item);
+        CartItem partialItem = new CartItem(productId, productName, unitPrice, 1);
+        cart.removeItem(partialItem);
+        assertEquals(1, cart.getItems().size());
+        assertEquals(1, cart.getItems().iterator().next().getQuantity());
+        assertEquals(CartStatus.EDITED, cart.getStatus());
+        assertEquals(new BigDecimal("10.00"), cart.getTotalAmount().getAmount());
+    }
+
+    @Test
+    void testRemoveItemNotFound() {
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            cart.removeItem(item);
+        });
+        assertEquals("Item not found in the cart.", exception.getMessage());
+    }
+
+    @Test
+    void testRemoveItemExceedingQuantity() {
+        cart.addItem(item);
+        CartItem exceedingItem = new CartItem(productId, productName, unitPrice, 3);
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            cart.removeItem(exceedingItem);
+        });
+        assertEquals("Quantity to remove is greater than the existing quantity.", exception.getMessage());
     }
 
     @Test

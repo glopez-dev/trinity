@@ -1,78 +1,77 @@
 package com.trinity.cart.service;
 
-import com.trinity.cart.domain.Cart;
-import com.trinity.cart.domain.CartItem;
-import com.trinity.cart.domain.Money;
+import com.trinity.cart.dto.CartItemRequest;
+import com.trinity.cart.dto.CartRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
-
-
 
 class CartServiceTest {
 
     private CartService cartService;
     private UUID customerId;
-    private CartItem cartItem;
+    private CartItemRequest cartItemRequest;
 
     @BeforeEach
     void setUp() {
         cartService = new CartService();
         customerId = UUID.randomUUID();
-        cartItem = new CartItem(UUID.randomUUID(), "Test Product", BigDecimal.TEN, 1);
+        cartItemRequest = CartItemRequest.builder()
+                .productId(UUID.randomUUID())
+                .productName("Test Product")
+                .quantity(1)
+                .unitPrice(BigDecimal.valueOf(100))
+                .build();
     }
 
     @Test
     void testCreateCart() {
-        Cart cart = cartService.createCart(customerId);
-        assertNotNull(cart);
-        assertEquals(customerId, cart.getCustomerId());
-    }
-
-    @Test
-    void testGetCart() {
-        Cart cart = cartService.createCart(customerId);
-        Cart retrievedCart = cartService.getCart(customerId);
-        assertEquals(cart, retrievedCart);
+        cartService.createCart(customerId);
+        CartRequest cartRequest = cartService.getCart(customerId);
+        assertNotNull(cartRequest);
+        assertEquals(customerId, cartRequest.getCustomerId());
     }
 
     @Test
     void testAddItemToCart() {
-        cartService.addItemToCart(customerId, cartItem);
-        Cart cart = cartService.getCart(customerId);
-        assertTrue(cart.getItems().contains(cartItem));
+        cartService.createCart(customerId);
+        cartService.addItemToCart(customerId, cartItemRequest);
+        CartRequest cartRequest = cartService.getCart(customerId);
+        assertEquals(1, cartRequest.getItems().size());
     }
 
     @Test
     void testRemoveItemFromCart() {
-        cartService.addItemToCart(customerId, cartItem);
-        cartService.removeItemFromCart(customerId, cartItem.getProductId(), 1);
-        Cart cart = cartService.getCart(customerId);
-        assertFalse(cart.getItems().contains(cartItem));
+        cartService.createCart(customerId);
+        cartService.addItemToCart(customerId, cartItemRequest);
+        cartService.removeItemFromCart(customerId, cartItemRequest);
+        CartRequest cartRequest = cartService.getCart(customerId);
+        assertEquals(0, cartRequest.getItems().size());
     }
 
     @Test
     void testValidateCart() {
         cartService.createCart(customerId);
-        assertThrows(IllegalStateException.class, () -> cartService.validateCart(customerId));
-        cartService.addItemToCart(customerId, cartItem);
+        cartService.addItemToCart(customerId, cartItemRequest);
         cartService.validateCart(customerId);
+        assertThrows(IllegalArgumentException.class, () -> cartService.getCart(customerId));
     }
 
     @Test
     void testRemoveCart() {
         cartService.createCart(customerId);
         cartService.removeCart(customerId);
-        Cart cart = cartService.getCart(customerId);
-        assertTrue(cart.getItems().isEmpty());
+        assertThrows(IllegalArgumentException.class, () -> cartService.getCart(customerId));
     }
 
     @Test
-    void testGetTotalAmount() {
-        cartService.addItemToCart(customerId, cartItem);
-        Money totalAmount = cartService.getTotalAmount(customerId);
-        assertEquals(new Money(BigDecimal.TEN, "USD"), totalAmount);
+    void testCancelCart() {
+        cartService.createCart(customerId);
+        cartService.cancelCart(customerId);
+        CartRequest cartRequest = cartService.getCart(customerId);
+        assertTrue(cartRequest.getItems().isEmpty());
     }
 }

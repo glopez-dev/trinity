@@ -1,35 +1,20 @@
 package com.trinity.cart.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.trinity.cart.domain.Cart;
-import com.trinity.cart.domain.CartItem;
-import com.trinity.cart.domain.Money;
+import com.trinity.cart.dto.CartItemRequest;
+import com.trinity.cart.dto.CartRequest;
 import com.trinity.cart.service.CartService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.math.BigDecimal;
 import java.util.UUID;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import org.springframework.beans.factory.annotation.Autowired;
-
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 class CartControllerTest {
 
@@ -41,122 +26,79 @@ class CartControllerTest {
 
     private MockMvc mockMvc;
 
-    private UUID customerId;
-    private Cart cart;
-
-    // @Autowired
-    // private ObjectMapper objectMapper = new ObjectMapper();
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(cartController).build();
-        customerId = UUID.randomUUID();
-        cart = new Cart(customerId);
     }
 
     @Test
-    void createCart() throws Exception {
+    void testCreateCart() {
+        UUID customerId = UUID.randomUUID();
+        doNothing().when(cartService).createCart(customerId);
 
-        when(cartService.createCart(customerId)).thenReturn(cart);
+        ResponseEntity<Void> response = cartController.createCart(customerId);
 
-        mockMvc.perform(post("/api/carts/{customerId}", customerId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.customerId").exists())
-                .andDo(result -> System.out.println(result.getResponse().getContentAsString())); // Print response to check
-
-        verify(cartService).createCart(customerId);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        verify(cartService, times(1)).createCart(customerId);
     }
 
     @Test
-    void getCart() throws Exception {
-        when(cartService.getCart(customerId)).thenReturn(cart);
+    void testGetCart() {
+        UUID customerId = UUID.randomUUID();
+        CartRequest cartRequest = new CartRequest();
+        when(cartService.getCart(customerId)).thenReturn(cartRequest);
 
-        mockMvc.perform(get("/api/carts/{customerId}", customerId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.customerId").exists())
-                .andDo(result -> System.out.println(result.getResponse().getContentAsString())); // Print response to check
-        verify(cartService).getCart(customerId);
-    }
+        ResponseEntity<CartRequest> response = cartController.getCart(customerId);
 
-
-    // @Test
-    // void addItemToCart_ShouldReturn201_WhenSuccessful() throws Exception {
-    //     // Given
-    //     CartItem cartItem = new CartItem(
-    //             UUID.randomUUID(),
-    //             "Test Product",
-    //             BigDecimal.valueOf(10.99),
-    //             2
-    //     );
-
-    //     // Simuler le comportement du service pour éviter une exception
-    //     doNothing().when(cartService).addItemToCart(Mockito.eq(customerId), Mockito.any(CartItem.class));
-
-    //     // When & Then
-    //     mockMvc.perform(post("/customers/{customerId}/items", customerId)
-    //                     .contentType(MediaType.APPLICATION_JSON)
-    //                     .content(objectMapper.writeValueAsString(cartItem)))
-    //             .andExpect(status().isCreated()) // Vérifie si le statut est 201
-    //             .andDo(result -> System.out.println("aaaaaaaaaaaaaaaaa" + result.getResponse().getContentAsString())); // Print response to check
-
-    //             verify(cartService).getCart(customerId);
-    // }
-
-
-    @Test
-    void addItemToCart() throws Exception {
-        UUID productId = UUID.randomUUID();
-        String productName = "Test Product";
-        BigDecimal unitPrice = BigDecimal.valueOf(10.99);
-        int quantity = 1;
-
-        mockMvc.perform(post("/api/carts/{customerId}/items", customerId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"productId\":\"" + productId + "\",\"productName\":\"" + productName + "\",\"unitPrice\":" + unitPrice + ",\"quantity\":" + quantity + "}"))
-                .andExpect(status().isCreated());
-
-        verify(cartService).addItemToCart(eq(customerId), any(CartItem.class));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(cartRequest, response.getBody());
+        verify(cartService, times(1)).getCart(customerId);
     }
 
     @Test
-    void removeItemFromCart() throws Exception {
-        UUID productId = UUID.randomUUID();
-        int quantity = 1;
+    void testAddItemToCart() {
+        UUID customerId = UUID.randomUUID();
+        CartItemRequest cartItemRequest = new CartItemRequest();
+        doNothing().when(cartService).addItemToCart(customerId, cartItemRequest);
 
-        mockMvc.perform(delete("/api/carts/{customerId}/items/{productId}", customerId, productId)
-                .param("quantity", String.valueOf(quantity)))
-                .andExpect(status().isOk());
+        ResponseEntity<Void> response = cartController.addItemToCart(customerId, cartItemRequest);
 
-        verify(cartService).removeItemFromCart(customerId, productId, quantity);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        verify(cartService, times(1)).addItemToCart(customerId, cartItemRequest);
     }
 
     @Test
-    void validateCart() throws Exception {
-        mockMvc.perform(post("/api/carts/{customerId}/validate", customerId))
-                .andExpect(status().isOk());
+    void testRemoveItemFromCart() {
+        UUID customerId = UUID.randomUUID();
+        CartItemRequest cartItemRequest = new CartItemRequest();
+        doNothing().when(cartService).removeItemFromCart(customerId, cartItemRequest);
 
-        verify(cartService).validateCart(customerId);
+        ResponseEntity<Void> response = cartController.removeItemFromCart(customerId, cartItemRequest);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(cartService, times(1)).removeItemFromCart(customerId, cartItemRequest);
     }
 
     @Test
-    void removeCart() throws Exception {
-        mockMvc.perform(delete("/api/carts/{customerId}", customerId))
-                .andExpect(status().isOk());
+    void testValidateCart() {
+        UUID customerId = UUID.randomUUID();
+        doNothing().when(cartService).validateCart(customerId);
 
-        verify(cartService).removeCart(customerId);
+        ResponseEntity<Void> response = cartController.validateCart(customerId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(cartService, times(1)).validateCart(customerId);
     }
 
     @Test
-    void getTotalAmount() throws Exception {
-        //return money
-        when(cartService.getTotalAmount(customerId)).thenReturn(new Money(BigDecimal.TEN, "USD"));
+    void testRemoveCart() {
+        UUID customerId = UUID.randomUUID();
+        doNothing().when(cartService).removeCart(customerId);
 
-        mockMvc.perform(get("/api/carts/{customerId}/total", customerId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.amount").exists())
-                .andDo(result -> System.out.println(result.getResponse().getContentAsString())); // Print response to check
+        ResponseEntity<Void> response = cartController.removeCart(customerId);
 
-        verify(cartService).getTotalAmount(customerId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(cartService, times(1)).removeCart(customerId);
     }
 }
