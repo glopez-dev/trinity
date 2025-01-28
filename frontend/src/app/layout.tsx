@@ -1,5 +1,6 @@
 'use client'
 
+import "react-day-picker/style.css";
 import "@/styles/globals.css";
 import React from "react";
 import {FlashProvider} from "@/lib/contexts/FlashMessagesContext";

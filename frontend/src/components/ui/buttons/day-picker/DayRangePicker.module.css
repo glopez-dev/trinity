@@ -1,0 +1,41 @@
+.datePickerContainer {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 400px;
+}
+
+.datePickerButton {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: #fff;
+    height: 40px;
+    outline: none;
+    border: 1px solid var(--primary);
+    border-radius: 4px;
+    transition: all .3s;
+}
+
+.datePickerButton:hover {
+    background-color: var(--primary);
+    color: #fff;
+}
+
+.date-text {
+    flex: 1;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.calendarDropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 50;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+}
