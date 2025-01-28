@@ -1,22 +1,14 @@
 package com.trinity.cart.domain;
 
-import jakarta.persistence.*;
+import lombok.Data;
 //import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data
 //@AllArgsConstructor
-@Entity
 public class CartItem {
-    @Id
-    @GeneratedValue
-    private UUID id;
-
     private UUID productId;
     private String productName;
     private int quantity;
@@ -26,6 +18,12 @@ public class CartItem {
     private BigDecimal totalPrice;
 
     public CartItem(UUID productId, String productName, BigDecimal unitPrice, int quantity) {
+        if (unitPrice.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Unit price must be greater than zero.");
+        }
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero.");
+        }
         this.productId = productId;
         this.productName = productName;
         this.unitPrice = unitPrice;
@@ -34,6 +32,9 @@ public class CartItem {
     }
 
     public void updateQuantity(int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalStateException("Quantity cannot be less than or equal to zero.");
+        }
         this.quantity = quantity;
         calculateTotalPrice();
     }

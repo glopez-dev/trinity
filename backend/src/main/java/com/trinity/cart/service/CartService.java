@@ -1,44 +1,76 @@
 package com.trinity.cart.service;
 
 import com.trinity.cart.domain.Cart;
-import com.trinity.cart.repository.CartRepository;
-import jakarta.transaction.Transactional;
+import com.trinity.cart.domain.CartItem;
+import com.trinity.cart.domain.Money;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 
 @Service
 public class CartService {
-    private final CartRepository cartRepository;
 
-    public CartService(CartRepository cartRepository) {
-        this.cartRepository = cartRepository;
-    }
+    // In-memory storage for carts
+    private final Map<UUID, Cart> carts = new ConcurrentHashMap<>();
 
-    @Transactional
     public Cart createCart(UUID customerId) {
         Cart cart = new Cart(customerId);
-        return cartRepository.save(cart);
+        carts.put(customerId, cart);
+        return cart;
     }
 
-    @Transactional
-    public Cart getCart(UUID cartId) {
-        return cartRepository.findById(cartId)
-                .orElseThrow(() -> new IllegalArgumentException("Cart not found."));
+    public Cart getCart(UUID customerId) {
+        return carts.getOrDefault(customerId, new Cart(customerId));
     }
 
-    @Transactional
-    public void addItemToCart(UUID cartId, UUID productId, String productName, BigDecimal unitPrice, int quantity) {
-        Cart cart = getCart(cartId);
-        cart.addItem(productId, productName, unitPrice, quantity);
-        cartRepository.save(cart);
+
+    public void addItemToCart(UUID customerId, CartItem cartItem) {
+        Cart cart = carts.computeIfAbsent(customerId, Cart::new);
+        cart.addItem(cartItem);
     }
 
-    @Transactional
-    public void removeItemFromCart(UUID cartId, UUID productId) {
-        Cart cart = getCart(cartId);
-        cart.removeItem(productId);
-        cartRepository.save(cart);
+
+    public void removeItemFromCart(UUID customerId, UUID productId, int quantity) {
+        Cart cart = carts.get(customerId);
+        if (cart != null) {
+            cart.removeItem(productId, quantity);
+        }
+    }
+
+    public void validateCart(UUID customerId) {
+        Cart cart = carts.get(customerId);
+        if (cart != null) {
+            cart.validate();
+            /// send a message to the payment service
+            carts.remove(customerId);
+        } else {
+            throw new IllegalArgumentException("Cart not found for customer: " + customerId);
+        }
+    }
+
+    public void removeCart(UUID customerId) {
+        Cart cart = carts.get(customerId);
+        if (cart != null) {
+            carts.remove(customerId);
+        }
+    }
+
+    public void cancelCart(UUID customerId) {
+        Cart cart = carts.get(customerId);
+        if (cart != null) {
+            cart.cancel();
+        }
+    }
+
+    public Money getTotalAmount(UUID customerId) {
+        Cart cart = carts.get(customerId);
+        if (cart != null) {
+            return cart.getTotalAmount();
+        }
+        return new Money(BigDecimal.ZERO, "USD");
     }
 }

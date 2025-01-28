@@ -1,66 +1,56 @@
 package com.trinity.cart.domain;
 
-import jakarta.persistence.*;
-import lombok.Getter;
+import com.trinity.cart.constant.CartStatus;
+
+import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 
-@Getter
-@Setter
+@Data
 @RequiredArgsConstructor
-@Entity
 public class Cart {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-
     @NonNull
-    @Column(nullable = false)
     private UUID customerId;
 
-    @ManyToMany(cascade = CascadeType.ALL)
     private List<CartItem> items = new ArrayList<>();
 
-    @Enumerated(EnumType.STRING)
-    private CartStatus status = CartStatus.ACTIVE;
+    //cart status
+    private CartStatus status = CartStatus.CREATED;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
-
-    @Embedded
     private Money totalAmount = new Money(BigDecimal.ZERO, "USD");
 
-    public void addItem(UUID productId, String productName, BigDecimal unitPrice, int quantity) {
-        if (status != CartStatus.ACTIVE) {
-            throw new IllegalStateException("Cannot modify a cart that is not ACTIVE.");
-        }
-
-        CartItem existingItem = findCartItem(productId);
+    public void addItem(CartItem item) {
+        CartItem existingItem = findItem(item.getProductId());
         if (existingItem != null) {
-            existingItem.updateQuantity(existingItem.getQuantity() + quantity);
+            existingItem.updateQuantity(existingItem.getQuantity() + item.getQuantity());
         } else {
-            items.add(new CartItem(productId, productName, unitPrice, quantity));
+            items.add(item);
         }
         calculateTotal();
+        this.status = CartStatus.EDITED;
     }
 
-    public void removeItem(UUID productId) {
-        items.removeIf(item -> item.getProductId().equals(productId));
+    public void removeItem(UUID productId, int quantity) {
+        CartItem existingItem = findItem(productId);
+        if (existingItem == null) {
+            throw new IllegalStateException("Item not found in the cart.");
+        }
+        if (quantity > existingItem.getQuantity()) {
+            throw new IllegalStateException("Quantity to remove is greater than the existing quantity.");
+        }
+        if (quantity == existingItem.getQuantity()) {
+            items.remove(existingItem);
+        } else {
+            existingItem.updateQuantity(existingItem.getQuantity() - quantity);
+        }
         calculateTotal();
+        this.status = CartStatus.EDITED;
     }
 
     public void validate() {
@@ -71,10 +61,12 @@ public class Cart {
     }
 
     public void cancel() {
+        items.clear();
+        calculateTotal();
         this.status = CartStatus.CANCELLED;
     }
 
-    private CartItem findCartItem(UUID productId) {
+    private CartItem findItem(UUID productId) {
         return items.stream()
                 .filter(item -> item.getProductId().equals(productId))
                 .findFirst()
