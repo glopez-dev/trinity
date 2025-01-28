@@ -1,7 +1,7 @@
 .sidebar {
     height: 100%;
     width: 300px;
-    background-color: var(--primary);
+    background: var(--green-gradient);
     transition: width 300ms ease;
     z-index: 40;
 }

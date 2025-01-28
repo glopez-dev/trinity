@@ -3,13 +3,9 @@ import { Menu, X } from 'lucide-react';
 import { NavigationContent } from './NavigationContent';
 import styles from '../styles/Topbar.module.css';
 import {NavLogo} from "@/components/ui/navigation/NavLogo";
+import {NavProps} from "@/components/layout/navigation/components/types";
 
-interface TopbarProps {
-    isOpen: boolean;
-    onToggle: () => void;
-}
-
-export const Topbar: React.FC<TopbarProps> = ({ isOpen, onToggle }) => {
+export const Topbar: React.FC<NavProps> = ({ isOpen, onToggle }) => {
     return (
         <div className={styles.topbar}>
             <div className={styles.header}>

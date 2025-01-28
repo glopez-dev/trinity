@@ -8,15 +8,17 @@ spring:
     url: jdbc:postgresql://${POSTGRES_DB_HOST:localhost}:${POSTGRES_DB_PORT:5432}/${POSTGRES_DB:trinity}
     username: ${POSTGRES_USER:trinity}
     password: ${POSTGRES_PASSWORD:trinity}
+    driver-class-name: org.postgresql.Driver
   
   # JPA/Hibernate Configuration
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: update
+    show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true
 
   # RabbitMQ Configuration
   rabbitmq:
@@ -59,13 +61,16 @@ management:
 logging:
   level:
     org:
-      springframework: DEBUG
+      springframework:
+        web: DEBUG
+        security: TRACE
       hibernate: ERROR
 
 # JWT Configuration (New)
 jwt:
   secret: ${JWT_SECRET:your_jwt_secret_key_here}
   expiration: ${JWT_EXPIRATION:86400000}  # 24 hours in milliseconds
+
 
 # Swagger/OpenAPI Configuration (New)
 springdoc:

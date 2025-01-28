@@ -1,6 +1,6 @@
 @font-face {
     font-family: "DM Sans";
-    src: url("/fonts/DMSans-VariableFont_opsz-wght.ttf");
+    src: url("/fonts/DMSans-VariableFont.ttf");
 }
 
 @font-face {
@@ -15,6 +15,7 @@
     --secondary: #F5F1E8;
     --accent: #C7522A;
     --text-color: #2D2D2D;
+    --green-gradient: linear-gradient(135deg, #567A4C 0%, #4A6741 50%, #3E5436 100%);
 }
 
 
@@ -25,9 +26,9 @@ body {
 }
 
 body {
-    color: var(--foreground);
     background: var(--secondary);
     font-family: "DM Sans", sans-serif;
+    color: var(--text-color);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -41,4 +42,28 @@ body {
 a {
     color: inherit;
     text-decoration: none;
+}
+
+h1 {
+    font-weight: bold;
+    font-size: 40px;
+    line-height: 150%;
+}
+
+h2 {
+    font-weight: bold;
+    font-size: 32px;
+    line-height: 150%;
+}
+
+h3 {
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 150%;
+}
+
+h4 {
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 150%;
 }

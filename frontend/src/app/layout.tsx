@@ -1,12 +1,9 @@
-import type {Metadata} from "next";
+'use client'
+
 import "@/styles/globals.css";
 import React from "react";
+import {FlashProvider} from "@/lib/contexts/FlashMessagesContext";
 
-export const metadata: Metadata = {
-    title: "Trinity",
-    description: "La plateforme de gestion de vos produits, factures et clients",
-    icons: 'images/web-icon-trinity.svg',
-};
 
 export default function RootLayout({
                                        children,
@@ -15,8 +12,15 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
+        <head>
+            <title>Trinity</title>
+            <meta name="description" content="La plateforme de gestion de vos produits, factures et clients"/>
+            <link rel="icon" href="images/web-icon-trinity.svg"/>
+        </head>
         <body>
-        {children}
+        <FlashProvider>
+            {children}
+        </FlashProvider>
         </body>
         </html>
     );

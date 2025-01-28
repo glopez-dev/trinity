@@ -5,7 +5,7 @@ up ENV:
     just down "{{ENV}}"
 
     echo "Removing unused docker data..."
-    docker system prune --force # Means no prompt
+    docker system prune --volumes --force # Means no prompt
 
     if [[ "{{ENV}}" == "dev" ]]; then
         echo "Deploying to the development environment..."
@@ -80,6 +80,15 @@ register_docker_dind_runner:
 # Run a shell in the given container of the given environment(dev|prod) and project(backend|frontend)
 sh ENV PROJECT:
     docker exec -it trinity-{{PROJECT}}_{{ENV}}-1 sh
-# Run and watch the tests
-test-watch-frontend:
-    docker exec -it trinity-frontend_dev-1 npm run test:watch
+
+# Run the tests for the given project (backend|frontend)
+test PROJECT:
+    #!/bin/bash
+    if [[ "{{PROJECT}}" == "backend" ]]; then
+        docker exec -it trinity-backend_dev-1 ./mvnw clean test
+    elif [[ "{{PROJECT}}" == "frontend" ]]; then
+        docker exec -it trinity-frontend_dev-1 npm run test
+    else
+        echo "Error: Unknown project '{{PROJECT}}'. Please specify 'backend' or 'frontend'."
+        exit 1
+    fi
