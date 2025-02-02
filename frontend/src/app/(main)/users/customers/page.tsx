@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import UserTable from '@/components/ui/tableau/tableau';
 

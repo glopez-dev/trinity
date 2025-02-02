@@ -1,5 +1,5 @@
-"use client";
-import React, {useState} from 'react';
+'use client';
+import React, {useState, useEffect} from 'react';
 import DataTable, {TableColumn} from 'react-data-table-component';
 import styles from './styles.module.css';
 import Button from '@/components/ui/buttons/button/Button';
@@ -17,7 +17,6 @@ interface User {
 const usersData: User[] = [
     {id: 1, firstName: 'John', lastName: 'Doe', email: 'john.doe@example.com'},
     {id: 2, firstName: 'Jane', lastName: 'Smith', email: 'jane.smith@example.com'},
-    {id: 3, firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@example.com'},
     {id: 3, firstName: 'Alice', lastName: 'Johnson', email: 'alice.johnson@example.com'},
 ];
 
@@ -66,8 +65,7 @@ const handleEdit = (user: User) => {
 
 const UserTable: React.FC = () => {
     const [filterText, setFilterText] = useState('');
-    const [filteredUsers, setFilteredUsers] = useState(usersData);
-
+    const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
         const searchText = event.target.value;
@@ -83,6 +81,10 @@ const UserTable: React.FC = () => {
         setFilteredUsers(filteredData);
     };
 
+    useEffect(() => {
+        setFilteredUsers(usersData);
+    }, []);
+
     return (
         <div className={styles.ctn}>
             <div className={styles.ctn1}>
@@ -93,12 +95,9 @@ const UserTable: React.FC = () => {
                     onChange={handleSearch}
                     className={styles.searchInput}
                 />
-
                 <Button icon={'Filter'} title='Filtrer' action={() => {
                 }}/>
-
             </div>
-
 
             <DataTable
                 className={styles.table}
@@ -129,10 +128,7 @@ const UserTable: React.FC = () => {
                             },
 
                         }
-
-
                     },
-
                     rows: {
                         style: {
                             color: 'black',
@@ -146,7 +142,6 @@ const UserTable: React.FC = () => {
                             backgroundColor: '#F5F1E8',
                         }
                     },
-
                     table: {
                         style: {
                             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
@@ -154,8 +149,6 @@ const UserTable: React.FC = () => {
                             border: "1px solid #ddd",
                         }
                     }
-
-
                 }}
             />
         </div>

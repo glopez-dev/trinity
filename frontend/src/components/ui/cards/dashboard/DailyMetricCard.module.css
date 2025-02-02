@@ -1,0 +1,33 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 120px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: white;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    line-height: 150%;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cardContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.cardVariationPos {
+    color: #4caf50;
+}
+
+.cardVariationNeg {
+    color: #f44336;
+}

@@ -9,6 +9,7 @@ describe("Dashboard Page", () => {
 
     it("should render dashboard page", () => {
         render(<Dashboard />);
-        expect(screen.getByText('Dashboard')).toBeDefined();
+        expect(screen.getByText("Dashboard")).toBeDefined();
+
     })
 });
