@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.trinity.stock.exception.NotEnoughStockException;
 import com.trinity.stock.exception.NegativeStockException;
-import com.trinity.stock.exception.TooMuchStockException;
+import com.trinity.stock.exception.TooManyStockException;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -57,8 +57,8 @@ public class Stock {
 
     /** 
      * Checks if the quantity requested is available in stock
-     * @param desiredQuantity the quantity of the product requested
-     * @return true if the quantity is available, false otherwise
+     * @param desiredQuantity the quantity of the product requested.
+     * @return true if the quantity is available, false otherwise.
     */
     public boolean canQuantityBeDeducted(int desiredQuantity) {
         return desiredQuantity <= this.getCurrentQuantity();
@@ -67,24 +67,17 @@ public class Stock {
     /**
      * Deducts the quantity requested from the stock.
      * @param quantity the quantity of the product requested.
-     * @throws NotEnoughStockException if the quantity requested is not available in stock
+     * @throws NotEnoughStockException if the quantity requested is not available in stock.
+     * @throws NegativeStockException if the quantity requested is negative.
      */
-    public void deductFromStock(int quantity) throws NotEnoughStockException {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity cannot be zero or negative");
-        }
-
+    public void deductFromStock(int quantity) throws NotEnoughStockException, NegativeStockException {
         if (!canQuantityBeDeducted(quantity)) {
             throw new NotEnoughStockException("Requested quantity is not available in stock");
         }
 
         int newQuantity = this.getCurrentQuantity() - quantity;
 
-        try {
-            this.setCurrentQuantity(newQuantity);
-        } catch (NegativeStockException e) {
-            throw new IllegalArgumentException("Quantity cannot be negative");
-        }
+        this.setCurrentQuantity(newQuantity);
     }
 
     /**
@@ -97,40 +90,34 @@ public class Stock {
         return this.getCurrentQuantity() + quantity <= this.getMaxTreshold();
     }
 
+
     /**
      * Adds the quantity requested to the stock.
      * 
      * @param quantity the quantity to be added.
-     * @throws TooMuchStockException if the quantity requested exceeds the maximum treshold.
+     * @throws TooManyStockException if the quantity requested exceeds the maximum treshold.
+     * @throws NegativeStockException if the quantity requested is negative.
      */
-    public void addToStock(int quantity) throws TooMuchStockException {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity cannot be zero or negative");
-        }
-
+    public void addToStock(int quantity) throws TooManyStockException, NegativeStockException {
         if (!canQuantityBeAdded(quantity)) {
-            throw new TooMuchStockException("Quantity exceeds the maximum treshold");
+            throw new TooManyStockException("Quantity exceeds the maximum treshold");
         } 
 
         int newQuantity = this.getCurrentQuantity() + quantity;
 
-        try {
-            this.setCurrentQuantity(newQuantity);
-        } catch (NegativeStockException e) {
-            throw new IllegalArgumentException("Quantity cannot be negative");
-        }
+        this.setCurrentQuantity(newQuantity);
     }
 
-    public void setMinTreshold(int minTreshold) throws IllegalArgumentException {
+    public void setMinTreshold(int minTreshold) throws NegativeStockException {
         if (minTreshold < 0) {
-            throw new IllegalArgumentException("Minimum treshold cannot be negative");
+            throw new NegativeStockException("Minimum treshold cannot be negative");
         }
         this.minTreshold = minTreshold;
     }
 
-    public void setMaxTreshold(int maxTreshold) throws IllegalArgumentException {
+    public void setMaxTreshold(int maxTreshold) throws NegativeStockException {
         if (maxTreshold < 0) {
-            throw new IllegalArgumentException("Maximum treshold cannot be negative");
+            throw new NegativeStockException("Maximum treshold cannot be negative");
         }
         this.maxTreshold = maxTreshold;
     }
