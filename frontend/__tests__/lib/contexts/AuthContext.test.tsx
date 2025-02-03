@@ -17,7 +17,7 @@ describe('AuthContext', () => {
         vi.clearAllMocks();
     });
 
-    it('devrait setter le token dans les cookies', () => {
+    it('should set the token in cookies', () => {
         const { result } = renderHook(() => useAuth(), {
             wrapper: AuthProvider
         });
@@ -33,7 +33,7 @@ describe('AuthContext', () => {
         });
     });
 
-    it('devrait supprimer le token lors du logout', () => {
+    it('should remove the token on logout', () => {
         const { result } = renderHook(() => useAuth(), {
             wrapper: AuthProvider
         });
@@ -45,7 +45,7 @@ describe('AuthContext', () => {
         expect(Cookies.remove).toHaveBeenCalledWith('auth_token');
     });
 
-    it('devrait vérifier la présence du token', () => {
+    it('should check for the presence of the token', () => {
         vi.mocked(Cookies.get).mockReturnValueOnce({'token': 'existing-token'});
 
         const { result } = renderHook(() => useAuth(), {
@@ -57,7 +57,7 @@ describe('AuthContext', () => {
         expect(Cookies.get).toHaveBeenCalledWith('auth_token');
     });
 
-    it('devrait retourner false si aucun token n\'est présent', () => {
+    it('should return false if no token is present', () => {
         vi.mocked(Cookies.get).mockReturnValueOnce(undefined);
 
         const { result } = renderHook(() => useAuth(), {
@@ -69,7 +69,7 @@ describe('AuthContext', () => {
         expect(Cookies.get).toHaveBeenCalledWith('auth_token');
     });
 
-    it('devrait throw une erreur si useAuth est utilisé sans Provider', () => {
+    it('should throw an error if useAuth is used without Provider', () => {
         expect(() => renderHook(() => useAuth())).toThrow(
             'useAuth doit être utilisé avec un AuthProvider'
         );
