@@ -1,6 +1,7 @@
 import {afterEach, describe, expect, it} from 'vitest'
 import {cleanup, render, screen} from '@testing-library/react'
 import AuthLayout from '@/app/(auth)/layout'
+import {renderWithProviders} from "@test/test-utils";
 
 describe('AuthLayout', () => {
     afterEach(() => {
@@ -8,7 +9,7 @@ describe('AuthLayout', () => {
     });
 
     it('should render auth layout correctly', () => {
-        const {container} = render(
+        const {container} = renderWithProviders(
             <AuthLayout>
                 <div>Test content</div>
             </AuthLayout>

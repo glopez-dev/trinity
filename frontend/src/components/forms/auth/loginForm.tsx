@@ -4,8 +4,17 @@ import Button from "@/components/ui/buttons/button/Button";
 import React, {useState} from "react";
 import {type Login, loginSchema} from "@/lib/schemas/userSchema";
 import {InputValueTypes} from "@/components/ui/input/types";
+import axios from "axios";
+import {useFlash} from "@/lib/contexts/FlashMessagesContext";
+import {login} from "@/lib/actions/auth";
+import {useAuth} from "@/lib/contexts/AuthContext";
+import {useRouter} from "next/navigation";
 
 export default function LoginForm() {
+    const {showMessage} = useFlash();
+    const {setToken} = useAuth();
+    const router = useRouter();
+
     const [user, setUser] = useState<Login>({
         email: '',
         password: ''
@@ -19,14 +28,29 @@ export default function LoginForm() {
     };
 
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
             loginSchema.parse(user);
-        } catch (e) {
-            console.log(e);
+            const response = await login(user);
+
+            if (response instanceof Error) {
+                showMessage('error', response.message);
+                return;
+            }
+            setToken(response.jwt);
+
+            router.replace('/dashboard');
+            router.refresh();
+
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                showMessage('error', error?.message);
+            } else {
+                showMessage('error', 'Une erreur est survenue !');
+            }
         }
-        console.log('submit');
     }
 
 

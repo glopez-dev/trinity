@@ -4,6 +4,7 @@ import "react-day-picker/style.css";
 import "@/styles/globals.css";
 import React from "react";
 import {FlashProvider} from "@/lib/contexts/FlashMessagesContext";
+import {AuthProvider} from "@/lib/contexts/AuthContext";
 
 
 export default function RootLayout({
@@ -20,7 +21,9 @@ export default function RootLayout({
         </head>
         <body>
         <FlashProvider>
-            {children}
+            <AuthProvider>
+                {children}
+            </AuthProvider>
         </FlashProvider>
         </body>
         </html>
