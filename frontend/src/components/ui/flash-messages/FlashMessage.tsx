@@ -19,7 +19,7 @@ const getIcon = (type: MessageType) => {
 export const FlashMessage = ({
                                  message,
                                  type,
-                                 duration = 3000,
+                                 duration = 5000,
                                  onClose
                              }: FlashMessageProps) => {
     const [progress, setProgress] = useState(100);

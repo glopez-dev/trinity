@@ -1,7 +1,8 @@
 import {cleanup, fireEvent, render, screen} from '@testing-library/react';
 import {afterEach, describe, expect, it} from 'vitest';
-import {FlashProvider, useFlash} from '@/lib/contexts/FlashMessagesContext';
+import {useFlash} from '@/lib/contexts/FlashMessagesContext';
 import {MessageType} from "@/components/ui/flash-messages/types";
+import {renderWithProviders} from "@test/test-utils";
 
 interface TestComponentProps {
     type: MessageType;
@@ -21,20 +22,18 @@ describe('FlashContext', () => {
     afterEach(cleanup);
 
     it('should render children correctly', () => {
-        render(
-            <FlashProvider>
-                <div data-testid="child">Test Child</div>
-            </FlashProvider>
+        renderWithProviders(
+                <div data-testid="child">Test Child</div>,
+                'flash'
         );
 
         expect(screen.getByTestId('child')).toBeTruthy();
     });
 
     it('should show and hide flash message', async () => {
-        render(
-            <FlashProvider>
-                <TestComponent type={'success'}/>
-            </FlashProvider>
+        renderWithProviders(
+            <TestComponent type={'success'}/>,
+            'flash'
         );
 
         fireEvent.click(screen.getByText('Show Message'));
@@ -42,13 +41,14 @@ describe('FlashContext', () => {
     });
 
     it('should render flash message with different types', () => {
-        render(
-            <FlashProvider>
+        renderWithProviders(
+            <>
                 <TestComponent type={'error'}/>
                 <TestComponent type={'warning'}/>
                 <TestComponent type={'info'}/>
                 <TestComponent type={'success'}/>
-            </FlashProvider>
+            </>,
+            'flash'
         );
 
         fireEvent.click(screen.getByRole('button-success'));
@@ -65,28 +65,26 @@ describe('FlashContext', () => {
     });
 
     it('should throw error when useFlash is used outside provider', () => {
-        expect(() => render(<TestComponent type={'success'}/>)).toThrow('useFlash must be used within a FlashProvider');
+        expect(() => render(<TestComponent type={'success'}/>)).toThrow('useFlash doit être utilisé avec un FlashProvider');
     });
 
-    it('should hide flash message after 3 seconds', async () => {
-        render(
-            <FlashProvider>
-                <TestComponent type={'error'}/>
-            </FlashProvider>
+    it('should hide flash message after 5 seconds', async () => {
+        renderWithProviders(
+            <TestComponent type={'success'}/>,
+            'flash'
         );
 
         fireEvent.click(screen.getByText('Show Message'));
         expect(screen.getByText('Test Message')).toBeDefined();
 
-        await new Promise((r) => setTimeout(r, 3100));
+        await new Promise((r) => setTimeout(r, 5100));
         expect(screen.queryByText('Test Message')).toBeNull();
     });
 
     it('should hide flash message when close button is clicked', async () => {
-        render(
-            <FlashProvider>
-                <TestComponent type={'error'}/>
-            </FlashProvider>
+        renderWithProviders(
+            <TestComponent type={'success'}/>,
+            'flash'
         );
 
         fireEvent.click(screen.getByText('Show Message'));

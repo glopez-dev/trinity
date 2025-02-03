@@ -133,7 +133,6 @@ describe('AddUser Component', () => {
         fireEvent.change(firstNameInput, {target: {value: 'John'}});
         fireEvent.change(lastNameInput, {target: {value: 'Doe'}});
         fireEvent.change(emailInput, {target: {value: 'john.doe@example.com'}});
-        console.log(firstNameInput?.getAttribute('value'));
         expect(firstNameInput?.getAttribute('value')).toBe('John');
         expect(lastNameInput?.getAttribute('value')).toBe('Doe');
         expect(emailInput?.getAttribute('value')).toBe('john.doe@example.com');
