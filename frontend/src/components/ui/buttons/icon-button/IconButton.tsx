@@ -10,7 +10,7 @@ interface IconButtonProps {
 
 const IconButton: FC<IconButtonProps> = ({ icon, onClick }) => {
     return (
-        <button role={'icon-button'} className={`${styles['icon-button']}`} onClick={onClick}>
+        <button role={`icon-button-${icon}`} className={`${styles['icon-button']}`} onClick={onClick}>
             <Icon name={icon} size={20} className={styles['icon-button__icon']}/>
         </button>
     );

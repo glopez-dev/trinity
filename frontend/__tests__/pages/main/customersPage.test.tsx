@@ -1,6 +1,5 @@
 import {describe, it, expect, vi, afterEach} from 'vitest';
 import {cleanup, render} from '@testing-library/react';
-import Home from '@/app/(main)/users/customers/page';
 import CustomersHome from "@/app/(main)/users/customers/page";
 
 vi.mock('@/components/ui/tableau/tableau', () => ({
