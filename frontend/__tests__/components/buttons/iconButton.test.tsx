@@ -11,7 +11,7 @@ describe('Icon Button', () => {
     it('renders correctly with default props', () => {
         const onClick = vi.fn();
         render(<IconButton icon={'Filter'} onClick={onClick}/>);
-        const button = screen.getByRole('icon-button');
+        const button = screen.getByRole('icon-button-Filter');
         expect(button).toBeDefined();
     });
 
@@ -20,7 +20,7 @@ describe('Icon Button', () => {
         const handleClick = vi.fn();
         render(<IconButton icon={'Filter'} onClick={handleClick}/>);
 
-        fireEvent.click(screen.getByRole('icon-button'));
+        fireEvent.click(screen.getByRole('icon-button-Filter'));
         expect(handleClick).toHaveBeenCalledTimes(1);
     });
 
