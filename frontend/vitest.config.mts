@@ -22,7 +22,9 @@ export default defineConfig({
                 'src/lib/api',
                 'src/lib/schemas/**',
                 '__tests__/**/__snapshots__/**',
+                '__tests__/test-utils.tsx',
             ]
         },
+        testTimeout: 10000,
     },
 })

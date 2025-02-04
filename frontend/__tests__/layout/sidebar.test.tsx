@@ -4,6 +4,7 @@ import {Sidebar} from '@/components/layout/navigation/components/Sidebar';
 import NavItem from "@/components/ui/navigation/NavItem";
 import React from "react";
 import {NavigationContentProps} from "@/components/layout/navigation/components/types";
+import {renderWithProviders} from "@test/test-utils";
 
 vi.mock('@/components/ui/navigation/NavLogo', () => ({
     NavLogo: ({isCollapsed}: NavigationContentProps) => (
@@ -22,7 +23,7 @@ describe('Sidebar Component', () => {
     });
 
     it('should render SideBar correctly', async () => {
-        render(<Sidebar isOpen={true} onToggle={vi.fn()}/>);
+        renderWithProviders(<Sidebar isOpen={true} onToggle={vi.fn()}/>);
         const sidebar = screen.getByRole('navigation');
         await expect(sidebar).toMatchFileSnapshot('./__snapshots__/sidebarTest.tsx');
     });
@@ -30,7 +31,7 @@ describe('Sidebar Component', () => {
     it('should handle toggle interactions', () => {
         const toggleSpy = vi.fn();
 
-        render(<Sidebar isOpen={true} onToggle={toggleSpy}/>);
+        renderWithProviders(<Sidebar isOpen={true} onToggle={toggleSpy}/>);
 
         const toggleBtn = screen.getByRole('button', {
             name: /réduire le menu/i
@@ -42,7 +43,7 @@ describe('Sidebar Component', () => {
 
     it('should conditionally render content based on collapsed state', () => {
         const onToggle = vi.fn();
-        const {rerender} = render(
+        const {rerender} = renderWithProviders(
             <Sidebar isOpen={true} onToggle={onToggle}/>
         );
         expect(screen.getByRole('img', {name: 'Trinity Logo'})).toBeDefined();
@@ -54,7 +55,7 @@ describe('Sidebar Component', () => {
 
     it('should handle toggle on NavItem click', () => {
         const onToggle = vi.fn();
-        render(
+        renderWithProviders(
             <NavItem
                 icon="LogOut"
                 label="Déconnexion"

@@ -1,5 +1,5 @@
 import {describe, it, expect, vi, beforeEach, afterEach} from 'vitest';
-import {render, screen, act, fireEvent, cleanup} from '@testing-library/react';
+import {render, screen, fireEvent, cleanup} from '@testing-library/react';
 import DateRangePicker from '@/components/ui/buttons/day-picker/DayRangePicker';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -18,8 +18,8 @@ describe('DateRangePicker', () => {
     })
 
     beforeEach(() => {
-        // vi.clearAllMocks();
-        // console.log = vi.fn();
+        vi.clearAllMocks();
+        console.log = vi.fn();
     });
 
     it('renders the component with default values', () => {
