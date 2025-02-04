@@ -1,14 +1,15 @@
 import {afterEach, describe, expect, it} from 'vitest'
 import {cleanup, render, screen} from '@testing-library/react'
 import MainLayout from "@/app/(main)/layout";
+import {renderWithProviders} from "@test/test-utils";
 
-describe('AuthLayout', () => {
+describe('MainLayout', () => {
     afterEach(() => {
         cleanup();
     });
 
     it('devrait afficher le titre "Auth Layout"', () => {
-        render(
+        renderWithProviders(
             <MainLayout>
                 <div>Test content</div>
             </MainLayout>
@@ -17,7 +18,7 @@ describe('AuthLayout', () => {
     })
 
     it('devrait rendre le contenu enfant', () => {
-        render(
+        renderWithProviders(
             <MainLayout>
                 <div data-testid="child-content">Test content</div>
             </MainLayout>

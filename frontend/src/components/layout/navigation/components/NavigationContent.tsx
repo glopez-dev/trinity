@@ -2,6 +2,7 @@ import React from 'react';
 import styles from '../styles/NavigationContent.module.css';
 import NavItem from "@/components/ui/navigation/NavItem";
 import {NavigationContentProps, NavItemProps} from "@/components/layout/navigation/components/types";
+import {useAuth} from "@/lib/contexts/AuthContext";
 
 
 const navItems: NavItemProps[] = [
@@ -14,7 +15,7 @@ const navItems: NavItemProps[] = [
 ];
 
 export const NavigationContent: React.FC<NavigationContentProps> = ({isCollapsed, onToggle}) => {
-
+    const {logout} = useAuth();
     return (
         <div className={styles.wrapper}>
             <nav className={styles.navigation}>
@@ -36,8 +37,9 @@ export const NavigationContent: React.FC<NavigationContentProps> = ({isCollapsed
                 <NavItem
                     icon="LogOut"
                     label="Déconnexion"
-                    route="/"
+                    route="/login"
                     isCollapsed={isCollapsed}
+                    onToggle={logout}
                 />
             </div>
         </div>
