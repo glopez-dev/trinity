@@ -21,7 +21,6 @@ vi.mock('@/components/layout/navigation/components/Topbar', () => ({
 
 describe('Navigation Component', () => {
     afterEach(() => {
-        cleanup();
         vi.clearAllMocks();
     });
 

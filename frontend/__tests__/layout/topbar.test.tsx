@@ -1,13 +1,9 @@
-import {afterEach, describe, expect, it, vi} from 'vitest';
-import {cleanup, fireEvent, render, screen} from '@testing-library/react';
+import {describe, expect, it, vi} from 'vitest';
+import {fireEvent, screen} from '@testing-library/react';
 import {Topbar} from '@/components/layout/navigation/components/Topbar';
 import {renderWithProviders} from "@test/test-utils";
 
 describe('Topbar Component', () => {
-
-    afterEach(() => {
-        cleanup()
-    });
 
     const renderTopbar = (isOpen = false) => {
         const toggleSpy = vi.fn();
@@ -19,7 +15,7 @@ describe('Topbar Component', () => {
 
     it('should render the topbar correctly', async () => {
         const {container} = renderTopbar();
-        await expect(container).toMatchFileSnapshot('./__snapshots__/topbarTest.tsx');
+        await expect(container).toMatchFileSnapshot('./__snapshots__/topbarTest.html');
     });
 
     it('should toggle mobile menu visibility', async () => {

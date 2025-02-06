@@ -1,4 +1,4 @@
-import {describe, it, expect, vi, beforeEach} from "vitest";
+import {beforeEach, describe, expect, it, vi} from "vitest";
 import {act, renderHook} from "@testing-library/react";
 import {AuthProvider, useAuth} from "@/lib/contexts/AuthContext";
 import Cookies from "js-cookie";
@@ -18,7 +18,7 @@ describe('AuthContext', () => {
     });
 
     it('should set the token in cookies', () => {
-        const { result } = renderHook(() => useAuth(), {
+        const {result} = renderHook(() => useAuth(), {
             wrapper: AuthProvider
         });
 
@@ -27,14 +27,14 @@ describe('AuthContext', () => {
         });
 
         expect(Cookies.set).toHaveBeenCalledWith('auth_token', 'test-jwt-token', {
-            expires: 30,
+            expires: 1,
             secure: true,
             sameSite: 'strict'
         });
     });
 
     it('should remove the token on logout', () => {
-        const { result } = renderHook(() => useAuth(), {
+        const {result} = renderHook(() => useAuth(), {
             wrapper: AuthProvider
         });
 
@@ -48,7 +48,7 @@ describe('AuthContext', () => {
     it('should check for the presence of the token', () => {
         vi.mocked(Cookies.get).mockReturnValueOnce({'token': 'existing-token'});
 
-        const { result } = renderHook(() => useAuth(), {
+        const {result} = renderHook(() => useAuth(), {
             wrapper: AuthProvider
         });
 
@@ -58,9 +58,9 @@ describe('AuthContext', () => {
     });
 
     it('should return false if no token is present', () => {
-        vi.mocked(Cookies.get).mockReturnValueOnce(undefined);
+        vi.mocked(Cookies.get).mockReturnValueOnce(undefined as ReturnType<never>);
 
-        const { result } = renderHook(() => useAuth(), {
+        const {result} = renderHook(() => useAuth(), {
             wrapper: AuthProvider
         });
 

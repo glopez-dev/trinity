@@ -1,5 +1,5 @@
 import {afterEach, describe, expect, it, vi} from 'vitest';
-import {cleanup, fireEvent, render, screen} from '@testing-library/react';
+import {fireEvent, render, screen} from '@testing-library/react';
 import AddUser from '@/components/forms/users/formUser';
 import {InputProps} from "@/components/ui/input/types";
 import {ButtonProps} from "@/components/ui/buttons/button/types";
@@ -103,7 +103,6 @@ describe('AddUser Component', () => {
 
     afterEach(() => {
         vi.clearAllMocks();
-        cleanup();
     })
 
     it('should render all form inputs and button', () => {

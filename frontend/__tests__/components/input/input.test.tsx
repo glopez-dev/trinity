@@ -1,4 +1,4 @@
-import {afterEach, describe, expect, it, vi} from 'vitest';
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {cleanup, fireEvent, render, screen} from '@testing-library/react';
 import Input from '@/components/ui/input/input';
 import {useState} from "react";
@@ -9,8 +9,10 @@ import {InputValueTypes} from "@/components/ui/input/types";
 const testEmailSchema = z.string().email({message: 'Le format est invalide.'});
 
 describe('Input', () => {
-    afterEach(() => {
-        cleanup();
+
+    beforeEach(() => {
+        vi.clearAllMocks();
+        console.log = vi.fn();
     });
 
     const TestComponent = () => {
@@ -48,16 +50,25 @@ describe('Input', () => {
     });
 
     it('should displays different types of input', () => {
-        const {rerender} = render(<Input value={''} name={'email'} label={'Email'} type={'email'} />);
+        const {rerender} = render(<Input value={''} name={'email'} label={'Email'} type={'email'} onChange={(value) => console.log(value)} />);
         expect(screen.getByRole('inputComponent').getAttribute('type')).toBe('email');
+        fireEvent.change(screen.getByRole('inputComponent'), {target: {value: 'test@test.test' }});
+        expect(console.log).toHaveBeenCalledWith('test@test.test');
 
-        rerender(<Input name={'typeText'} value={''} label={'Text'} />);
+
+        rerender(<Input name={'typeText'} value={''} label={'Text'} onChange={(value) => console.log(value)} />);
         expect(screen.getByRole('inputComponent').getAttribute('type')).toBe('text');
+        fireEvent.change(screen.getByRole('inputComponent'), {target: {value: 'test@test.test' }});
+        expect(console.log).toHaveBeenCalledWith('test@test.test');
 
-        rerender(<Input label={'Number'} name={'testNumber'} value={''} type={'number'} />);
+        rerender(<Input label={'Number'} name={'testNumber'} value={''} type={'number'} onChange={(value) => console.log(value)} />);
         expect(screen.getByRole('inputComponent').getAttribute('type')).toBe('number');
+        fireEvent.change(screen.getByRole('inputComponent'), {target: {value: 3 }});
+        expect(console.log).toHaveBeenCalledWith('3');
 
-        rerender(<Input label={'Password'} name={'testPassword'} value={''} type={'password'} />);
+        rerender(<Input label={'Password'} name={'testPassword'} value={''} type={'password'} onChange={(value) => console.log(value)} />);
         expect(screen.getByRole('inputComponent').getAttribute('type')).toBe('password');
+        fireEvent.change(screen.getByRole('inputComponent'), {target: {value: 'test@test.test' }});
+        expect(console.log).toHaveBeenCalledWith('test@test.test');
     })
 });

@@ -1,12 +1,8 @@
-import {afterEach, describe, expect, it, vi} from 'vitest';
-import {cleanup, fireEvent, render, screen} from '@testing-library/react';
+import {describe, expect, it, vi} from 'vitest';
+import {fireEvent, render, screen} from '@testing-library/react';
 import Button from '@/components/ui/buttons/button/Button';
 
 describe('Button', () => {
-
-    afterEach(() => {
-        cleanup();
-    });
 
     it('should renders correctly with default props', () => {
         const handleAction = vi.fn();

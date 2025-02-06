@@ -1,15 +1,12 @@
-import {afterEach, describe, expect, it, vi} from 'vitest';
-import {cleanup, fireEvent, render, screen} from '@testing-library/react';
+import {describe, expect, it, vi} from 'vitest';
+import {fireEvent, render, screen} from '@testing-library/react';
 import SearchableSelect from "@/components/ui/input/select/SearchableSelect";
 
 describe('SearchableSelect', () => {
-    afterEach(() => {
-        cleanup();
-    });
-    
+
     const mockOptions = [
-        { value: '1', label: 'Option 1' },
-        { value: '2', label: 'Option 2' }
+        {value: '1', label: 'Option 1'},
+        {value: '2', label: 'Option 2'}
     ];
 
     it('renders correctly with default props', () => {
@@ -46,7 +43,7 @@ describe('SearchableSelect', () => {
     it('should close search when mouseclicked outside', () => {
         render(<SearchableSelect options={mockOptions}/>);
         const input = screen.getByRole('textbox');
-        
+
         fireEvent.change(input, {target: {value: 'Option'}});
         expect(screen.getByText('Option 1')).toBeDefined();
         expect(screen.getByText('Option 2')).toBeDefined();

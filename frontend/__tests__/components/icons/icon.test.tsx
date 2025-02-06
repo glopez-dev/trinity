@@ -1,5 +1,5 @@
-import {afterEach, describe, expect, it, vi} from "vitest";
-import {cleanup, fireEvent, render} from "@testing-library/react";
+import {describe, expect, it, vi} from "vitest";
+import {fireEvent, render} from "@testing-library/react";
 import Icon from "@/components/ui/icons/Icon";
 import {icons} from "lucide-react";
 
@@ -12,9 +12,6 @@ type IconArray = IconArrayItem[];
 
 describe('Icon Component', () => {
 
-    afterEach(() => {
-        cleanup();
-    })
     it('renders correctly with default props', () => {
         render(<Icon name={'Plus'}/>)
         const icon = document.querySelector('svg');

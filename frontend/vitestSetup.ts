@@ -1,4 +1,5 @@
-import {beforeAll, vi} from 'vitest';
+import {afterEach, beforeAll, vi} from 'vitest';
+import {cleanup} from "@testing-library/react";
 
 // Mocking next/navigation module to provide useRouter error (find on https://github.com/vercel/next.js/discussions/63100#discussioncomment-8737391 )
 beforeAll(() => {
@@ -26,4 +27,8 @@ beforeAll(() => {
         unobserve: vi.fn(),
         disconnect: vi.fn(),
     }))
+});
+
+afterEach(() => {
+    cleanup();
 });
