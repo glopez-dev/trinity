@@ -59,9 +59,9 @@ logging:
     root: WARN
     org:
       springframework: ERROR
-      hibernate: DEBUG
-      hibernate.SQL: DEBUG
-      hibernate.type.descriptor.sql: TRACE
+      hibernate: ERROR 
+      hibernate.SQL: ERROR 
+      hibernate.type.descriptor.sql: ERROR 
 
 jwt:
   secret: ${JWT_SECRET:your_jwt_secret_key_here}
