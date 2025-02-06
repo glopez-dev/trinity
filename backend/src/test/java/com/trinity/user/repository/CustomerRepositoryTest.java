@@ -15,7 +15,6 @@ import org.springframework.test.context.ActiveProfiles;
 import com.trinity.user.constant.UserStatus;
 import com.trinity.user.constant.UserType;
 import com.trinity.user.model.Customer;
-import com.trinity.user.repository.CustomerRepository;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

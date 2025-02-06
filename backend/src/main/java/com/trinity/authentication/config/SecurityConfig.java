@@ -21,7 +21,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.trinity.authentication.filter.JwtAuthenticationFilter;
-import com.trinity.user.repository.EmployeeRepository;
 
 import java.util.Arrays;
 
@@ -31,7 +30,6 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
-    private final EmployeeRepository employeeRepository;
     private final UserDetailsService userDetailsService;
 
     @Bean

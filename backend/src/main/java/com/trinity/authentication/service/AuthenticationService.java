@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.trinity.authentication.dto.AuthenticationResponse;
 import com.trinity.authentication.dto.LoginRequest;
 import com.trinity.authentication.dto.RegisterRequest;
-import com.trinity.user.constant.UserType;
 import com.trinity.user.model.Employee;
 import com.trinity.user.repository.EmployeeRepository;
 

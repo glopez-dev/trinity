@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.trinity.user.constant.UserType;
-import com.trinity.user.model.Customer;
 
 
 class CustomerTest {

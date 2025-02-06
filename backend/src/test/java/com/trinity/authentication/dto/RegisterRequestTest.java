@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.trinity.authentication.dto.RegisterRequest;
 import com.trinity.user.constant.EmployeeRole;
 
 
@@ -167,7 +166,7 @@ class RegisterRequestTest {
                 .build();
 
         // When & Then
-        assertTrue(registerRequest.equals(anotherRequest));
+        assertEquals(registerRequest, anotherRequest);
     }
 
     @Test

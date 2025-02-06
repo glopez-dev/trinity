@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.trinity.authentication.dto.AuthenticationResponse;
-
 
 class AuthenticationResponseTest {
 
@@ -62,7 +60,7 @@ class AuthenticationResponseTest {
                 .build();
 
         // When & Then
-        assertTrue(authenticationResponse.equals(anotherResponse));
+        assertEquals(authenticationResponse, anotherResponse);
     }
 
     @Test

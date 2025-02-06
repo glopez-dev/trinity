@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.trinity.authentication.dto.LoginRequest;
-
 
 class LoginRequestTest {
 
@@ -88,7 +86,7 @@ class LoginRequestTest {
                 .build();
 
         // When & Then
-        assertTrue(loginRequest.equals(anotherRequest));
+        assertEquals(loginRequest, anotherRequest);
     }
 
     @Test

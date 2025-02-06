@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
-import com.trinity.authentication.filter.JwtAuthenticationFilter;
 import com.trinity.authentication.service.JwtService;
 
 import jakarta.servlet.FilterChain;

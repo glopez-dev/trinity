@@ -12,7 +12,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.trinity.product.dto.open_food_facts.OpenFoodFactSearchResponse;
 import com.trinity.product.exception.ApiException;
-import com.trinity.product.service.OpenFoodFactsService;
 
 import reactor.core.publisher.Mono;
 
@@ -21,9 +20,11 @@ class OpenFoodFactsServiceTest {
     @Mock
     private WebClient webClient;
 
+    @SuppressWarnings("rawtypes")
     @Mock
     private WebClient.RequestHeadersUriSpec requestHeadersUriSpec;
 
+    @SuppressWarnings("rawtypes")
     @Mock
     private WebClient.RequestHeadersSpec requestHeadersSpec;
 
@@ -38,6 +39,7 @@ class OpenFoodFactsServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void testGetSearchResponseJson_Success() {
         // Given
@@ -45,7 +47,7 @@ class OpenFoodFactsServiceTest {
         OpenFoodFactSearchResponse expectedResponse = new OpenFoodFactSearchResponse();
 
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(uri)).thenReturn(requestHeadersSpec);
+        when(requestHeadersUriSpec.uri(uri)).thenReturn((WebClient.RequestHeadersSpec<?>) requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToMono(OpenFoodFactSearchResponse.class)).thenReturn(Mono.just(expectedResponse));
 
@@ -56,6 +58,7 @@ class OpenFoodFactsServiceTest {
         assertEquals(expectedResponse, actualResponse);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void testGetSearchResponseJson_ApiException() {
         // Given

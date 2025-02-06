@@ -7,7 +7,6 @@ import java.time.Instant;
 import org.junit.jupiter.api.Test;
 
 import com.trinity.user.constant.UserType;
-import com.trinity.user.model.Employee;
 
 class EmployeeTest {
 
