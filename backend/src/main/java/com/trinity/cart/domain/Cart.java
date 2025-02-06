@@ -1,7 +1,6 @@
 package com.trinity.cart.domain;
 
 import com.trinity.cart.constant.CartStatus;
-import com.trinity.cart.domain.Money;
 
 import lombok.Builder;
 import lombok.Data;

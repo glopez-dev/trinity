@@ -3,7 +3,6 @@ package com.trinity.product.controller;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.trinity.product.controller.ProductController;
 import com.trinity.product.dto.TrinitySearchRequest;
 import com.trinity.product.dto.TrinitySearchResponse;
 import com.trinity.product.service.OpenFoodFactsService;

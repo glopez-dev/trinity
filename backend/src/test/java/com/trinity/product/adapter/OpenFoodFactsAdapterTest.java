@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-import com.trinity.product.adapter.OpenFoodFactsAdapter;
 import com.trinity.product.dto.ImageUrls;
 import com.trinity.product.dto.TrinitySearchResponse;
 import com.trinity.product.dto.open_food_facts.Front;
@@ -71,9 +70,9 @@ class OpenFoodFactsAdapterTest {
 
         OpenFoodFactsSelectedImages selectedImages = new OpenFoodFactsSelectedImages();
         Front front = new Front();
-        front.setDisplay(new ImageUrls().builder().en("https://display-url.com").fr("https://display-url.com").build());
-        front.setSmall(new ImageUrls().builder().en("https://small-url.com").fr("https://small-url.com").build());
-        front.setThumb(new ImageUrls().builder().en("https://thumb-url.com").fr("https://thumb-url.com").build());
+        front.setDisplay(ImageUrls.builder().en("https://display-url.com").fr("https://display-url.com").build());
+        front.setSmall(ImageUrls.builder().en("https://small-url.com").fr("https://small-url.com").build());
+        front.setThumb(ImageUrls.builder().en("https://thumb-url.com").fr("https://thumb-url.com").build());
         selectedImages.setFront(front);
         openFoodFactsProduct.setSelectedImages(selectedImages);
 

@@ -24,12 +24,12 @@ class CartControllerTest {
     @InjectMocks
     private CartController cartController;
 
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(cartController).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(cartController).build();
     }
 
     @Test

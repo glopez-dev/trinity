@@ -2,12 +2,11 @@ package com.trinity.product.dto.open_food_facts;
 
 import org.junit.jupiter.api.Test;
 
-import com.trinity.product.dto.open_food_facts.OpenFoodFactsNutriments;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class OpenFoodFactsNutrimentsTest {
+class OpenFoodFactsNutrimentsTest {
 
     @Test
     void testEnergyKcal() {

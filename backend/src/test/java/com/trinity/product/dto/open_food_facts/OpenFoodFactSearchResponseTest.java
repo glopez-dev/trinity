@@ -6,9 +6,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.trinity.product.dto.open_food_facts.OpenFoodFactSearchResponse;
-import com.trinity.product.dto.open_food_facts.OpenFoodFactsProduct;
-
 
 class OpenFoodFactSearchResponseTest {
 
