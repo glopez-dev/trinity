@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotEmpty;
-import lombok.RequiredArgsConstructor;
 
 @Data
 @RequiredArgsConstructor

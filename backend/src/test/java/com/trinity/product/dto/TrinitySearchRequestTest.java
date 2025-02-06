@@ -8,8 +8,6 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.trinity.product.dto.TrinitySearchRequest;
-
 import java.util.Set;
 
 

@@ -3,8 +3,6 @@ package com.trinity.product.exception;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 
-import com.trinity.product.exception.ApiException;
-
 
 class ApiExceptionTest {
 

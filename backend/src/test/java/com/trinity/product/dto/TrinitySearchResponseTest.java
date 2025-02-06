@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.trinity.product.dto.TrinitySearchResponse;
 import com.trinity.product.model.Product;
 
 
