@@ -15,13 +15,15 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.val;
 
 @Service
 public class JwtService {
 
     private static final String SECRET_KEY = "b24bfe05b10f876172094ffa542dd10b43437cd9934d95c844a5006e51a8038a";
+
     @Value("${jwt.expiration}")
-    private String jwtExpiration;
+    private Long jwtExpiration;
 
     public String extractUsername(String jwt) {
         return this.extractClaim(jwt, Claims::getSubject);
@@ -40,12 +42,17 @@ public class JwtService {
         Map<String, Object> extraClaims,
         UserDetails userDetails
     ) {
+
+        long validity = this.jwtExpiration == null 
+            ? 1000 * 60 * 60 
+            : this.jwtExpiration;
+
         return Jwts
             .builder()
             .setClaims(extraClaims)
             .setSubject(userDetails.getUsername())
             .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+            .setExpiration(new Date(System.currentTimeMillis() + validity))
             .signWith(this.getSignInKey(), SignatureAlgorithm.HS256)
             .compact();
     }

@@ -12,8 +12,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.trinity.authentication.service.JwtService;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -40,7 +38,7 @@ class JwtServiceTest {
         jwt = Jwts.builder()
             .setSubject("testUser")
             .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
             .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode("b24bfe05b10f876172094ffa542dd10b43437cd9934d95c844a5006e51a8038a")), SignatureAlgorithm.HS256)
             .compact();
     }
