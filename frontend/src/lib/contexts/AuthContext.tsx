@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, ReactNode } from 'react';
+import {createContext, useContext, ReactNode, useMemo} from 'react';
 import Cookies from "js-cookie";
 import {AuthContextType} from "@/lib/types/user/auth";
 
@@ -10,7 +10,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const setToken = (jwt: string) => {
         Cookies.set('auth_token', jwt, {
-            expires: 30,
+            expires: 1,
             secure: true,
             sameSite: 'strict'
         });
@@ -25,11 +25,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return !!token;
     };
 
-    const value = {
+    const value = useMemo(() => ({
         setToken,
         logout,
         checkAuth,
-    };
+    }), []);
 
     return (
         <AuthContext.Provider value={value}>

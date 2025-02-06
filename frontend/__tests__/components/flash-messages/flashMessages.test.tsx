@@ -1,11 +1,8 @@
-import {afterEach, describe, expect, it, vitest} from "vitest";
-import {cleanup, render, screen} from "@testing-library/react";
+import {describe, expect, it, vitest} from "vitest";
+import {render, screen} from "@testing-library/react";
 import {FlashMessage} from "@/components/ui/flash-messages/FlashMessage";
 
 describe('FlashMessages', () => {
-    afterEach(() => {
-        cleanup();
-    });
 
     it('renders correctly with default props', () => {
         render(<FlashMessage message={'Success Message'} type={'success'}/>)

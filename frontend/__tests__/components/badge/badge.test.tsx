@@ -1,12 +1,8 @@
-import {afterEach, describe, expect, it} from 'vitest';
-import {cleanup, render, screen} from '@testing-library/react';
+import {describe, expect, it} from 'vitest';
+import {render, screen} from '@testing-library/react';
 import Badge from "@/components/ui/badge/Badge";
 
 describe('Badges', () => {
-
-    afterEach(() => {
-        cleanup();
-    });
 
     it('render correctly with default props' , () => {
         render(<Badge text={'Badge'} type={'success'} data-testid={'badge-success'}/>);

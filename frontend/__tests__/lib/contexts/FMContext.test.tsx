@@ -1,5 +1,5 @@
-import {cleanup, fireEvent, render, screen} from '@testing-library/react';
-import {afterEach, describe, expect, it} from 'vitest';
+import {fireEvent, render, screen} from '@testing-library/react';
+import {describe, expect, it} from 'vitest';
 import {useFlash} from '@/lib/contexts/FlashMessagesContext';
 import {MessageType} from "@/components/ui/flash-messages/types";
 import {renderWithProviders} from "@test/test-utils";
@@ -19,12 +19,11 @@ const TestComponent = ({type}: TestComponentProps) => {
 
 
 describe('FlashContext', () => {
-    afterEach(cleanup);
 
     it('should render children correctly', () => {
         renderWithProviders(
-                <div data-testid="child">Test Child</div>,
-                'flash'
+            <div data-testid="child">Test Child</div>,
+            'flash'
         );
 
         expect(screen.getByTestId('child')).toBeTruthy();
@@ -65,7 +64,8 @@ describe('FlashContext', () => {
     });
 
     it('should throw error when useFlash is used outside provider', () => {
-        expect(() => render(<TestComponent type={'success'}/>)).toThrow('useFlash doit être utilisé avec un FlashProvider');
+        expect(() => render(<TestComponent
+            type={'success'}/>)).toThrow('useFlash doit être utilisé avec un FlashProvider');
     });
 
     it('should hide flash message after 5 seconds', async () => {

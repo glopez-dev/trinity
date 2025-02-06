@@ -1,5 +1,5 @@
-import {afterEach, describe, expect, it, vi} from 'vitest';
-import {cleanup, fireEvent, render, screen} from '@testing-library/react';
+import {describe, expect, it, vi} from 'vitest';
+import {fireEvent, screen} from '@testing-library/react';
 import {Sidebar} from '@/components/layout/navigation/components/Sidebar';
 import NavItem from "@/components/ui/navigation/NavItem";
 import React from "react";
@@ -18,14 +18,10 @@ vi.mock('@/components/ui/navigation/NavLogo', () => ({
 
 describe('Sidebar Component', () => {
 
-    afterEach(() => {
-        cleanup()
-    });
-
     it('should render SideBar correctly', async () => {
         renderWithProviders(<Sidebar isOpen={true} onToggle={vi.fn()}/>);
         const sidebar = screen.getByRole('navigation');
-        await expect(sidebar).toMatchFileSnapshot('./__snapshots__/sidebarTest.tsx');
+        await expect(sidebar).toMatchFileSnapshot('./__snapshots__/sidebarTest.html');
     });
 
     it('should handle toggle interactions', () => {

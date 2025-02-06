@@ -1,12 +1,9 @@
-import {afterEach, describe, expect, it} from 'vitest'
-import {cleanup, render, screen} from '@testing-library/react'
+import {describe, expect, it} from 'vitest'
+import {render, screen} from '@testing-library/react'
 import AuthLayout from '@/app/(auth)/layout'
 import {renderWithProviders} from "@test/test-utils";
 
 describe('AuthLayout', () => {
-    afterEach(() => {
-        cleanup();
-    });
 
     it('should render auth layout correctly', () => {
         const {container} = renderWithProviders(
