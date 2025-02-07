@@ -28,6 +28,7 @@ export default function AddProductCard({
             onMouseLeave={() => onMouseLeave()}
         >
             <div className={styles.imageWrapper}>
+                {product.selectedImages ?
                 <Image
                     src={product.selectedImages.thumb.fr || product.selectedImages.thumb.en}
                     alt={product.brand}
@@ -35,6 +36,9 @@ export default function AddProductCard({
                     width={100}
                     height={100}
                 />
+                    :
+                    <div className={styles.productImage} style={{backgroundColor: 'lightgrey'}} />
+                }
             </div>
             <div className={styles.productContent}>
                 <div className={styles.brandName}>{product.brand}</div>

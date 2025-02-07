@@ -1,5 +1,5 @@
-import {render, screen, fireEvent, cleanup} from '@testing-library/react';
-import {describe, it, expect, vi, afterEach} from "vitest";
+import {render, screen, fireEvent} from '@testing-library/react';
+import {describe, it, expect, vi} from "vitest";
 import AddProductCard from '@/components/ui/cards/product/AddProductCard';
 import { ProductOFF } from '@/lib/types/product/product';
 
