@@ -1,5 +1,4 @@
-import {afterEach, it, describe, expect} from "vitest";
-import {cleanup, render} from "@testing-library/react";
+import {describe, expect, it} from "vitest";
 import {Product} from "@/lib/types/product/product";
 import {getStockStatus, STOCK_STATUS} from "@/lib/constants/products";
 
@@ -27,9 +26,6 @@ const product: Product = {
 };
 
 describe('prodcut constants', () => {
-    afterEach(() => {
-        cleanup();
-    });
 
     it('should get the correct stock status for low stock', () => {
         const stockStatus = getStockStatus(product.stock.currentQuantity, product.stock.minThreshold);

@@ -1,5 +1,5 @@
-import {afterEach, describe, expect, it, vi, vitest} from "vitest";
-import {cleanup, fireEvent, render, screen} from "@testing-library/react";
+import {describe, expect, it, vi, vitest} from "vitest";
+import {fireEvent, render, screen} from "@testing-library/react";
 import Products from "@/app/(main)/products/page";
 import {InputProps} from "@/components/ui/input/types";
 import {ButtonProps} from "@/components/ui/buttons/button/types";
@@ -34,9 +34,6 @@ vi.mock('@/components/ui/buttons/button/Button', () => ({
 }));
 
 describe("Products Page", () => {
-    afterEach(() => {
-        cleanup();
-    });
 
     it("should render product page", () => {
         const {container} = render(<Products/>);
