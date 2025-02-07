@@ -1,0 +1,67 @@
+.productFormContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.productFormHeader {
+    display: flex;
+    gap: 8px;
+}
+
+.productFormBody {
+    display: flex;
+    flex-direction: column;
+}
+
+.searchSkeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.skeletonTitle {
+    height: 40px;
+    width: 100px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    animation: pulse 1.5s infinite;
+}
+
+.skeletonCard {
+    height: 100px;
+    width: 300px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    animation: pulse 1.5s infinite;
+}
+
+.productGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 12px 0;
+    margin: 0 auto;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 400px;
+    width: 100%;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}

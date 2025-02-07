@@ -27,8 +27,6 @@ export default function LoginForm() {
         });
     };
 
-
-
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
@@ -52,7 +50,6 @@ export default function LoginForm() {
             }
         }
     }
-
 
     return (
         <form onSubmit={handleSubmit} className={styles.loginCard}>

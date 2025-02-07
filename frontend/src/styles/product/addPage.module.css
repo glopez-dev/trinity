@@ -1,0 +1,8 @@
+.addProductHeader {
+    padding: 12px 4px;
+    border-bottom: 1px solid var(--text-color);
+}
+
+.addProductBody {
+    padding: 12px 4px;
+}

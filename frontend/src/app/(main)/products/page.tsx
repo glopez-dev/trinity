@@ -10,6 +10,7 @@ import Button from "@/components/ui/buttons/button/Button";
 import IconButton from "@/components/ui/buttons/icon-button/IconButton";
 import {ProductSearch} from "@/lib/schemas/productSchema";
 import {Product} from "@/lib/types/product/product";
+import {useRouter} from "next/navigation";
 
 export default function Products() {
 
@@ -18,6 +19,7 @@ export default function Products() {
     const [searchFilter, setSearchFilter] = useState<ProductSearch>({
         name: ''
     });
+    const router = useRouter();
 
     const handleSearch = (value: InputValueTypes) => {
         setSearchFilter({
@@ -55,7 +57,7 @@ export default function Products() {
                     <IconButton icon={'Filter'} onClick={() => console.log('test')}/>
                 </div>
                 <div className={styles.addContainer}>
-                    <Button title={'Ajouter'} icon={'Plus'} action={() => console.log('yes')}/>
+                    <Button title={'Ajouter'} icon={'Plus'} action={() => router.replace('/products/add')}/>
                     <IconButton icon={'RefreshCw'} onClick={handleRefresh} />
                 </div>
             </div>
