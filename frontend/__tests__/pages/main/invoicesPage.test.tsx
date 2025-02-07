@@ -29,14 +29,14 @@ describe("Invoices Page", () => {
 
     it("should call handleEdit when edit button is clicked", () => {
         render(<Invoices/>);
-        const editButtons = screen.getAllByRole('icon-button-Pencil')
+        const editButtons = screen.getAllByTestId('icon-button-Pencil')
 
         expect(fireEvent.click(editButtons[0])).toBeTruthy();
     });
 
     it("should call handleDelete when delete button is clicked", () => {
         render(<Invoices/>);
-        const deleteButtons = screen.getAllByRole('icon-button-Trash');
+        const deleteButtons = screen.getAllByTestId('icon-button-Trash');
 
         expect(fireEvent.click(deleteButtons[0])).toBeTruthy();
     });

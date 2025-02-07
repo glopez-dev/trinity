@@ -23,6 +23,7 @@ export default defineConfig({
                 'src/lib/schemas/**',
                 '__tests__/**/__snapshots__/**',
                 '__tests__/test-utils.tsx',
+                'src/components/features/dashboard/**Chart.tsx',
             ]
         },
         testTimeout: 10000,

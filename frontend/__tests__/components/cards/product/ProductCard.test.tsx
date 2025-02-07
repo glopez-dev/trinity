@@ -1,5 +1,5 @@
-import {afterEach, expect, it, describe} from "vitest";
-import {cleanup, render, screen} from "@testing-library/react";
+import {describe, expect, it} from "vitest";
+import {render, screen} from "@testing-library/react";
 import {Product} from "@/lib/types/product/product";
 import {ProductCard} from "@/components/ui/cards/product/ProductCard";
 import {STOCK_STATUS} from "@/lib/constants/products";
@@ -74,29 +74,22 @@ const productNormal: Product = {
 };
 
 describe("ProductCard", () => {
-    afterEach(() => {
-        cleanup();
-    });
 
     it('should render correctly the product card', () => {
         const {container} = render(<ProductCard product={productLow} key={productLow.id}/>);
         expect(container).toBeDefined();
 
-        // Nom du produit
         expect(screen.getByText(productLow.name)).toBeDefined();
 
-        // Catégorie
         expect(screen.getByText('Catégorie')).toBeDefined();
         expect(screen.getByText(productLow.category)).toBeDefined();
-        // Prix
+
         expect(screen.getByText('Prix')).toBeDefined();
         expect(screen.getByText(`${productLow.price} €`)).toBeDefined();
 
-        // Seuil minimal
         expect(screen.getByText('Seuil Minimal')).toBeDefined();
         expect(screen.getByText(productLow.stock.minThreshold)).toBeDefined();
 
-        // Quantité
         expect(screen.getByText('Quantité')).toBeDefined();
         expect(screen.getByText(productLow.stock.currentQuantity)).toBeDefined();
     });
@@ -105,7 +98,6 @@ describe("ProductCard", () => {
         const {rerender, container} = render(<ProductCard product={productLow} key={productLow.id}/>);
         expect(container).toBeDefined();
 
-        // Badge Low
         const badgeLow = screen.getByRole('badge');
         expect(badgeLow).toBeDefined();
         expect(badgeLow.textContent).toBe(STOCK_STATUS.LOW_STOCK);
@@ -113,7 +105,6 @@ describe("ProductCard", () => {
 
         rerender(<ProductCard product={productVeryLow} key={productVeryLow.id}/>);
 
-        // Badge Very Low
         const badgeVeryLow = screen.getByRole('badge');
         expect(badgeVeryLow).toBeDefined();
         expect(badgeVeryLow.textContent).toBe(STOCK_STATUS.VERY_LOW_STOCK);
@@ -121,7 +112,6 @@ describe("ProductCard", () => {
 
         rerender(<ProductCard product={productNormal} key={productNormal.id}/>);
 
-        // Badge Normal
         const badgeNormal = screen.getByRole('badge');
         expect(badgeNormal).toBeDefined();
         expect(badgeNormal.textContent).toBe(STOCK_STATUS.NORMAL_STOCK);

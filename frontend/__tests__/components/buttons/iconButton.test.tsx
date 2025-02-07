@@ -1,17 +1,13 @@
-import {afterEach, describe, expect, it, vi} from 'vitest';
-import {cleanup, fireEvent, render, screen} from '@testing-library/react';
+import {describe, expect, it, vi} from 'vitest';
+import {fireEvent, render, screen} from '@testing-library/react';
 import IconButton from '@/components/ui/buttons/icon-button/IconButton';
 
 describe('Icon Button', () => {
 
-    afterEach(() => {
-        cleanup();
-    });
-
     it('renders correctly with default props', () => {
         const onClick = vi.fn();
         render(<IconButton icon={'Filter'} onClick={onClick}/>);
-        const button = screen.getByRole('icon-button-Filter');
+        const button = screen.getByTestId('icon-button-Filter');
         expect(button).toBeDefined();
     });
 
@@ -20,7 +16,7 @@ describe('Icon Button', () => {
         const handleClick = vi.fn();
         render(<IconButton icon={'Filter'} onClick={handleClick}/>);
 
-        fireEvent.click(screen.getByRole('icon-button-Filter'));
+        fireEvent.click(screen.getByTestId('icon-button-Filter'));
         expect(handleClick).toHaveBeenCalledTimes(1);
     });
 
