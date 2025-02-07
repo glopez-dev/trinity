@@ -1,5 +1,5 @@
 import {ProductOFF} from "@/lib/types/product/product";
-import styles from './addProductCard.module.css';
+import styles from './AddProductCard.module.css';
 import Image from "next/image";
 
 interface ProductCardProps {
