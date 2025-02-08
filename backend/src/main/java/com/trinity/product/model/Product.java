@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.annotation.LastModifiedDate;
 
-import com.trinity.product.dto.ImageUrls;
+import com.trinity.product.dto.open_food_facts.ImageUrls;
 
 import java.math.BigDecimal;
 

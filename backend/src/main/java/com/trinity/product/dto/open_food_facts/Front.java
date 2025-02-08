@@ -1,7 +1,6 @@
 package com.trinity.product.dto.open_food_facts;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.trinity.product.dto.ImageUrls;
 
 import lombok.Data;
 

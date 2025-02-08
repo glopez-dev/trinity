@@ -3,7 +3,7 @@ package com.trinity.product.mapper;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import com.trinity.product.dto.ImageUrls;
+
 import com.trinity.product.dto.api.CreateProductDTO;
 import com.trinity.product.dto.api.ReadProductDTO;
 import com.trinity.product.dto.api.CreateProductDTO.NutrientLevelsDto;
@@ -11,6 +11,7 @@ import com.trinity.product.dto.api.CreateProductDTO.NutrimentsDto;
 import com.trinity.product.dto.api.CreateProductDTO.SelectedImagesDto;
 import com.trinity.product.dto.api.CreateProductDTO.StockDto;
 import com.trinity.product.dto.api.CreateProductDTO.SelectedImagesDto.DisplayImagesDto;
+import com.trinity.product.dto.open_food_facts.ImageUrls;
 import com.trinity.product.model.Product;
 import java.math.BigDecimal;
 
