@@ -32,10 +32,16 @@ x-backend-env: &backend-env
   # Using Docker secret for security
   SPRING_RABBITMQ_PASSWORD: /run/secrets/rabbitmq_password
 
+  # PayPal Configuration
+  PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
+  PAYPAL_CLIENT_SECRET: ${PAYPAL_SECRET}
+
   # Custom JWT Configuration
   # Maps to jwt.secret in application.properties
   # Using Docker secret for security
   JWT_SECRET: /run/secrets/jwt_secret
+
+
   # Maps to jwt.expiration in application.properties
   # Value in milliseconds (24 hours)
   JWT_EXPIRATION: 86400000
@@ -90,6 +96,8 @@ secrets:
     file: ./.secrets/postgres_password
   rabbitmq_password:
     file: ./.secrets/rabbitmq_password
+  paypal_secret:
+    file: ./.secrets/paypal_secret
 
 services:
 ##########

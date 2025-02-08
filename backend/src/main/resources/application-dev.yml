@@ -87,3 +87,9 @@ springdoc:
 app:
   cors:
     allowed-origins: ${NEXT_DEV_API_URL}
+
+paypal:
+  client:
+    id: ${PAYPAL_CLIENT_ID}
+    secret: ${PAYPAL_SECRET}
+  mode: sandbox
