@@ -1,4 +1,4 @@
-package com.trinity.product.dto;
+package com.trinity.product.dto.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,18 +8,19 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.trinity.product.dto.api.SearchProductResponse;
 import com.trinity.product.model.Product;
 
 
 
-class TrinitySearchResponseTest {
+class SearchProductResponseTest {
 
-    private TrinitySearchResponse response;
+    private SearchProductResponse response;
     private List<Product> products;
 
     @BeforeEach
     void setUp() {
-        response = new TrinitySearchResponse();
+        response = new SearchProductResponse();
         products = new ArrayList<>();
         Product product = Product.builder()
                 .barcode("1234567890123")

@@ -1,4 +1,4 @@
-package com.trinity.product.dto;
+package com.trinity.product.dto.api;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TrinitySearchResponse {
+public class SearchProductResponse {
 
     private List<Product> products;
     

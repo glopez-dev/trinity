@@ -7,7 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.trinity.product.adapter.OpenFoodFactsAdapter;
-import com.trinity.product.dto.TrinitySearchResponse;
+import com.trinity.product.dto.api.SearchProductResponse;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactSearchResponse;
 import com.trinity.product.exception.ApiException;
 
@@ -41,7 +41,7 @@ public class OpenFoodFactsService {
             .block();
     }
 
-    public TrinitySearchResponse searchProducts(String searchTerm) {
+    public SearchProductResponse searchProducts(String searchTerm) {
         URI uri = this.buildUri(searchTerm);
 
         OpenFoodFactSearchResponse externalResponse = this.getSearchResponseJson(uri);
