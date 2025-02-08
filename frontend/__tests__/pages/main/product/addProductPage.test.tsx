@@ -43,8 +43,8 @@ describe('AddProductPage', () => {
         expect(body).toBeDefined();
     });
 
-    it('should match snapshot', () => {
+    it('should match snapshot', async () => {
         const {container} = render(<AddProductPage/>);
-        expect(container).toMatchFileSnapshot('./__snapshots__/addProductPage.html');
+        await expect(container).toMatchFileSnapshot('./__snapshots__/addProductPage.html');
     });
 });
