@@ -7,7 +7,6 @@ import {ProductOFF} from "@/lib/types/product/product";
 import {ButtonProps} from "@/components/ui/buttons/button/types";
 import {InputProps} from "@/components/ui/input/types";
 import {ReactNode} from 'react';
-import {api} from "@/lib/api/api";
 
 vi.mock('@/lib/api/products/productsProvider');
 vi.mock('axios');
@@ -59,7 +58,7 @@ vi.mock('next/navigation', () => ({
 
 const mockProducts: ProductOFF[] = [
     {
-        id: 1,
+        id: '1',
         barcode: '123456789',
         category: 'Beverages',
         brand: 'MockBrand',
@@ -95,7 +94,7 @@ const mockProducts: ProductOFF[] = [
         },
     },
     {
-        id: 2,
+        id: '2',
         barcode: '123456789',
         category: 'Beverages',
         brand: 'MockBrand',

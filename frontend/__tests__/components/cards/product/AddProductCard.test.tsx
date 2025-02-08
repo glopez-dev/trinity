@@ -4,7 +4,7 @@ import AddProductCard from '@/components/ui/cards/product/AddProductCard';
 import { ProductOFF } from '@/lib/types/product/product';
 
 const mockProduct: ProductOFF = {
-    id: 1,
+    id: '1',
     barcode: '123456789',
     category: 'Beverages',
     brand: 'MockBrand',

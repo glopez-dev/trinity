@@ -1,4 +1,5 @@
 import {InputValueTypes} from "@/components/ui/input/types";
+import {z} from "zod";
 
 export interface Product {
     id: string;
@@ -91,4 +92,14 @@ export interface ProductResponse {
         maxThreshold: InputValueTypes;
     };
 }
+
+export const updateProductSchema = z.object({
+    name: z.string(),
+    price: z.number(),
+    currentQuantity: z.number()
+});
+
+export type UpdateProductSchemaType = z.infer<typeof updateProductSchema>;
+
+
 
