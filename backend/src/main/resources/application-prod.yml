@@ -68,3 +68,10 @@ springdoc:
     enabled: false  # Désactivé en production pour la sécurité
   swagger-ui:
     enabled: false  # Désactivé en production pour la sécurité
+
+# PayPal Configuration
+paypal:
+  client:
+    id: ${PAYPAL_CLIENT_ID}
+    secret: ${PAYPAL_SECRET}
+  mode: live
