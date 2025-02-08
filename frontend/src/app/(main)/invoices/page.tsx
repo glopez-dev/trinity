@@ -68,16 +68,16 @@ const handleEdit = (invoice: Invoice) => {
     console.log('Édition de la facture:', invoice);
 };
 
-const UserTable: React.FC = () => {
+const InvoiceTable: React.FC = () => {
     const [filterText, setFilterText] = useState('');
-  
+
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
         const searchText = event.target.value;
         setFilterText(searchText);
     };
 
-    const filteredInvoices = invoicesData.filter((invoice: Invoice) => 
-        invoice.firstName.toLowerCase().includes(filterText.toLowerCase()) || 
+    const filteredInvoices = invoicesData.filter((invoice: Invoice) =>
+        invoice.firstName.toLowerCase().includes(filterText.toLowerCase()) ||
         invoice.status.toLowerCase().includes(filterText.toLowerCase())
     );
 
@@ -97,7 +97,7 @@ const UserTable: React.FC = () => {
             <DataTable
                 className={styles.table}
                 columns={columns}
-                data={filteredInvoices}  // Use filtered data here
+                data={filteredInvoices}
                 pagination
                 highlightOnHover
                 striped
@@ -146,4 +146,4 @@ const UserTable: React.FC = () => {
     );
 };
 
-export default UserTable;
+export default InvoiceTable;

@@ -11,7 +11,6 @@ const navItems: NavItemProps[] = [
     {name: 'Employés', icon: "UserCog", path: '/users/employees'},
     {name: 'Clients', icon: "Users", path: '/users/customers'},
     {name: 'Factures', icon: "FileText", path: '/invoices'},
-    {name: 'Rapports', icon: "ChartNoAxesColumnIncreasing", path: '/reports'},
 ];
 
 export const NavigationContent: React.FC<NavigationContentProps> = ({isCollapsed, onToggle}) => {
