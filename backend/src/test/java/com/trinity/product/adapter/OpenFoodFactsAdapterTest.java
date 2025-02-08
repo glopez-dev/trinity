@@ -5,7 +5,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.trinity.product.dto.ImageUrls;
-import com.trinity.product.dto.TrinitySearchResponse;
+import com.trinity.product.dto.api.SearchProductResponse;
 import com.trinity.product.dto.open_food_facts.Front;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactSearchResponse;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactsNutrientLevels;
@@ -23,7 +23,7 @@ class OpenFoodFactsAdapterTest {
         OpenFoodFactSearchResponse openFoodFactsResponse = null;
 
         // When
-        TrinitySearchResponse response = OpenFoodFactsAdapter.adapt(openFoodFactsResponse);
+        SearchProductResponse response = OpenFoodFactsAdapter.adapt(openFoodFactsResponse);
 
         // Then
         assertThat(response.getProducts()).isEmpty();
@@ -36,7 +36,7 @@ class OpenFoodFactsAdapterTest {
         openFoodFactsResponse.setProducts(List.of());
 
         // When
-        TrinitySearchResponse response = OpenFoodFactsAdapter.adapt(openFoodFactsResponse);
+        SearchProductResponse response = OpenFoodFactsAdapter.adapt(openFoodFactsResponse);
 
         // Then
         assertThat(response.getProducts()).isEmpty();
@@ -80,7 +80,7 @@ class OpenFoodFactsAdapterTest {
         openFoodFactsResponse.setProducts(List.of(openFoodFactsProduct));
 
         // When
-        TrinitySearchResponse response = OpenFoodFactsAdapter.adapt(openFoodFactsResponse);
+        SearchProductResponse response = OpenFoodFactsAdapter.adapt(openFoodFactsResponse);
 
         // Then
         assertThat(response.getProducts()).hasSize(1);

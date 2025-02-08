@@ -99,4 +99,18 @@ public class Product {
 
     @LastModifiedDate
     private LocalDateTime lastUpdate;
+
+   @Embedded
+    private Stock stock;
+
+    @Embeddable
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Stock {
+        private int quantity;
+        private int minThreshold;
+        private int maxThreshold;
+    }
 }

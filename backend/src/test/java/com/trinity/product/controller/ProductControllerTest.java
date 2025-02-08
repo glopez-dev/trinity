@@ -3,9 +3,14 @@ package com.trinity.product.controller;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.trinity.product.dto.TrinitySearchRequest;
-import com.trinity.product.dto.TrinitySearchResponse;
+import java.math.BigDecimal;
+
+import com.trinity.product.dto.api.CreateProductDTO;
+import com.trinity.product.dto.api.ReadProductDTO;
+import com.trinity.product.dto.api.SearchProductRequest;
+import com.trinity.product.dto.api.SearchProductResponse;
 import com.trinity.product.service.OpenFoodFactsService;
+import com.trinity.product.service.ProductService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,11 +19,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
-
 class ProductControllerTest {
 
     @Mock
     private OpenFoodFactsService openFoodFactsService;
+
+    @Mock
+    private ProductService productService;
 
     @InjectMocks
     private ProductController productController;
@@ -32,14 +39,14 @@ class ProductControllerTest {
     void testSearchProducts_Success() {
         // Given
         String searchTerm = "test";
-        TrinitySearchRequest request = new TrinitySearchRequest();
+        SearchProductRequest request = new SearchProductRequest();
         request.setSearchTerm(searchTerm);
-        TrinitySearchResponse expectedResponse = new TrinitySearchResponse();
+        SearchProductResponse expectedResponse = new SearchProductResponse();
 
         when(openFoodFactsService.searchProducts(searchTerm)).thenReturn(expectedResponse);
 
         // When
-        ResponseEntity<TrinitySearchResponse> responseEntity = productController.searchProducts(request);
+        ResponseEntity<SearchProductResponse> responseEntity = productController.searchProducts(request);
 
         // Then
         assertEquals(ResponseEntity.ok(expectedResponse), responseEntity);
@@ -50,7 +57,7 @@ class ProductControllerTest {
     void testSearchProducts_Failure() {
         // Given
         String searchTerm = "test";
-        TrinitySearchRequest request = new TrinitySearchRequest();
+        SearchProductRequest request = new SearchProductRequest();
         request.setSearchTerm(searchTerm);
 
         when(openFoodFactsService.searchProducts(searchTerm)).thenThrow(new RuntimeException("API error"));
@@ -58,5 +65,46 @@ class ProductControllerTest {
         // When & Then
         assertThrows(RuntimeException.class, () -> productController.searchProducts(request));
         verify(openFoodFactsService, times(1)).searchProducts(searchTerm);
+    }
+
+    @Test 
+    void testCreateProduct_Success() {
+        // Given
+        CreateProductDTO dto = new CreateProductDTO();
+        dto.setBarcode("1234567890");
+        dto.setBrand("brand");
+        dto.setName("name");
+        dto.setPrice(new BigDecimal("1.23"));
+
+        ReadProductDTO expectedProduct = new ReadProductDTO();
+        expectedProduct.setBarcode("1234567890");
+        expectedProduct.setBrand("brand");
+        expectedProduct.setName("name");
+        expectedProduct.setPrice(new BigDecimal("1.23"));
+
+        when(productService.createProduct(dto)).thenReturn(expectedProduct);
+
+        // When 
+        ResponseEntity<ReadProductDTO> responseEntity = productController.createProduct(dto);
+
+        // Then
+        assertEquals(ResponseEntity.ok(expectedProduct), responseEntity);
+        verify(productService, times(1)).createProduct(dto);
+    }
+
+    @Test
+    void testCreateProduct_Failure() {
+        // Given
+        CreateProductDTO dto = new CreateProductDTO();
+        dto.setBarcode("1234567890");
+        dto.setBrand("brand");
+        dto.setName("name");
+        dto.setPrice(new BigDecimal("1.23"));
+
+        when(productService.createProduct(dto)).thenThrow(new RuntimeException("Creation error"));
+
+        // When & Then
+        assertThrows(RuntimeException.class, () -> productController.createProduct(dto));
+        verify(productService, times(1)).createProduct(dto);
     }
 }

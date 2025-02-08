@@ -191,4 +191,22 @@ class ProductTest {
         // Then
         assertThat(result).isEqualTo(lastUpdate);
     }
+
+    @Test
+    void testGetStock() {
+        // Given
+        Product.Stock stock = new Product.Stock();
+        stock.setQuantity(50);
+        stock.setMinThreshold(5);
+        stock.setMaxThreshold(100);
+        product.setStock(stock);
+
+        // When
+        Product.Stock result = product.getStock();
+
+        // Then
+        assertThat(result.getQuantity()).isEqualTo(50);
+        assertThat(result.getMinThreshold()).isEqualTo(5);
+        assertThat(result.getMaxThreshold()).isEqualTo(100);
+    }
 }

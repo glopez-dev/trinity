@@ -1,4 +1,4 @@
-package com.trinity.product.dto;
+package com.trinity.product.dto.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import jakarta.validation.ConstraintViolation;
@@ -8,10 +8,12 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.trinity.product.dto.api.SearchProductRequest;
+
 import java.util.Set;
 
 
-class TrinitySearchRequestTest {
+class SearchProductRequestTest {
 
     private Validator validator;
 
@@ -25,7 +27,7 @@ class TrinitySearchRequestTest {
     void testGetSearchTerm() {
         // Given
         String searchTerm = "TestSearch";
-        TrinitySearchRequest request = new TrinitySearchRequest(searchTerm);
+        SearchProductRequest request = new SearchProductRequest(searchTerm);
 
         // When
         String result = request.getSearchTerm();
@@ -38,7 +40,7 @@ class TrinitySearchRequestTest {
     void testSetSearchTerm() {
         // Given
         String searchTerm = "NewSearch";
-        TrinitySearchRequest request = new TrinitySearchRequest();
+        SearchProductRequest request = new SearchProductRequest();
 
         // When
         request.setSearchTerm(searchTerm);
@@ -50,10 +52,10 @@ class TrinitySearchRequestTest {
     @Test
     void testSearchTermNotEmpty() {
         // Given
-        TrinitySearchRequest request = new TrinitySearchRequest();
+        SearchProductRequest request = new SearchProductRequest();
 
         // When
-        Set<ConstraintViolation<TrinitySearchRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<SearchProductRequest>> violations = validator.validate(request);
 
         // Then
         assertThat(violations).isNotEmpty();
@@ -63,10 +65,10 @@ class TrinitySearchRequestTest {
     @Test
     void testSearchTermPattern() {
         // Given
-        TrinitySearchRequest request = new TrinitySearchRequest("Invalid123");
+        SearchProductRequest request = new SearchProductRequest("Invalid123");
 
         // When
-        Set<ConstraintViolation<TrinitySearchRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<SearchProductRequest>> violations = validator.validate(request);
 
         // Then
         assertThat(violations).isNotEmpty();
@@ -76,10 +78,10 @@ class TrinitySearchRequestTest {
     @Test
     void testValidSearchTerm() {
         // Given
-        TrinitySearchRequest request = new TrinitySearchRequest("ValidSearch");
+        SearchProductRequest request = new SearchProductRequest("ValidSearch");
 
         // When
-        Set<ConstraintViolation<TrinitySearchRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<SearchProductRequest>> violations = validator.validate(request);
 
         // Then
         assertThat(violations).isEmpty();

@@ -6,9 +6,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.trinity.product.dto.TrinitySearchRequest;
-import com.trinity.product.dto.TrinitySearchResponse;
+import com.trinity.product.dto.api.CreateProductDTO;
+import com.trinity.product.dto.api.ReadProductDTO;
+import com.trinity.product.dto.api.SearchProductRequest;
+import com.trinity.product.dto.api.SearchProductResponse;
 import com.trinity.product.service.OpenFoodFactsService;
+import com.trinity.product.service.ProductService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -20,19 +23,20 @@ import lombok.AllArgsConstructor;
 public class ProductController {
 
     private final OpenFoodFactsService openFoodFactsService;
+    private final ProductService productService;
 
-    /**
-     * Handles the search request for products.
-     *
-     * @param request the search request containing the search term
-     * @return a ResponseEntity containing the search response
-     */
     @PostMapping("/search")
-    public ResponseEntity<TrinitySearchResponse> searchProducts(@Valid @RequestBody TrinitySearchRequest request) {
+    public ResponseEntity<SearchProductResponse> searchProducts(@Valid @RequestBody SearchProductRequest request) {
 
         String searchTerm = request.getSearchTerm();
-        TrinitySearchResponse response = openFoodFactsService.searchProducts(searchTerm);
+        SearchProductResponse response = openFoodFactsService.searchProducts(searchTerm);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<ReadProductDTO> createProduct(@Valid @RequestBody CreateProductDTO request) {
+        ReadProductDTO product = productService.createProduct(request);
+        return ResponseEntity.ok(product);
     }
 
 }
