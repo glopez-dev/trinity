@@ -53,7 +53,7 @@ interface SelectedImages {
 }
 
 export interface ProductOFF {
-    id: number | string | null;
+    id: string | null;
     barcode: string;
     category: string | null;
     brand: string;
@@ -71,3 +71,24 @@ export interface ProductOFF {
         maxThreshold: InputValueTypes;
     };
 }
+
+export interface ProductResponse {
+    id: string;
+    barcode: string;
+    category: string | null;
+    brand: string;
+    name: string;
+    ingredients: string;
+    price: InputValueTypes;
+    nutrientLevels: Nutrient;
+    nutriments: Nutriments;
+    nutriscoreGrade: 'a' | 'b' | 'c' | 'd' | 'e';
+    selectedImages: SelectedImages;
+    lastUpdate: string | null;
+    stock: {
+        currentQuantity: InputValueTypes;
+        minThreshold: InputValueTypes;
+        maxThreshold: InputValueTypes;
+    };
+}
+

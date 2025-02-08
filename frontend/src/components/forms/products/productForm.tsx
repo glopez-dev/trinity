@@ -1,14 +1,15 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import styles from './productForm.module.css';
 import Input from "@/components/ui/input/input";
 import {InputValueTypes} from "@/components/ui/input/types";
 import IconButton from "@/components/ui/buttons/icon-button/IconButton";
-import {searchOFFProducts} from "@/lib/api/products/productsProvider";
+import {createProduct, searchOFFProducts} from "@/lib/api/products/productsProvider";
 import {ProductOFF} from "@/lib/types/product/product";
 import {useFlash} from "@/lib/contexts/FlashMessagesContext";
 import AddProductCard from "@/components/ui/cards/product/AddProductCard";
 import axios from "axios";
 import Button from "@/components/ui/buttons/button/Button";
+import {useRouter} from "next/navigation";
 
 export default function ProductForm() {
     const [selectedProduct, setSelectedProduct] = useState<ProductOFF | null>(null);
@@ -18,12 +19,9 @@ export default function ProductForm() {
     const [searchValue, setSearchValue] = useState<InputValueTypes>('');
     const [searchResults, setSearchResults] = useState<ProductOFF[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const router = useRouter();
     const {showMessage} = useFlash();
 
-
-    useEffect(() => {
-        console.log(selectedProduct);
-    }, [selectedProduct, setSelectedProduct]);
     const handleSearch = async () => {
         if (searchValue === '') {
             showMessage('warning', 'Veuillez entrer un nom de produit à rechercher');
@@ -45,19 +43,37 @@ export default function ProductForm() {
         }
     }
 
-    const handleSumbit = async () => {
+    const handleSubmit = async () => {
         if (!selectedProduct || currentQuantity === '' || minThreshold === '') {
             showMessage('warning', 'Veuillez remplir tous les champs');
         } else {
-            setSelectedProduct({
+            const newProduct = {
                 ...selectedProduct,
                 stock: {
                     currentQuantity: currentQuantity,
                     minThreshold: minThreshold,
-                    maxThreshold: '1000'
-                },
-            })
-            showMessage('success', 'Produit ajouté avec succès');
+                    maxThreshold: '10000',
+                }
+            }
+
+            setSelectedProduct(newProduct);
+
+            try {
+                const response = await createProduct(newProduct);
+                if (response.id !== null && response.id !== undefined) {
+                    setSelectedProduct(null);
+                    setCurrentQuantity('');
+                    setMinThreshold('');
+                    router.push('/products');
+                    showMessage('success', 'Produit ajouté avec succès');
+                }
+            } catch (e) {
+                if (axios.isAxiosError(e)) {
+                    showMessage('error', e.message);
+                } else {
+                    showMessage('error', 'Une erreur est survenue ! Veuillez réessayer plus tard.');
+                }
+            }
         }
     }
 
@@ -91,7 +107,7 @@ export default function ProductForm() {
                     {searchResults.length > 0 && searchResults.map((product: ProductOFF, index: number) => {
                         return (
                             <AddProductCard
-                                key={product.id ? product.id : index}
+                                key={product.stock ? product.stock.currentQuantity : index}
                                 product={product}
                                 isSelected={selectedProduct?.barcode === product.barcode}
                                 onSelect={(product) => setSelectedProduct(product)}
@@ -105,6 +121,17 @@ export default function ProductForm() {
 
                 {selectedProduct && (
                     <div className={styles.inputContainer}>
+                        <Input
+                            onChange={(value) => setSelectedProduct({
+                                ...selectedProduct,
+                                name: value.toString()
+                            })}
+                            value={selectedProduct.name ? selectedProduct.name : ''}
+                            name={'nom'}
+                            placeholder={'Nom du produit...'}
+                            label={'Nom'}
+                            required
+                        />
                         <Input
                             onChange={(value) => setSelectedProduct({
                                 ...selectedProduct,
@@ -137,7 +164,7 @@ export default function ProductForm() {
                         />
                         <Button
                             title={'Ajouter'}
-                            action={() => handleSumbit()}
+                            action={() => handleSubmit()}
                             size={'full'}
                             color={'primary'}
                             type={'button'}
