@@ -1,0 +1,42 @@
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-top: 1px solid var(--text-color);
+    padding: 1rem 4px 0;
+}
+
+.stockTitle {
+    font-size: 16px;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.stockContainer {
+    display: flex;
+    gap: 10px;
+}
+
+.currentQuantity > button {
+    align-self: end;
+    justify-content: end;
+}
+
+.stockInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.currentQuantity {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: space-between;
+}
+
+.buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
