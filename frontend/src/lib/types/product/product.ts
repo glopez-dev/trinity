@@ -53,7 +53,7 @@ interface SelectedImages {
 }
 
 export interface ProductOFF {
-    id: number | null;
+    id: number | string | null;
     barcode: string;
     category: string | null;
     brand: string;

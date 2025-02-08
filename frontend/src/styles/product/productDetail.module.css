@@ -1,0 +1,22 @@
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.productContainer {
+    border-top: 1px solid var(--text-color);
+    padding: 1rem 4px 0;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

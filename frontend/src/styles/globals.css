@@ -68,6 +68,13 @@ h4 {
     line-height: 150%;
 }
 
+p {
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 150%;
+    font-family: "DM Sans", sans-serif;
+}
+
 .rdp-root {
     --rdp-accent-color: var(--primary);
     --rdp-accent-background-color: rgba(74, 103, 65, 0.2);

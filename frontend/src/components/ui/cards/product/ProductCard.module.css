@@ -25,12 +25,16 @@
     color: var(--text-color);
     line-height: 150%;
 }
+.cardHeaderName:hover {
+    text-decoration: underline;
+}
 
 .cardBody {
     display: flex;
     flex-direction: column;
     padding: 16px;
     gap: 10px;
+    width: 100%;
 }
 
 .cardItem {
