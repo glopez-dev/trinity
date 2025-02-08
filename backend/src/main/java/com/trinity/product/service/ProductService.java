@@ -1,7 +1,7 @@
 package com.trinity.product.service;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -26,5 +26,26 @@ public class ProductService {
         Product savedProduct = productRepository.save(mappedProduct);
         return productMapper.toDTO(savedProduct);
     }
- 
+
+    public List<ReadProductDTO> getAllProducts() {
+        List<Product> products = productRepository.findAll();
+
+        if (products.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return products.stream()
+            .map(productMapper::toDTO)
+            .toList();
+    }
+
+    public ReadProductDTO getProduct(UUID productId) {
+        Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        return productMapper.toDTO(product);
+    }
+
+
+
 }
