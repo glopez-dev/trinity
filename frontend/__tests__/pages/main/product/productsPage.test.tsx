@@ -33,6 +33,7 @@ vi.mock('@/components/ui/buttons/button/Button', () => ({
     )
 }));
 
+
 describe("Products Page", () => {
 
     it("should render product page", () => {
@@ -46,12 +47,12 @@ describe("Products Page", () => {
         expect(container).toBeDefined();
         expect(screen.getByPlaceholderText('Rechercher un produit')).toBeDefined();
 
-        expect(screen.getAllByRole('product-card').length).above(0);
+        expect(screen.getAllByTestId('product-card').length).above(0);
 
         const input = screen.getByPlaceholderText('Rechercher un produit');
         fireEvent.change(input, {target: {value: 'Bio Organic Quinoa'}});
 
-        expect(screen.getAllByRole('product-card').length).toBe(1);
+        expect(screen.getAllByTestId('product-card').length).toBe(1);
     });
 
     it("should refresh the products list", () => {

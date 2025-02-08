@@ -2,9 +2,9 @@ import styles from "./ProductCard.module.css";
 import {getStockStatus, STOCK_STATUS} from "@/lib/constants/products";
 import Badge, {BadgeProps} from "@/components/ui/badge/Badge";
 import {Product} from "@/lib/types/product/product";
+import Link from "next/link";
 
 interface ProductCardProps {
-    key: string;
     product: Product;
 }
 
@@ -21,9 +21,11 @@ export const ProductCard = ({product}: ProductCardProps) => {
     }
 
     return (
-        <div className={styles.card} role={'product-card'}>
+        <div className={styles.card} data-testid={'product-card'}>
             <div className={styles.cardHeader}>
-                <p className={styles.cardHeaderName}>{product.name}</p>
+                <div>
+                    <Link className={styles.cardHeaderName} href={`/products/${product.id}/`} >{product.name}</Link>
+                </div>
                 <Badge text={badgeData.text} type={badgeData.type}/>
             </div>
             <div className={styles.cardBody}>

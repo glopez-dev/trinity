@@ -14,13 +14,10 @@ const Button: FC<ButtonProps> = ({
                                      type = 'button'
                                  }) => {
     let iconColor = '';
-    switch (color) {
-        case 'secondary':
-            iconColor = '#4A6741';
-            break;
-        default:
-            iconColor = '#F5F1E8';
-            break;
+    if (color === 'secondary') {
+        iconColor = '#4A6741';
+    } else {
+        iconColor = '#F5F1E8';
     }
 
     return (
@@ -32,7 +29,7 @@ const Button: FC<ButtonProps> = ({
                 disabled={disabled}
             >
                 <p>{title}</p>
-                {icon && <Icon name={icon} size={20} color={iconColor}/>}
+                {icon && <Icon name={icon} size={14} color={iconColor}/>}
             </button>
         </div>
     );
