@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.trinity.product.dto.api.SearchProductResponse;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactSearchResponse;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactsNutrientLevels;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactsNutriments;
@@ -22,21 +21,15 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class OpenFoodFactsAdapter {
 
-    public static SearchProductResponse adapt(OpenFoodFactSearchResponse openFoodFactsResponse) {
-        SearchProductResponse response = new SearchProductResponse();
+    public static List<Product> adapt(OpenFoodFactSearchResponse openFoodFactsResponse) {
 
         if (openFoodFactsResponse == null || openFoodFactsResponse.getProducts() == null) {
-            response.setProducts(List.of());
-            return response;
+            return List.of();
         }
 
-        List<Product> products = openFoodFactsResponse.getProducts().parallelStream()
+        return openFoodFactsResponse.getProducts().parallelStream()
             .map(OpenFoodFactsAdapter::adaptProduct)
             .collect(Collectors.toList());
-
-        response.setProducts(products);
-
-        return response;
     }
 
     private static NutrientLevels adaptNutrientLevels(OpenFoodFactsNutrientLevels openFoodFactsNutrientLevels) {

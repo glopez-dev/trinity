@@ -4,11 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.trinity.product.dto.api.CreateProductDTO;
 import com.trinity.product.dto.api.ReadProductDTO;
-import com.trinity.product.dto.api.SearchProductRequest;
-import com.trinity.product.dto.api.SearchProductResponse;
+import com.trinity.product.dto.api.SearchProductDTO;
 import com.trinity.product.service.OpenFoodFactsService;
 import com.trinity.product.service.ProductService;
 
@@ -39,14 +40,15 @@ class ProductControllerTest {
     void testSearchProducts_Success() {
         // Given
         String searchTerm = "test";
-        SearchProductRequest request = new SearchProductRequest();
+        SearchProductDTO request = new SearchProductDTO();
         request.setSearchTerm(searchTerm);
-        SearchProductResponse expectedResponse = new SearchProductResponse();
+        List<ReadProductDTO> expectedResponse = new ArrayList<>();
+        expectedResponse.add(new ReadProductDTO());
 
         when(openFoodFactsService.searchProducts(searchTerm)).thenReturn(expectedResponse);
 
         // When
-        ResponseEntity<SearchProductResponse> responseEntity = productController.searchProducts(request);
+        ResponseEntity<List<ReadProductDTO>> responseEntity = productController.searchProducts(request);
 
         // Then
         assertEquals(ResponseEntity.ok(expectedResponse), responseEntity);
@@ -57,7 +59,7 @@ class ProductControllerTest {
     void testSearchProducts_Failure() {
         // Given
         String searchTerm = "test";
-        SearchProductRequest request = new SearchProductRequest();
+        SearchProductDTO request = new SearchProductDTO();
         request.setSearchTerm(searchTerm);
 
         when(openFoodFactsService.searchProducts(searchTerm)).thenThrow(new RuntimeException("API error"));
