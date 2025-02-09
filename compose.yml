@@ -23,7 +23,8 @@ x-backend-env: &backend-env
   # PayPal Configuration
   PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
   PAYPAL_CLIENT_SECRET: ${PAYPAL_SECRET}
-
+  # CORS Configuration
+  SPRING_CORS_ALLOWED_ORIGINS: ${SPRING_CORS_ALLOWED_ORIGINS}
   # Custom JWT Configuration
   # Maps to jwt.secret in application.properties
   # Using Docker secret for security
@@ -39,6 +40,7 @@ x-backend-env: &backend-env
 x-backend-common: &backend-common
   networks: 
     - backend
+    - frontend
   depends_on:
     postgres:
       condition: service_healthy
