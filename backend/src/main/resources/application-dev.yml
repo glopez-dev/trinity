@@ -70,6 +70,17 @@ app:
   cors:
     allowed-origins: ${NEXT_DEV_API_URL}
 
+
+springdoc:
+  api-docs:
+    path: /api/v1/api-docs
+  swagger-ui:
+    path: /api/v1/swagger-ui.html
+    use-root-path: false
+    url: /api/v1/api-docs
+    config-url: /api/v1/api-docs/swagger-config
+  pathsToMatch: /api/v1/**
+
 paypal:
   client:
     id: ${PAYPAL_CLIENT_ID}
