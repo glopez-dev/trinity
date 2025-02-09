@@ -19,10 +19,10 @@ public class AppConfig  {
 
     private static final Logger logger = LoggerFactory.getLogger(AppConfig.class);
 
-    @Value("${app.name}") // Injects 'app.name' property
+    @Value("${spring.application.name}") // Injects 'app.name' property
     private String appName;
 
-    @Value("${app.version}") // Injects 'app.version' property
+    @Value("${spring.application.version}") // Injects 'app.version' property
     private String appVersion;
 
     public void printConfig() {
