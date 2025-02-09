@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -67,6 +68,13 @@ public class ProductController {
     public ResponseEntity<ReadProductDTO> updateProduct(@PathVariable UUID productId, @Valid @RequestBody UpdateProductDTO request) {
         ReadProductDTO product = productService.updateProduct(productId, request);
         return ResponseEntity.ok(product);
+    }
+
+    @DeleteMapping("/{productId}")
+    @Operation(summary = "Delete a product", description = "Delete a product by its ID")
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID productId) {
+        productService.deleteProduct(productId);
+        return ResponseEntity.noContent().build();
     }
 
 }
