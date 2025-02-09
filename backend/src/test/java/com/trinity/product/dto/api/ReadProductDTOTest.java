@@ -130,4 +130,62 @@ class ReadProductDTOTest {
         assertThat(violations.iterator().next().getMessage())
             .isEqualTo("Nutriscore grade must be between a and e");
     }
+
+    @Test
+    void equalsTest() {
+        // Given
+        setRequiredValidFields();
+        readProductDTO.setNutriscoreGrade("a");
+        ReadProductDTO dtoCopy = new ReadProductDTO();
+        dtoCopy.setId(readProductDTO.getId());
+        dtoCopy.setBarcode(readProductDTO.getBarcode());
+        dtoCopy.setPrice(readProductDTO.getPrice());
+        dtoCopy.setNutriscoreGrade(readProductDTO.getNutriscoreGrade());
+        dtoCopy.setStock(readProductDTO.getStock());
+        
+        // When & Then
+        assertThat(readProductDTO).isEqualTo(dtoCopy);
+        
+        // Change one field and test not equals
+        dtoCopy.setBarcode("987654321");
+        assertThat(readProductDTO).isNotEqualTo(dtoCopy);
+    }
+
+    @Test
+    void hashCodeTest() {
+        // Given
+        setRequiredValidFields();
+        readProductDTO.setNutriscoreGrade("a");
+        ReadProductDTO dtoCopy = new ReadProductDTO();
+        dtoCopy.setId(readProductDTO.getId());
+        dtoCopy.setBarcode(readProductDTO.getBarcode());
+        dtoCopy.setPrice(readProductDTO.getPrice());
+        dtoCopy.setNutriscoreGrade(readProductDTO.getNutriscoreGrade());
+        dtoCopy.setStock(readProductDTO.getStock());
+        
+        // When & Then
+        assertThat(readProductDTO.hashCode()).isEqualTo(dtoCopy.hashCode());
+        
+        // Change one field and test hashcodes are likely different
+        dtoCopy.setPrice(new BigDecimal("19.99"));
+        assertThat(readProductDTO.hashCode()).isNotEqualTo(dtoCopy.hashCode());
+    }
+
+    @Test
+    void toStringTest() {
+        // Given
+        setRequiredValidFields();
+        readProductDTO.setNutriscoreGrade("a");
+
+        // When
+        String dtoString = readProductDTO.toString();
+
+        // Then
+        assertThat(dtoString).isNotNull();
+        assertThat(dtoString).contains("id=")
+                             .contains("barcode=")
+                             .contains("price=")
+                             .contains("nutriscoreGrade=")
+                             .contains("stock=");
+    }
 }

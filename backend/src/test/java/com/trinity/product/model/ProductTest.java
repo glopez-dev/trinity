@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.trinity.product.dto.ImageUrls;
+import com.trinity.product.dto.open_food_facts.ImageUrls;
 
 
 class ProductTest {

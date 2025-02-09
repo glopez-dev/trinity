@@ -92,7 +92,6 @@ Trinity is a comprehensive retail management system, designed to modernize groce
 ### Backend
 - RESTful API with JWT authentication
 - PostgreSQL database
-- RabbitMQ for message queuing
 - Integration with external APIs (PayPal, Open Food Facts)
 
 

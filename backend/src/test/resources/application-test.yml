@@ -22,12 +22,6 @@ spring:
   main:
     banner-mode: off
 
-  rabbitmq:
-    host: ${RABBITMQ_HOST:localhost}
-    port: ${RABBITMQ_PORT:5672}
-    username: ${RABBITMQ_DEFAULT_USER:trinity_rabbit}
-    password: ${RABBITMQ_DEFAULT_PASS:trinity_rabbit}
-
   devtools:
     restart:
       enabled: true

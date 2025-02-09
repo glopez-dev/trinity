@@ -20,18 +20,6 @@ x-backend-env: &backend-env
   # Maps to spring.datasource.password in application.properties
   # Using Docker secret for security
   SPRING_DATASOURCE_PASSWORD: /run/secrets/postgres_password
-
-  # RabbitMQ Configuration
-  # Maps to spring.rabbitmq.host in application.properties
-  SPRING_RABBITMQ_HOST: rabbitmq
-  # Maps to spring.rabbitmq.port in application.properties
-  SPRING_RABBITMQ_PORT: 5672
-  # Maps to spring.rabbitmq.username in application.properties
-  SPRING_RABBITMQ_USERNAME: ${RABBITMQ_DEFAULT_USER}
-  # Maps to spring.rabbitmq.password in application.properties
-  # Using Docker secret for security
-  SPRING_RABBITMQ_PASSWORD: /run/secrets/rabbitmq_password
-
   # PayPal Configuration
   PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
   PAYPAL_CLIENT_SECRET: ${PAYPAL_SECRET}
@@ -54,8 +42,7 @@ x-backend-common: &backend-common
   depends_on:
     postgres:
       condition: service_healthy
-    rabbitmq:
-     condition: service_healthy
+
 
 ############
 # FRONTEND # 
@@ -82,8 +69,7 @@ name: trinity
 volumes:
   postgres_data:
     driver: local
-  rabbitmq_data:
-    driver: local
+
 
 networks:
   backend:
@@ -94,10 +80,6 @@ networks:
 secrets: 
   postgres_password:
     file: ./.secrets/postgres_password
-  rabbitmq_password:
-    file: ./.secrets/rabbitmq_password
-  paypal_secret:
-    file: ./.secrets/paypal_secret
 
 services:
 ##########
@@ -115,18 +97,6 @@ services:
     networks:
       - "backend"
   
-  rabbitmq:
-    extends:
-      file: ./devops/compose/rabbitmq.yml
-      service: rabbitmq
-    volumes:
-      - "rabbitmq_data:/var/lib/rabbitmq"
-    networks:
-      - "backend"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    
 ###############
 # DEVELOPMENT #
 ###############

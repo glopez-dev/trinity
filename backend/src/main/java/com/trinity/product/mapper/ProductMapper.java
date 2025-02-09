@@ -2,9 +2,9 @@ package com.trinity.product.mapper;
 
 import org.springframework.stereotype.Service;
 
-import com.trinity.product.dto.ImageUrls;
 import com.trinity.product.dto.api.CreateProductDTO;
 import com.trinity.product.dto.api.ReadProductDTO;
+import com.trinity.product.dto.open_food_facts.ImageUrls;
 import com.trinity.product.model.Product;
 import com.trinity.product.model.Product.NutrientLevels;
 

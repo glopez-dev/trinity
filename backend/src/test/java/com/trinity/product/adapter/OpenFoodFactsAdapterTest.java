@@ -4,9 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-import com.trinity.product.dto.ImageUrls;
-import com.trinity.product.dto.api.SearchProductResponse;
 import com.trinity.product.dto.open_food_facts.Front;
+import com.trinity.product.dto.open_food_facts.ImageUrls;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactSearchResponse;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactsNutrientLevels;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactsNutriments;
@@ -23,10 +22,10 @@ class OpenFoodFactsAdapterTest {
         OpenFoodFactSearchResponse openFoodFactsResponse = null;
 
         // When
-        SearchProductResponse response = OpenFoodFactsAdapter.adapt(openFoodFactsResponse);
+        List<Product> response = OpenFoodFactsAdapter.adapt(openFoodFactsResponse);
 
         // Then
-        assertThat(response.getProducts()).isEmpty();
+        assertThat(response).isEmpty();
     }
 
     @Test
@@ -36,10 +35,10 @@ class OpenFoodFactsAdapterTest {
         openFoodFactsResponse.setProducts(List.of());
 
         // When
-        SearchProductResponse response = OpenFoodFactsAdapter.adapt(openFoodFactsResponse);
+        List<Product> response = OpenFoodFactsAdapter.adapt(openFoodFactsResponse);
 
         // Then
-        assertThat(response.getProducts()).isEmpty();
+        assertThat(response).isEmpty();
     }
 
     @Test
@@ -80,11 +79,11 @@ class OpenFoodFactsAdapterTest {
         openFoodFactsResponse.setProducts(List.of(openFoodFactsProduct));
 
         // When
-        SearchProductResponse response = OpenFoodFactsAdapter.adapt(openFoodFactsResponse);
+        List<Product> response = OpenFoodFactsAdapter.adapt(openFoodFactsResponse);
 
         // Then
-        assertThat(response.getProducts()).hasSize(1);
-        Product product = response.getProducts().get(0);
+        assertThat(response.size()).isEqualTo(1);
+        Product product = response.get(0);
         assertThat(product.getBarcode()).isEqualTo("1234567890123");
         assertThat(product.getBrand()).isEqualTo("Coca-Cola");
         assertThat(product.getName()).isEqualTo("Coca-Cola Classic");
