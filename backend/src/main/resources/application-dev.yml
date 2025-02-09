@@ -68,7 +68,7 @@ jwt:
 
 app:
   cors:
-    allowed-origins: ${NEXT_DEV_API_URL}
+    allowed-origins: ${SPRING_CORS_ALLOWED_ORIGINS:*}
 
 
 springdoc:
