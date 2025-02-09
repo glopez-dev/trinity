@@ -79,7 +79,7 @@ run_spring_boot() {
             inotifywait -r -e modify /app/backend/src/main/ |
             while read -r path action file; do
                 echo "[entrypoint.sh] File changed: $path$file. Recompiling..."
-                ./mvnw compile -o -DskipTests
+                ./mvnw clean compile -o -DskipTests
             done &
             trap 'kill $(jobs -p) 2>/dev/null' EXIT
 

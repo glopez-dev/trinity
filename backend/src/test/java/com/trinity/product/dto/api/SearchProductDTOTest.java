@@ -8,12 +8,10 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.trinity.product.dto.api.SearchProductRequest;
-
 import java.util.Set;
 
 
-class SearchProductRequestTest {
+class SearchProductDTOTest {
 
     private Validator validator;
 
@@ -27,7 +25,7 @@ class SearchProductRequestTest {
     void testGetSearchTerm() {
         // Given
         String searchTerm = "TestSearch";
-        SearchProductRequest request = new SearchProductRequest(searchTerm);
+        SearchProductDTO request = new SearchProductDTO(searchTerm);
 
         // When
         String result = request.getSearchTerm();
@@ -40,7 +38,7 @@ class SearchProductRequestTest {
     void testSetSearchTerm() {
         // Given
         String searchTerm = "NewSearch";
-        SearchProductRequest request = new SearchProductRequest();
+        SearchProductDTO request = new SearchProductDTO();
 
         // When
         request.setSearchTerm(searchTerm);
@@ -52,10 +50,10 @@ class SearchProductRequestTest {
     @Test
     void testSearchTermNotEmpty() {
         // Given
-        SearchProductRequest request = new SearchProductRequest();
+        SearchProductDTO request = new SearchProductDTO();
 
         // When
-        Set<ConstraintViolation<SearchProductRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<SearchProductDTO>> violations = validator.validate(request);
 
         // Then
         assertThat(violations).isNotEmpty();
@@ -65,10 +63,10 @@ class SearchProductRequestTest {
     @Test
     void testSearchTermPattern() {
         // Given
-        SearchProductRequest request = new SearchProductRequest("Invalid123");
+        SearchProductDTO request = new SearchProductDTO("Invalid123");
 
         // When
-        Set<ConstraintViolation<SearchProductRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<SearchProductDTO>> violations = validator.validate(request);
 
         // Then
         assertThat(violations).isNotEmpty();
@@ -78,10 +76,10 @@ class SearchProductRequestTest {
     @Test
     void testValidSearchTerm() {
         // Given
-        SearchProductRequest request = new SearchProductRequest("ValidSearch");
+        SearchProductDTO request = new SearchProductDTO("ValidSearch");
 
         // When
-        Set<ConstraintViolation<SearchProductRequest>> violations = validator.validate(request);
+        Set<ConstraintViolation<SearchProductDTO>> violations = validator.validate(request);
 
         // Then
         assertThat(violations).isEmpty();

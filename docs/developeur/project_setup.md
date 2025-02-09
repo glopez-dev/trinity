@@ -36,11 +36,6 @@ POSTGRES_DB=mydatabase
 POSTGRES_PASSWORD=secret
 POSTGRES_USER=myuser
 
-# RabbitMQ Configuration
-RABBITMQ_HOST=rabbitmq
-RABBITMQ_DEFAULT_PASS=secret
-RABBITMQ_DEFAULT_USER=myuser
-
 # API Configuration
 NEXT_PUBLIC_API_URL=http://host.docker.internal:8080
 ```

@@ -3,20 +3,24 @@ package com.trinity.product.model;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import com.trinity.product.dto.ImageUrls;
+import com.trinity.product.dto.open_food_facts.ImageUrls;
 
 import java.math.BigDecimal;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Embeddable
 @Entity
+@Table(name = "products")
 @Data
 @Builder
 @AllArgsConstructor
@@ -27,11 +31,13 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 13)
     private String barcode;
 
+    @Column(length = 100)
     private String category;
 
+    @Column(length = 100)
     private String brand;
 
     @Column(nullable = false)
@@ -39,11 +45,19 @@ public class Product {
 
     private String ingredients;
 
-    @Column(nullable = false)
+    @NotNull
+    @Positive
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
     @Embedded
     private NutrientLevels nutrientLevels;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
     @Embeddable 
     @Data

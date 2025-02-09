@@ -1,4 +1,4 @@
-package com.trinity.product.dto;
+package com.trinity.product.dto.open_food_facts;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
