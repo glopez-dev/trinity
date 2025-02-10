@@ -1,4 +1,8 @@
-# Backend CI pipeline 
+#######################
+# Backend CI pipeline #
+#######################
+
+# Default values for the jobs if not specified.
 default:
   cache:
     key: ${CI_COMMIT_REF_SLUG}-maven
@@ -36,7 +40,7 @@ Compile Backend code:
   script:
     - cd backend
     - chmod +x mvnw
-    - ./mvnw compile
+    - ./mvnw clean compile
   # Caching
   artifacts:
     paths:
@@ -46,6 +50,7 @@ Build the Backend dev image:
   stage: build
   # Setup
   variables:
+    # The name of the built image 
     BACKEND_IMAGE_TAG_DEV: $BACKEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
   # Scripts
   before_script:
@@ -58,7 +63,7 @@ Build the Backend dev image:
     - docker push "$BACKEND_IMAGE_TAG_DEV"
   # Delete the image from the host Docker's registry after pushing to Docker Hub.
   after_script:
-    - docker image rm $BACKEND_IMAGE_TAG_DEV
+    - docker image rm $BACKEND_IMAGE_TAG_DEV && docker system prune
   # Conditions
   needs: ['Compile Backend code']
 
@@ -74,6 +79,7 @@ Run Backend unit-tests:
   script:
     - cd backend
     - docker run --rm -v $(pwd)/target:/app/backend/target $BACKEND_IMAGE_TAG_DEV clean test jacoco:report 
+    - ls $(pwd)/target/surefire-reports && ls $(pwd)/target/site/jacoco
   artifacts:
     when: always
     reports:
