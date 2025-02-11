@@ -1,7 +1,6 @@
 'use client';
 
 import {useEffect, useState} from "react";
-import {products as p} from "@/lib/api/temporaryData/products/products";
 import styles from "@/styles/product/page.module.css";
 import ProductList from "@/components/features/product/ProductList";
 import Input from "@/components/ui/input/input";
@@ -9,13 +8,14 @@ import {InputValueTypes} from "@/components/ui/input/types";
 import Button from "@/components/ui/buttons/button/Button";
 import IconButton from "@/components/ui/buttons/icon-button/IconButton";
 import {ProductSearch} from "@/lib/schemas/productSchema";
-import {Product} from "@/lib/types/product/product";
+import {ProductResponse} from "@/lib/types/product/product";
 import {useRouter} from "next/navigation";
+import {getProducts} from "@/lib/api/products/productsProvider";
 
 export default function Products() {
 
-    const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [products, setProducts] = useState<ProductResponse[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
     const [searchFilter, setSearchFilter] = useState<ProductSearch>({
         name: ''
     });
@@ -25,19 +25,34 @@ export default function Products() {
         setSearchFilter({
             name: value.toString()
         });
-        const filteredProducts = p.filter(product => product.name.toLowerCase().includes(value.toString().toLowerCase()));
+        const filteredProducts = originalProducts.filter(product =>
+            product.name.toLowerCase().includes(value.toString().toLowerCase())
+        );
         setProducts(filteredProducts);
     }
 
     const handleRefresh = () => {
         setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-        }, 2000);
     }
 
+    const [originalProducts, setOriginalProducts] = useState<ProductResponse[]>([]);
+
     useEffect(() => {
-        setProducts(p);
+        const getAllProducts = async () => {
+            try {
+                const response = await getProducts();
+                setProducts(response);
+                setOriginalProducts(response);
+                setLoading(false);
+            } catch (error) {
+                console.error('Erreur lors du chargement des produits:', error);
+                setLoading(false);
+            }
+        };
+
+        if (loading) {
+            getAllProducts();
+        }
     }, [loading]);
 
     return (

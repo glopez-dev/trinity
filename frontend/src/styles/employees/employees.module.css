@@ -1,0 +1,13 @@
+.titre {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 6px 1rem;
+    border-bottom: 1px solid var(--text-color);
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    margin-top: 40px;
+}
