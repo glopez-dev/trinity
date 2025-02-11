@@ -4,7 +4,7 @@ import Input from "@/components/ui/input/input";
 import {InputValueTypes} from "@/components/ui/input/types";
 import IconButton from "@/components/ui/buttons/icon-button/IconButton";
 import {createProduct, searchOFFProducts} from "@/lib/api/products/productsProvider";
-import {ProductOFF} from "@/lib/types/product/product";
+import {ProductResponse} from "@/lib/types/product/product";
 import {useFlash} from "@/lib/contexts/FlashMessagesContext";
 import AddProductCard from "@/components/ui/cards/product/AddProductCard";
 import axios from "axios";
@@ -12,12 +12,12 @@ import Button from "@/components/ui/buttons/button/Button";
 import {useRouter} from "next/navigation";
 
 export default function ProductForm() {
-    const [selectedProduct, setSelectedProduct] = useState<ProductOFF | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<ProductResponse | null>(null);
     const [currentQuantity, setCurrentQuantity] = useState<InputValueTypes>('');
     const [minThreshold, setMinThreshold] = useState<InputValueTypes>('');
     const [tooltipProduct, setTooltipProduct] = useState<string | null>(null);
     const [searchValue, setSearchValue] = useState<InputValueTypes>('');
-    const [searchResults, setSearchResults] = useState<ProductOFF[]>([]);
+    const [searchResults, setSearchResults] = useState<ProductResponse[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
     const {showMessage} = useFlash();
@@ -31,7 +31,7 @@ export default function ProductForm() {
             setSearchResults([]);
             setLoading(true);
             const response = await searchOFFProducts(searchValue);
-            setSearchResults(response.products);
+            setSearchResults(response);
             setLoading(false);
         } catch (e) {
             if (axios.isAxiosError(e)) {
@@ -50,7 +50,7 @@ export default function ProductForm() {
             const newProduct = {
                 ...selectedProduct,
                 stock: {
-                    currentQuantity: currentQuantity,
+                    quantity: currentQuantity,
                     minThreshold: minThreshold,
                     maxThreshold: '10000',
                 }
@@ -104,10 +104,10 @@ export default function ProductForm() {
                     <h3>Selectionnez le produit à ajouter</h3>
                 )}
                 <div className={styles.productGrid}>
-                    {searchResults.length > 0 && searchResults.map((product: ProductOFF, index: number) => {
+                    {searchResults.length > 0 && searchResults.map((product: ProductResponse, index: number) => {
                         return (
                             <AddProductCard
-                                key={product.stock ? product.stock.currentQuantity : index}
+                                key={product.stock ? product.stock.quantity : index}
                                 product={product}
                                 isSelected={selectedProduct?.barcode === product.barcode}
                                 onSelect={(product) => setSelectedProduct(product)}

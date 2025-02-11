@@ -87,7 +87,7 @@ export interface ProductResponse {
     selectedImages: SelectedImages;
     lastUpdate: string | null;
     stock: {
-        currentQuantity: InputValueTypes;
+        quantity: InputValueTypes;
         minThreshold: InputValueTypes;
         maxThreshold: InputValueTypes;
     };
@@ -96,7 +96,7 @@ export interface ProductResponse {
 export const updateProductSchema = z.object({
     name: z.string(),
     price: z.number(),
-    currentQuantity: z.number()
+    quantity: z.number()
 });
 
 export type UpdateProductSchemaType = z.infer<typeof updateProductSchema>;

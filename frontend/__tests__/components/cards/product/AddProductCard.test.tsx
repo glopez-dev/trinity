@@ -1,16 +1,16 @@
-import {render, screen, fireEvent} from '@testing-library/react';
-import {describe, it, expect, vi} from "vitest";
+import {fireEvent, render, screen} from '@testing-library/react';
+import {describe, expect, it, vi} from "vitest";
 import AddProductCard from '@/components/ui/cards/product/AddProductCard';
-import { ProductOFF } from '@/lib/types/product/product';
+import {ProductResponse} from '@/lib/types/product/product';
 
-const mockProduct: ProductOFF = {
+const mockProduct: ProductResponse = {
     id: '1',
     barcode: '123456789',
     category: 'Beverages',
     brand: 'MockBrand',
     name: 'MockProduct',
     ingredients: 'Water, Sugar, Flavor',
-    price: null,
+    price: '10',
     nutrientLevels: {
         fat: 'low',
         saturatedFat: 'low',
@@ -28,13 +28,13 @@ const mockProduct: ProductOFF = {
     },
     nutriscoreGrade: 'c',
     selectedImages: {
-        display: { en: '', fr: 'images/web-icon-trinity.svg' },
-        small: { en: '', fr: 'images/web-icon-trinity.svg' },
-        thumb: { en: '', fr: 'images/web-icon-trinity.svg' },
+        display: {en: '', fr: 'images/web-icon-trinity.svg'},
+        small: {en: '', fr: 'images/web-icon-trinity.svg'},
+        thumb: {en: '', fr: 'images/web-icon-trinity.svg'},
     },
     lastUpdate: '2023-10-01',
     stock: {
-        currentQuantity: 100,
+        quantity: 100,
         minThreshold: 10,
         maxThreshold: 200,
     },

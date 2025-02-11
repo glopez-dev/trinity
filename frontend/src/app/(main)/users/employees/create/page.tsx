@@ -12,7 +12,7 @@ const AddUserPage = () => {
 
     return (
         <div>
-            <h1 className={styles.title}>Ajouter un utilisateur</h1>
+            <h1 className={styles.title}>Ajouter un employé</h1>
             <AddUser onSubmit={handleAddUser} />
         </div>
     );

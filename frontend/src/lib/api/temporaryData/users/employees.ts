@@ -1,5 +1,6 @@
-{
-  "employees": [
+import {Employee} from "@/lib/types/user/employees";
+
+export const employees = [
     {
       "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
       "email": "sophie.martin@store.com",
@@ -152,5 +153,4 @@
       "updatedAt": "2024-01-19T14:25:00Z",
       "lastLoginAt": "2024-01-20T09:30:00Z"
     }
-  ]
-}
+  ] as Employee[];

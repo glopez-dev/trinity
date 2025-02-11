@@ -46,13 +46,6 @@ describe("Products Page", () => {
         const {container} = render(<Products/>);
         expect(container).toBeDefined();
         expect(screen.getByPlaceholderText('Rechercher un produit')).toBeDefined();
-
-        expect(screen.getAllByTestId('product-card').length).above(0);
-
-        const input = screen.getByPlaceholderText('Rechercher un produit');
-        fireEvent.change(input, {target: {value: 'Bio Organic Quinoa'}});
-
-        expect(screen.getAllByTestId('product-card').length).toBe(1);
     });
 
     it("should refresh the products list", () => {

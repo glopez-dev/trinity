@@ -3,7 +3,7 @@ import {cleanup, fireEvent, screen, waitFor} from '@testing-library/react';
 import ProductForm from '@/components/forms/products/productForm';
 import {createProduct, searchOFFProducts} from '@/lib/api/products/productsProvider';
 import {renderWithProviders} from "@test/test-utils";
-import {ProductOFF} from "@/lib/types/product/product";
+import {ProductResponse} from "@/lib/types/product/product";
 import {ButtonProps} from "@/components/ui/buttons/button/types";
 import {InputProps} from "@/components/ui/input/types";
 import {ReactNode} from 'react';
@@ -56,7 +56,7 @@ vi.mock('next/navigation', () => ({
     })
 }));
 
-const mockProducts: ProductOFF[] = [
+const mockProducts: ProductResponse[] = [
     {
         id: '1',
         barcode: '123456789',
@@ -64,7 +64,7 @@ const mockProducts: ProductOFF[] = [
         brand: 'MockBrand',
         name: 'Test Product 1',
         ingredients: 'Test ingredients 1',
-        price: null,
+        price: '10',
         nutrientLevels: {
             fat: 'low',
             saturatedFat: 'low',
@@ -88,7 +88,7 @@ const mockProducts: ProductOFF[] = [
         },
         lastUpdate: '2023-10-01',
         stock: {
-            currentQuantity: 100,
+            quantity: 100,
             minThreshold: 10,
             maxThreshold: 200,
         },
@@ -100,7 +100,7 @@ const mockProducts: ProductOFF[] = [
         brand: 'MockBrand',
         name: 'Test Product 2',
         ingredients: 'Test ingredients 2',
-        price: null,
+        price: 10,
         nutrientLevels: {
             fat: 'low',
             saturatedFat: 'low',
@@ -124,7 +124,7 @@ const mockProducts: ProductOFF[] = [
         },
         lastUpdate: '2023-10-01',
         stock: {
-            currentQuantity: 100,
+            quantity: 100,
             minThreshold: 10,
             maxThreshold: 200,
         }
@@ -134,8 +134,8 @@ const mockProducts: ProductOFF[] = [
 describe('ProductForm', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        (searchOFFProducts as Mock).mockResolvedValue({products: mockProducts});
-        (createProduct as Mock).mockResolvedValue({products: mockProducts});
+        (searchOFFProducts as Mock).mockResolvedValue(mockProducts);
+        (createProduct as Mock).mockResolvedValue(mockProducts);
         cleanup();
     });
 
@@ -326,15 +326,42 @@ describe('ProductForm', () => {
         fireEvent.click(submitButton);
 
         await waitFor(() => {
-            expect(createProduct).toHaveBeenCalledWith(expect.objectContaining({
+            expect(createProduct).toHaveBeenCalledWith({
+                barcode: '123456789',
+                category: 'Beverages',
+                brand: 'MockBrand',
                 name: 'Test Product 1',
+                id:'1',
+                ingredients: 'Test ingredients 1',
                 price: '10.99',
+                nutrientLevels: {
+                    fat: 'low',
+                    saturatedFat: 'low',
+                    sugars: 'high',
+                    salt: 'low',
+                },
+                nutriments: {
+                    energyKcal100g: 50,
+                    proteins100g: 0,
+                    carbohydrates100g: 12,
+                    fat100g: 0,
+                    fiber100g: 0,
+                    salt100g: 0.1,
+                    sugars100g: 10,
+                },
+                nutriscoreGrade: 'c',
+                selectedImages: {
+                    display: {en: '', fr: 'images/web-icon-trinity.svg'},
+                    small: {en: '', fr: 'images/web-icon-trinity.svg'},
+                    thumb: {en: '', fr: 'images/web-icon-trinity.svg'},
+                },
+                lastUpdate: '2023-10-01',
                 stock: {
-                    currentQuantity: '5',
-                    minThreshold: '2',
-                    maxThreshold: '10000'
-                }
-            }));
+                    quantity: "5",
+                    minThreshold: "2",
+                    maxThreshold: "10000",
+                },
+            });
         });
     });
 });

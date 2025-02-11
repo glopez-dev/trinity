@@ -1,15 +1,15 @@
 import styles from "./ProductCard.module.css";
 import {getStockStatus, STOCK_STATUS} from "@/lib/constants/products";
 import Badge, {BadgeProps} from "@/components/ui/badge/Badge";
-import {Product} from "@/lib/types/product/product";
+import {ProductResponse} from "@/lib/types/product/product";
 import Link from "next/link";
 
 interface ProductCardProps {
-    product: Product;
+    product: ProductResponse;
 }
 
 export const ProductCard = ({product}: ProductCardProps) => {
-    const stockStatus = getStockStatus(product.stock.currentQuantity, product.stock.minThreshold);
+    const stockStatus = getStockStatus(Number(product.stock.quantity), Number(product.stock.minThreshold));
     const badgeData: BadgeProps = {
         text: stockStatus,
         type: 'success'
@@ -24,7 +24,7 @@ export const ProductCard = ({product}: ProductCardProps) => {
         <div className={styles.card} data-testid={'product-card'}>
             <div className={styles.cardHeader}>
                 <div>
-                    <Link className={styles.cardHeaderName} href={`/products/${product.id}/`} >{product.name}</Link>
+                    <Link className={styles.cardHeaderName} href={`/products/${product.id}/`}>{product.name}</Link>
                 </div>
                 <Badge text={badgeData.text} type={badgeData.type}/>
             </div>
@@ -35,7 +35,7 @@ export const ProductCard = ({product}: ProductCardProps) => {
                 </div>
                 <div className={styles.cardItem}>
                     <p className={styles.cardItemName}>Quantité</p>
-                    <p className={styles.cardItemValue}>{product.stock.currentQuantity}</p>
+                    <p className={styles.cardItemValue}>{product.stock.quantity}</p>
                 </div>
                 <div className={styles.cardItem}>
                     <p className={styles.cardItemName}>Seuil Minimal</p>
@@ -43,11 +43,11 @@ export const ProductCard = ({product}: ProductCardProps) => {
                 </div>
                 <div className={styles.cardItem}>
                     <p className={styles.cardItemName}>Catégorie</p>
-                    <p className={styles.cardItemValue}>{product.category}</p>
+                    <p className={styles.cardItemValue}>{product.category ? product.category : 'Aucune'}</p>
                 </div>
                 <div className={styles.cardItem}>
                     <p className={styles.cardItemName}>Dernière mise à jour</p>
-                    <p className={styles.cardItemValue}>{product.lastUpdate.toLocaleDateString()}</p>
+                    <p className={styles.cardItemValue}>{product.lastUpdate ? product.lastUpdate : 'Aucune'}</p>
                 </div>
             </div>
         </div>

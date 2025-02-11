@@ -1,19 +1,20 @@
 'use client'
 import {useEffect, useState} from 'react';
-import {Product} from "@/lib/types/product/product";
-import {products} from "@/lib/api/temporaryData/products/products";
+import {ProductResponse} from "@/lib/types/product/product";
 import styles from '@/styles/product/productDetail.module.css';
 import {ProductCard} from "@/components/ui/cards/product/ProductCard";
 import Button from "@/components/ui/buttons/button/Button";
 import {useRouter} from "next/navigation";
 import Modal from "@/components/ui/modal/Modal";
 import {useFlash} from "@/lib/contexts/FlashMessagesContext";
+import {deleteProduct, getProductById} from "@/lib/api/products/productsProvider";
+import ProductCardSkeleton from "@/components/ui/cards/product/ProductCardSkeleton";
 
 export default function ProductDetailPage({params}: Readonly<{
     params: Promise<{ slug: string }>
 }>) {
     const [slug, setSlug] = useState<string>('');
-    const [product, setProduct] = useState<Product | null>(null);
+    const [product, setProduct] = useState<ProductResponse | null>(null);
     const [modalDeleteVisible, setModalDeleteVisible] = useState<boolean>(false)
     const {showMessage} = useFlash();
     const router = useRouter();
@@ -25,12 +26,39 @@ export default function ProductDetailPage({params}: Readonly<{
     }, [params]);
 
     useEffect(() => {
-        products.filter(product => product.id === slug).forEach(product => setProduct(product));
-    }, [slug]);
+        const getProductBySlug = async () => {
+            try {
+                const response = await getProductById(slug);
+                setProduct(response);
+            } catch (error) {
+                if (error instanceof Error) {
+                    showMessage('error', error.message);
+                } else {
+                    showMessage('error', 'Une erreur est survenue ! Veuillez réessayer plus tard.');
+                }
+            }
+        }
+        if (slug) {
+            getProductBySlug().then(r => console.log(r));
+        }
+    }, [showMessage, slug]);
 
-    function handleDelete() {
-        showMessage('success', 'Produit supprimé avec succès');
-        router.push('/products');
+    const handleDelete = async () => {
+        if (!product) {
+            showMessage('error', 'Produit introuvable');
+            return;
+        }
+        try {
+            await deleteProduct(product.id);
+            showMessage('success', 'Produit supprimé avec succès');
+            router.push('/products');
+        } catch (error) {
+            if (error instanceof Error) {
+                showMessage('error', error.message);
+            } else {
+                showMessage('error', 'Une erreur est survenue ! Veuillez réessayer plus tard.');
+            }
+        }
     }
 
     return (
@@ -52,8 +80,10 @@ export default function ProductDetailPage({params}: Readonly<{
                 </div>
             </div>
             <div className={styles.productContainer}>
-                {product && (
+                {product ? (
                     <ProductCard product={product}/>
+                ): (
+                    <ProductCardSkeleton/>
                 )}
             </div>
             <Modal

@@ -2,14 +2,14 @@ import React from 'react';
 import {ProductCard} from "@/components/ui/cards/product/ProductCard";
 import styles from '@/styles/product/page.module.css';
 import ProductCardSkeleton from "@/components/ui/cards/product/ProductCardSkeleton";
-import {Product} from "@/lib/types/product/product";
+import {ProductResponse} from "@/lib/types/product/product";
 
 interface ProductListProps {
-    products: Product[];
+    products: ProductResponse[];
     loading: boolean;
 }
 
-function ProductList({products, loading}: ProductListProps) {
+function ProductList({products, loading}: Readonly<ProductListProps>) {
 
     return (
         <div className={styles.productList}>
