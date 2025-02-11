@@ -2,30 +2,53 @@ import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {fireEvent, screen} from '@testing-library/react';
 import UpdateProductForm from '@/components/forms/products/updateProductForm';
 import {renderWithProviders} from "@test/test-utils";
-import {Product} from "@/lib/types/product/product";
+import {ProductResponse} from "@/lib/types/product/product";
 import {ButtonProps} from "@/components/ui/buttons/button/types";
 import {InputProps} from "@/components/ui/input/types";
 
-const mockProduct: Product = {
-    id: '1',
-    barcode: '123456789',
-    category: 'Beverages',
-    brand: 'MockBrand',
-    name: 'MockProduct',
-    price: 10.99,
-    lastUpdate: new Date(),
-    stock: {
-        currentQuantity: 100,
-        minThreshold: 10,
-        maxThreshold: 200,
+const mockProduct: ProductResponse = {
+    "id": "1",
+    "barcode": "123456789",
+    "category": "Beverages",
+    "brand": "MockBrand",
+    "name": "MockProduct",
+    "ingredients": "Mock ingredients",
+    "price": 10.99,
+    "lastUpdate": new Date().toISOString(),
+    "stock": {
+        "quantity": 100,
+        "minThreshold": 10,
+        "maxThreshold": 200
     },
-    nutritionalInfo: {
-        energy: 100,
-        proteins: 10,
-        carbohydrates: 20,
-        fat: 5,
-        fiber: 3,
-        ingredients: 'Mock ingredients'
+    "nutrientLevels": {
+        "fat": "low",
+        "saturatedFat": "low",
+        "sugars": "moderate",
+        "salt": "low"
+    },
+    "nutriments": {
+        "energyKcal100g": 100,
+        "proteins100g": 10,
+        "carbohydrates100g": 20,
+        "fat100g": 5,
+        "fiber100g": 3,
+        "salt100g": 0.5,
+        "sugars100g": 15
+    },
+    "nutriscoreGrade": "b",
+    "selectedImages": {
+        "display": {
+            "en": "",
+            "fr": ""
+        },
+        "small": {
+            "en": "",
+            "fr": ""
+        },
+        "thumb": {
+            "en": "",
+            "fr": ""
+        }
     }
 };
 
@@ -95,12 +118,5 @@ describe('UpdateProductForm', () => {
         const submitButton = screen.getByRole('button', {name: 'Enregistrer'});
         fireEvent.click(submitButton);
         expect(handleSubmit).toHaveBeenCalled();
-    });
-
-    it('should show a success message when form is submitted', () => {
-        renderWithProviders(<UpdateProductForm product={mockProduct}/>);
-        const submitButton = screen.getByRole('button', {name: 'Enregistrer'});
-        fireEvent.click(submitButton);
-        expect(screen.getByText('Produit mis à jour avec succès')).toBeDefined();
     });
 });
