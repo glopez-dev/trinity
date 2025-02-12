@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: trinity-prod
+  namespace: argocd
+spec:
+  description: "Trinity Production Project"
+  sourceRepos:
+  - "git@t-dev.epitest.eu:PAR_11/T-DEV-703-Mobile.git"
+  destinations:
+  - namespace: trinity-prod
+    server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
