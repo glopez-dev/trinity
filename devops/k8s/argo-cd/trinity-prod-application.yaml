@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: trinity-prod-application
+  namespace: argocd
+spec:
+  project: trinity-prod 
+  description: "Trinity Production Application"
+  source:
+    repoURL: git@t-dev.epitest.eu:PAR_11/T-DEV-703-Mobile.git
+    targetRevision: HEAD
+    path: deployment/prod 
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: trinity-prod 
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
