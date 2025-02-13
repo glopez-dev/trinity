@@ -107,19 +107,21 @@ Build the Backend prod image:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-Build the Backend draft image:
-  stage: package
+################
+# DEPLOY STAGE #
+################
+Update the ArgoCD deployment file:
+  stage: deploy
   variables:
-    BACKEND_IMAGE_TAG_DRAFT: $BACKEND_IMAGE:draft-$CI_MERGE_REQUEST_IID
-  # Scripts
+    BACKEND_IMAGE_TAG_PROD: $BACKEND_IMAGE:prod-$CI_COMMIT_SHORT_SHA
   before_script:
-    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+    - git config --global user.email "gitlab-ci@example.com"
+    - git config --global user.name "GitLab CI"
   script:
-    - cd backend
-    - docker build -t $BACKEND_IMAGE_TAG_DRAFT --target prod .
-    - docker push $BACKEND_IMAGE_TAG_DRAFT
-  after_script:
-    - docker image rm $BACKEND_IMAGE_TAG_DRAFT
-  # Conditions
+    - cd deployment/trinity
+    - sed -i "s|image:.*|image: ${BACKEND_IMAGE_TAG_PROD}|" backend-deployment.yaml
+    - git add backend-deployment.yaml
+    - git commit -m "Update backend image to ${BACKEND_IMAGE_TAG_PROD}"
+    - git push "https://oauth2:${CI_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" HEAD:${CI_DEFAULT_BRANCH}
   rules:
-    - if: $CI_MERGE_REQUEST_IID
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
