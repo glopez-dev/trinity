@@ -23,9 +23,6 @@ include:
     rules:
       - changes:
         - backend/**/*
-  
-  - local: .gitlab-cd.yml
-    
 
 # The names and order of the pipeline stages.
 stages:

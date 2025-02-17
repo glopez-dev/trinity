@@ -12,7 +12,6 @@ include:
     rules:
       - changes:
         - backend/**/*
-  - local: .gitlab-cd.yml
 
 stages:
   - setup
