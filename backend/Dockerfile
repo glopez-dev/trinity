@@ -52,12 +52,12 @@ COPY --from=build /app/backend/target/*.jar /app/backend/app.jar
 # Copie du script de lancement du conteneur
 COPY entrypoint.sh /entrypoint.sh
 
-# Modification des permissions
-RUN  chmod 550 /entrypoint.sh
-
 # Utilisateur non-root pour la sécurité
 RUN addgroup --system appgroup && \
     adduser --system --ingroup appgroup appuser
+
+RUN chmod 550 /entrypoint.sh && \
+    chown appuser:appgroup /entrypoint.sh
 
 USER appuser
 
