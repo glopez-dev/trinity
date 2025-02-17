@@ -1,33 +1,19 @@
-# Each default keyword is copied to every job that doesn’t already have it defined.
 default:
-  # We want to run the Jobs on EC2 VMs with a "docker" type Gitlab runner.
   tags:
-    - docker-dind
-  # As we have Docker installed on the host we can use images with only the docker CLI inside them and use the host server.
-  image: docker:stable
-  services:
-    - name: docker:27.3-dind 
-      alias: docker
-  # We want to check before each script that docker is available to the job.
-  # before_script:
-  #   - docker info
+    - k8s
+  image: alpine:latest 
 
-# Use include to include external YAML files in your CI/CD configuration.
 include:
   - local: frontend/frontend-ci.yml
     rules:
       - changes:
         - frontend/**/*
-
   - local: backend/backend-ci.yml
     rules:
       - changes:
         - backend/**/*
-  
   - local: .gitlab-cd.yml
-    
 
-# The names and order of the pipeline stages.
 stages:
   - setup
   - build
@@ -36,22 +22,18 @@ stages:
   - deploy
 
 variables:
-    DOCKER_HOST: tcp://docker:2376
-    DOCKER_TLS_CERTDIR: "/certs"
-    DOCKER_TLS_VERIFY: 1
-    DOCKER_CERT_PATH: "/certs/client"
+  KUBERNETES_CPU_REQUEST: "1"
+  KUBERNETES_CPU_LIMIT: "2"
+  KUBERNETES_MEMORY_REQUEST: "1Gi"
+  KUBERNETES_MEMORY_LIMIT: "2Gi"
 
-# Control what types of pipeline run.
 workflow:
   rules:
-    # Run only for MR, tagged or protected branches
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_REF_PROTECTED == "true"
-    # Enforce branch naming rules
     - if: $CI_COMMIT_BRANCH =~ /^(noah|elone|gabriel|rabieh|geraud)\/.*/ || $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main"
 
-# The main Pipeline needs to have at least one job so we keep this one here.
 Logger:
   stage: setup
   script:

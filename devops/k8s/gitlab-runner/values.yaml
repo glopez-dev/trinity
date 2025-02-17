@@ -1,0 +1,43 @@
+###########################################################
+## HOW TO USE THE HELM CHART ?
+###########################################################
+## 1. kubectl create namespace gitlab-runners
+## 2. helm repo add gitlab https://charts.gitlab.io
+## 3. helm repo update
+## 4. Add your gitlab runner token 
+## 5. helm install gitlab-runner gitlab/gitlab-runner \
+##    -n gitlab-runners \
+##    -f values.yaml
+###########################################################
+gitlabUrl: https://t-dev.epitest.eu
+runnerRegistrationToken: "<Add your gitlab runner token>"
+
+rbac:
+  create: true
+  rules:
+    - apiGroups: [""]
+      resources: ["pods", "pods/exec", "pods/attach", "secrets", "configmaps"]
+      verbs: ["get", "list", "watch", "create", "patch", "delete", "update"]
+    - apiGroups: [""]
+      resources: ["pods/exec", "pods/attach"]
+      verbs: ["create"]
+    - apiGroups: [""]
+      resources: ["secrets"]
+      verbs: ["update", "patch"]
+
+serviceAccount:
+  create: true
+  name: "gitlab-runner"
+
+runners:
+  config: |
+    [[runners]]
+      [runners.kubernetes]
+        namespace = "{{.Release.Namespace}}"
+        image = "ubuntu:20.04"
+        privileged = false
+        service_account = "gitlab-runner"
+        resource_limits = ["cpu", "memory"]
+        resource_limits_cpu = "1"
+        resource_limits_memory = "1Gi"
+        tags = ["k8s"]

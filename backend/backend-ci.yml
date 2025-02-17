@@ -1,4 +1,3 @@
-# Backend CI pipeline 
 default:
   cache:
     key: ${CI_COMMIT_REF_SLUG}-maven
@@ -6,74 +5,26 @@ default:
       - .m2/repository
       - backend/target/
     policy: pull-push
+  tags:
+    - k8s
 
-# The names and order of the pipeline stages.
 stages:
-  - setup
-  - build
   - test
   - package
   - deploy
 
-# Define CI/CD variables for all jobs in the pipeline
 variables:
-  # Maven command-line options to use a custom settings file and run in batch mode
   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode"
-  # Maven configuration to specify a local repository path within the CI project directory
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -DthreadCount=4 -Xmx2g"
-  # Name of the backend Docker image including the Docker Hub prefix
   BACKEND_IMAGE: $DOCKER_HUB_USERNAME/t-dev-701-backend
-
-###############
-# BUILD STAGE #
-###############
-
-Compile Backend code:
-  stage: build
-  # Setup
-  image: eclipse-temurin:21-jdk-jammy
-  # Scripts
-  script:
-    - cd backend
-    - chmod +x mvnw
-    - ./mvnw compile
-  # Caching
-  artifacts:
-    paths:
-      - backend/target/
-
-Build the Backend dev image:
-  stage: build
-  # Setup
-  variables:
-    BACKEND_IMAGE_TAG_DEV: $BACKEND_IMAGE:dev-$CI_COMMIT_SHORT_SHA
-  # Scripts
-  before_script:
-    # Connect to the Docker Hub registry using the CI/CD variables defined on Gitlab website.
-    - docker login -u "$DOCKER_HUB_USERNAME" -p "$DOCKER_HUB_PASSWORD"
-  script:
-    # Build a developement Docker image with the specific commit codebase.
-    - docker build --tag "$BACKEND_IMAGE_TAG_DEV" --target dev ./backend
-    # Publish the image so the others jobs can pull it.
-    - docker push "$BACKEND_IMAGE_TAG_DEV"
-  # Delete the image from the host Docker's registry after pushing to Docker Hub.
-  after_script:
-    - docker image rm $BACKEND_IMAGE_TAG_DEV
-  # Conditions
-  needs: ['Compile Backend code']
-
-##############
-# TEST STAGE #
-##############
 
 Run Backend unit-tests:
   stage: test
-  variables:
-    BACKEND_IMAGE_TAG_DEV: ${BACKEND_IMAGE}:dev-${CI_COMMIT_SHORT_SHA}
-  # Scripts
+  image: eclipse-temurin:21-jdk-jammy
   script:
     - cd backend
-    - docker run --rm -v $(pwd)/target:/app/backend/target $BACKEND_IMAGE_TAG_DEV clean test jacoco:report 
+    - chmod +x mvnw
+    - ./mvnw test jacoco:report
   artifacts:
     when: always
     reports:
@@ -82,44 +33,42 @@ Run Backend unit-tests:
         coverage_format: jacoco
         path: backend/target/site/jacoco/jacoco.xml
     expire_in: 1 week
-  # Conditions
-  needs: ['Build the Backend dev image']
 
-#################
-# PACKAGE STAGE #
-#################
 Build the Backend prod image:
   stage: package
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
   variables:
     BACKEND_IMAGE_TAG_PROD: $BACKEND_IMAGE:prod-$CI_COMMIT_SHORT_SHA
-  # Scripts
-  before_script:
-    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
   script:
-    - cd backend
-    - docker build -t $BACKEND_IMAGE_TAG_PROD -t $BACKEND_IMAGE:latest --target prod .
-    - docker push $BACKEND_IMAGE_TAG_PROD
-    - docker push $BACKEND_IMAGE:latest
-  after_script:
-    - docker image rm $BACKEND_IMAGE_TAG_PROD
-    - docker image rm $BACKEND_IMAGE:latest
-  # Conditions
+    - echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"username\":\"$DOCKER_HUB_USERNAME\",\"password\":\"$DOCKER_HUB_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor 
+      --context="./backend"
+      --dockerfile="./backend/Dockerfile"
+      --target="prod"
+      --destination="$BACKEND_IMAGE_TAG_PROD"
+      --destination="$BACKEND_IMAGE:latest"
+      --cache=true
+      --cache-ttl=24h
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-Build the Backend draft image:
-  stage: package
+Update the ArgoCD deployment file:
+  stage: deploy
+  image: alpine:latest
   variables:
-    BACKEND_IMAGE_TAG_DRAFT: $BACKEND_IMAGE:draft-$CI_MERGE_REQUEST_IID
-  # Scripts
+    BACKEND_IMAGE_TAG_PROD: $BACKEND_IMAGE:prod-$CI_COMMIT_SHORT_SHA
   before_script:
-    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+    - apk add --no-cache git
+    - git config --global user.email "gitlab-ci@example.com"
+    - git config --global user.name "GitLab CI"
   script:
-    - cd backend
-    - docker build -t $BACKEND_IMAGE_TAG_DRAFT --target prod .
-    - docker push $BACKEND_IMAGE_TAG_DRAFT
-  after_script:
-    - docker image rm $BACKEND_IMAGE_TAG_DRAFT
-  # Conditions
+    - | 
+      cd deployment/trinity && \
+      sed -i "s|image:.*|image: ${BACKEND_IMAGE_TAG_PROD}|" backend-deployment.yaml && \
+      git add backend-deployment.yaml && \
+      git commit -m "Update backend image to ${BACKEND_IMAGE_TAG_PROD}" && \
+      git push "https://oauth2:${CI_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" HEAD:${CI_DEFAULT_BRANCH}
   rules:
-    - if: $CI_MERGE_REQUEST_IID
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
