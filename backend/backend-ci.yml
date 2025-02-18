@@ -42,6 +42,8 @@ Sonar Analysis:
     SONAR_HOST_URL: "http://sonarqube.sonarqube.svc.cluster.local:80"
     SONAR_TOKEN: ${SONAR_TOKEN}
   script:
+    - cd backend
+    - ls -la backend/target
     - sonar-scanner
       -Dsonar.projectKey=PAR_11_T-DEV-703-Mobile_fa36ad8d-c08b-40b0-a450-3d1a3b34afb0
       -Dsonar.sources=backend/src/main/java
