@@ -80,7 +80,7 @@ Update the ArgoCD deployment file:
     BACKEND_IMAGE_TAG_PROD: $BACKEND_IMAGE:prod-$CI_COMMIT_SHORT_SHA
   before_script:
     - apk add --no-cache git
-    - git config --global user.email "gitlab-ci@example.com"
+    - git config --global user.email "gitlab-ci@epitech-msc2026.me"
     - git config --global user.name "GitLab CI"
   script:
     - | 
@@ -88,6 +88,6 @@ Update the ArgoCD deployment file:
       sed -i "s|image:.*|image: ${BACKEND_IMAGE_TAG_PROD}|" backend-deployment.yaml && \
       git add backend-deployment.yaml && \
       git commit -m "Update backend image to ${BACKEND_IMAGE_TAG_PROD} [skip ci]" && \
-      git push "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" HEAD:${CI_DEFAULT_BRANCH}
+      git push "https://${GITOPS_CI_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" HEAD:${CI_DEFAULT_BRANCH}
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
