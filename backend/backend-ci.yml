@@ -27,6 +27,8 @@ Run Backend unit-tests:
     - ./mvnw test jacoco:report
   artifacts:
     when: always
+    paths:
+      - backend/target/
     reports:
       junit: backend/target/surefire-reports/TEST-*.xml
       coverage_report:
