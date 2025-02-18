@@ -43,7 +43,7 @@ Sonar Analysis:
     SONAR_TOKEN: ${SONAR_TOKEN}
   script:
     - sonar-scanner \
-        -Dsonar.projectKey=t-dev-701-backend \
+        -Dsonar.projectKey=PAR_11_T-DEV-703-Mobile_fa36ad8d-c08b-40b0-a450-3d1a3b34afb0 \
         -Dsonar.sources=backend/src/main/java \
         -Dsonar.tests=backend/src/test/java \
         -Dsonar.java.binaries=backend/target/classes \
