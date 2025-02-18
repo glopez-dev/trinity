@@ -51,7 +51,7 @@ Sonar Analysis:
       -Dsonar.token=$SONAR_TOKEN
   needs: ['Run Backend unit-tests']
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANC
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 Build the Backend prod image:
   stage: package
