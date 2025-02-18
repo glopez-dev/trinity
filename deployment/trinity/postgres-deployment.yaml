@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,9 +21,9 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_DB
-              value: mydatabase
+              value: trinity
             - name: POSTGRES_USER
-              value: myuser
+              value: trinity-api 
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -33,15 +34,15 @@ spec:
           volumeMounts:
             - name: postgres-storage
               mountPath: /var/lib/postgresql/data
-              subpath: pgdata
+              subPath: pgdata
           livenessProbe:
             exec:
               command:
                 - pg_isready
                 - -U
-                - myuser
+                - trinity-api 
                 - -d
-                - mydatabase
+                - trinity 
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
