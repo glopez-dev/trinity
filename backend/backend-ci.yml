@@ -25,10 +25,11 @@ Run Backend unit-tests:
     - cd backend
     - chmod +x mvnw
     - ./mvnw test jacoco:report
+  cache:
+    paths:
+      - backend/target/**/*
   artifacts:
     when: always
-    paths:
-      - backend/target/
     reports:
       junit: backend/target/surefire-reports/TEST-*.xml
       coverage_report:
