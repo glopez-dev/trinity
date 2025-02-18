@@ -87,7 +87,7 @@ Update the ArgoCD deployment file:
       cd deployment/trinity && \
       sed -i "s|image:.*|image: ${BACKEND_IMAGE_TAG_PROD}|" backend-deployment.yaml && \
       git add backend-deployment.yaml && \
-      git commit -m "Update backend image to ${BACKEND_IMAGE_TAG_PROD}" && \
-      git push "https://oauth2:${CI_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" HEAD:${CI_DEFAULT_BRANCH}
+      git commit -m "Update backend image to ${BACKEND_IMAGE_TAG_PROD} [skip ci]" && \
+      git push "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" HEAD:${CI_DEFAULT_BRANCH}
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
