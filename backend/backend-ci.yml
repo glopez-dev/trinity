@@ -42,16 +42,15 @@ Sonar Analysis:
     SONAR_HOST_URL: "http://sonarqube.sonarqube.svc.cluster.local:80"
     SONAR_TOKEN: ${SONAR_TOKEN}
   script:
-    - cd backend
     - sonar-scanner
       -Dsonar.projectKey=PAR_11_T-DEV-703-Mobile_fa36ad8d-c08b-40b0-a450-3d1a3b34afb0
-      -Dsonar.sources=backend/src/main/java
-      -Dsonar.tests=backend/src/test/java
-      -Dsonar.java.binaries=backend/target/classes
-      -Dsonar.java.test.binaries=backend/target/test-classes
-      -Dsonar.junit.reportPaths=backend/target/surefire-reports
-      -Dsonar.coverage.jacoco.xmlReportPaths=backend/target/site/jacoco/jacoco.xml
-      -Dsonar.java.libraries=backend/target/dependency/*.jar
+      -Dsonar.sources=./backend/src/main/java
+      -Dsonar.tests=./backend/src/test/java
+      -Dsonar.java.binaries=./backend/target/classes
+      -Dsonar.java.test.binaries=./backend/target/test-classes
+      -Dsonar.junit.reportPaths=./backend/target/surefire-reports
+      -Dsonar.coverage.jacoco.xmlReportPaths=./backend/target/site/jacoco/jacoco.xml
+      -Dsonar.java.libraries=./backend/target/dependency/*.jar
   needs: ['Run Backend unit-tests']
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
