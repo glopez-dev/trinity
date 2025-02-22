@@ -1,4 +1,3 @@
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -10,8 +9,6 @@ metadata:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, OPTIONS, DELETE"
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-    # Rewrite la base du path pour le backend
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   tls:
   - hosts:
@@ -22,7 +19,7 @@ spec:
     http:
       paths:
       # Route pour le backend
-      - path: /api/v1(/|$)(.*)
+      - path: /api
         pathType: Prefix
         backend:
           service:
