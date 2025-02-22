@@ -1,7 +1,7 @@
 {
   "name": "mobile-app",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -29,6 +29,5 @@
     "@types/react": "~18.3.12",
     "typescript": "^5.3.3"
   },
-  "private": true,
-  "scheme": "trinity-mobile-app"
+  "private": true
 }
