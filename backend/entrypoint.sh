@@ -22,25 +22,40 @@ validate_env_vars() {
 }
 
 check_db_connectivity() {
-    local db_host db_port
+    local db_host db_port max_retries=30 retry_interval=5
     db_host=$(echo "$SPRING_DATASOURCE_URL" | sed -E 's|jdbc:[^:]+://([^:/]+).*|\1|')
     db_port=$(echo "$SPRING_DATASOURCE_URL" | sed -E 's|jdbc:[^:]+://[^:/]+:?([0-9]+).*|\1|')
     db_port=${db_port:-5432}
 
     echo "[entrypoint.sh] Checking database connectivity to $db_host:$db_port"
-    if command -v curl &> /dev/null; then
-        if ! curl -f --max-time 5 --silent --show-error http://"$db_host":"$db_port" > /dev/null 2>&1; then
-            echo "[entrypoint.sh] Error: Cannot connect to database at $db_host:$db_port" >&2
-            exit 1
+    
+    for ((i=1; i<=$max_retries; i++)); do
+        if command -v pg_isready &> /dev/null; then
+            if pg_isready -h "$db_host" -p "$db_port" -U "$SPRING_DATASOURCE_USERNAME" > /dev/null 2>&1; then
+                echo "[entrypoint.sh] Successfully connected to database using pg_isready"
+                return 0
+            fi
+        elif command -v nc &> /dev/null; then
+            if nc -z "$db_host" "$db_port" &>/dev/null; then
+                echo "[entrypoint.sh] Successfully connected to database using netcat"
+                return 0
+            fi
+        else
+            echo "[entrypoint.sh] Warning: Neither 'pg_isready' nor 'nc' is available. Attempting curl..." >&2
+            if curl -f --max-time 5 --silent --show-error "http://$db_host:$db_port" > /dev/null 2>&1; then
+                echo "[entrypoint.sh] Successfully connected to database using curl"
+                return 0
+            fi
         fi
-    elif command -v nc &> /dev/null; then
-        if ! nc -z "$db_host" "$db_port" &>/dev/null; then
-            echo "[entrypoint.sh] Error: Cannot connect to database at $db_host:$db_port" >&2
-            exit 1
+
+        if [[ $i -lt $max_retries ]]; then
+            echo "[entrypoint.sh] Attempt $i/$max_retries: Database not ready. Retrying in ${retry_interval}s..."
+            sleep "$retry_interval"
         fi
-    else
-        echo "[entrypoint.sh] Warning: Neither 'curl' nor 'nc' is available. Skipping connectivity check." >&2
-    fi
+    done
+
+    echo "[entrypoint.sh] Error: Cannot connect to database at $db_host:$db_port after $max_retries attempts" >&2
+    exit 1
 }
 
 setup_dev_env() {
@@ -55,6 +70,18 @@ setup_prod_env() {
     echo "[entrypoint.sh] Configuring production environment..."
     export SPRING_DEVTOOLS_RESTART_ENABLED=false
     export SPRING_PROFILES_ACTIVE=prod
+    
+    # Set JVM options optimized for containers
+    export JAVA_OPTS="${JAVA_OPTS:-} \
+        -XX:+UseContainerSupport \
+        -XX:MaxRAMPercentage=75.0 \
+        -XX:+UseG1GC \
+        -XX:+ParallelRefProcEnabled \
+        -XX:MaxInlineLevel=20 \
+        -XX:+ExitOnOutOfMemoryError \
+        -XX:+HeapDumpOnOutOfMemoryError \
+        -XX:HeapDumpPath=/tmp/heapdump.hprof \
+        -Djava.security.egd=file:/dev/./urandom"
 
     if [[ ! -f /app/backend/app.jar ]]; then
         echo "[entrypoint.sh] Error: /app/backend/app.jar not found!" >&2
@@ -87,37 +114,33 @@ run_spring_boot() {
             ;;
 
         prod)
-            exec java \
-                -XX:+UseContainerSupport \
-                -XX:MaxRAMPercentage=75.0 \
-                -XX:+UseG1GC \
-                -XX:+ParallelRefProcEnabled \
-                -XX:MaxInlineLevel=20 \
-                -Djava.security.egd=file:/dev/./urandom \
+            exec java ${JAVA_OPTS:-} \
                 -jar /app/backend/app.jar
             ;;
         *)
             echo "[entrypoint.sh] Invalid ENV value: ${ENV}. Defaulting to production." >&2
-
             setup_prod_env
-
-            exec java \
-                -XX:+UseContainerSupport \
-                -XX:MaxRAMPercentage=75.0 \
-                -XX:+UseG1GC \
-                -XX:+ParallelRefProcEnabled \
-                -XX:MaxInlineLevel=20 \
-                -Djava.security.egd=file:/dev/./urandom \
+            exec java ${JAVA_OPTS:-} \
                 -jar /app/backend/app.jar
             ;;
     esac
 }
 
-main() {
+handle_shutdown() {
+    echo "[entrypoint.sh] Received shutdown signal. Initiating graceful shutdown..."
+    # Kill any background processes in dev mode
+    if [[ "${ENV}" == "dev" ]]; then
+        kill $(jobs -p) 2>/dev/null || true
+    fi
+    exit 0
+}
 
-    trap 'echo "[entrypoint.sh] Stopping Spring Boot..."; exit 0' SIGTERM SIGINT
+main() {
+    # Set up signal handlers for graceful shutdown
+    trap handle_shutdown SIGTERM SIGINT
 
     validate_env_vars
+    check_db_connectivity
 
     case "${ENV}" in
         dev) setup_dev_env ;;
