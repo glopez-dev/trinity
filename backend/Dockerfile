@@ -2,30 +2,41 @@
 # BUILD #
 #########
 
-# The first stage is responsible for only resolving dependencies and acts as a kind of cache.
-# This way, when the source code changes but the pom.xml file remains unchanged,
-# we don’t have to wait for the dependencies to be downloaded again.
-
+#########################################################################################
+## The first stage is responsible for only resolving dependencies and acts as a kind of
+## cache. This way, when the source code changes but the pom.xml file remains unchanged,
+## we don’t have to wait for the dependencies to be downloaded again.
+#########################################################################################
 FROM eclipse-temurin:21-jdk-jammy AS build
-
 WORKDIR /app/backend
 
-# Arguments pour personnaliser le build
+#########################################################################################
+## Arguments to customiez the Maven build
+#########################################################################################
 ARG SKIP_TESTS=true
 ENV MAVEN_OPTS="-Xmx2g -DthreadCount=4"
 
-# Copie des fichiers de dépendances
+#########################################################################################
+## Copy the dependency files
+#########################################################################################
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 
-# Télécharger toutes les dépendances
+#########################################################################################
+## Download all the dependencies
+#########################################################################################
 RUN chmod +x mvnw && \
     ./mvnw -B dependency:go-offline -DskipTests
 
-# Copie du code source
+#########################################################################################
+## Copy the source code
+#########################################################################################
 COPY src src
 
-# Construction conditionnelle des tests
+
+#########################################################################################
+## Conditional execution of tests
+#########################################################################################
 RUN if [ "$SKIP_TESTS" = "false" ]; then \
         ./mvnw -B verify; \
     else \
@@ -36,33 +47,39 @@ RUN if [ "$SKIP_TESTS" = "false" ]; then \
 # PRODUCTION #
 ##############
 
-# Java Runtime Environment (JRE)
-# Doesn't includes the development tools
+#########################################################################################
+## Java Runtime Environment (JRE)
+# The JRE is the runtime portion of Java software, it doesn't include the development tools.
+#########################################################################################
 FROM eclipse-temurin:21-jre-jammy AS prod
-
 WORKDIR /app/backend
-
 EXPOSE 8080
-
 ENV ENV="prod"
 
-# Copie du package compilé
+#########################################################################################
+# Install postgresql-client and curl for healthcheck
+#########################################################################################
+RUN apt-get update && \
+    apt-get install -y postgresql-client curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY --from=build /app/backend/target/*.jar /app/backend/app.jar
 
-# Copie du script de lancement du conteneur
 COPY entrypoint.sh /entrypoint.sh
 
-# Utilisateur non-root pour la sécurité
+#########################################################################################
+## Use a non-root user for security
+#########################################################################################
 RUN addgroup --system appgroup && \
-    adduser --system --ingroup appgroup appuser
-
-RUN chmod 550 /entrypoint.sh && \
+    adduser --system --ingroup appgroup appuser && \
+    chown -R appuser:appgroup /app/backend && \
+    chmod 550 /entrypoint.sh && \
     chown appuser:appgroup /entrypoint.sh
 
 USER appuser
 
 ENTRYPOINT ["/entrypoint.sh"]
-
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=5 \
   CMD ["curl", "-f", "http://localhost:8080/actuator/health"]
 
@@ -70,34 +87,41 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=5 \
 # DEVELOPMENT #
 ###############
 
-# Java Development Kit (JDK)
+#########################################################################################
+## Java Development Kit (JDK)
+#########################################################################################
 FROM eclipse-temurin:21-jdk-jammy AS dev
-
 WORKDIR /app/backend
-
 EXPOSE 8080
-
 ENV ENV="dev"
 
-# Update and install dependencies
-RUN apt update && apt install -y inotify-tools curl && apt-get clean && rm -rf /var/lib/apt/lists/*
+#########################################################################################
+## Update and install inotify-tools and curl
+#########################################################################################
+RUN apt update && apt install -y inotify-tools postgresql-client curl && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy the startup script
+#########################################################################################
+## Copy the startup script
+#########################################################################################
 COPY entrypoint.sh /app/entrypoint.sh
 
-# Copy Maven wrapper and project definition files
+#########################################################################################
+## Copy Maven wrapper and project definition files
+#########################################################################################
 COPY mvnw pom.xml /app/backend/
 COPY .mvn .mvn/
 
-# Modify permissions for executables
+#########################################################################################
+## Modify the permissions of the startup script and Maven wrapper
+#########################################################################################
 RUN chmod 755 /app/entrypoint.sh /app/backend/mvnw
 
-# Set volume for hot-reloadable source code
+#########################################################################################
+## Set voume for hot reload of the source code
+#########################################################################################
 VOLUME /app/backend/src
 
-# Entry point for the container
 ENTRYPOINT ["/app/entrypoint.sh"]
 
-# Healthcheck for application
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=5 \
   CMD curl -f http://localhost:8080/actuator/health || exit 1
