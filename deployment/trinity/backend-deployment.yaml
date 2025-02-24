@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: silica5518/t-dev-701-backend:prod-df12a7f2
+        image: silica5518/t-dev-701-backend:prod-abc518b7
         ports:
         - containerPort: 8080
         envFrom:
