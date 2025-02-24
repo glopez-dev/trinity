@@ -8,13 +8,25 @@ REQUIRED_VARS=(
     "SPRING_DATASOURCE_PASSWORD"
 )
 
+
 validate_env_vars() {
     local missing_vars=()
+    
+    echo "[entrypoint] Debugging environment variables:"
+    echo "----------------------------------------"
+    echo "Required variables and their values:"
     for var in "${REQUIRED_VARS[@]}"; do
+        printf "%-25s = %s\n" "$var" "${!var:-<NOT SET>}"
         if [[ -z "${!var:-}" ]]; then
             missing_vars+=("$var")
         fi
     done
+    
+    echo "----------------------------------------"
+    echo "All Spring-related environment variables:"
+    env | grep -i "spring" | sort
+    echo "----------------------------------------"
+    
     if [[ ${#missing_vars[@]} -gt 0 ]]; then
         echo "[entrypoint] Warning: Missing required environment variables:" >&2
         printf '%s\n' "${missing_vars[@]}" >&2
