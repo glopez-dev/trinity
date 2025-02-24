@@ -12,7 +12,6 @@ REQUIRED_VARS=(
     "SPRING_CORS_ALLOWED_ORIGINS"
 )
 
-
 validate_env_vars() {
     local missing_vars=()
     
@@ -23,6 +22,7 @@ validate_env_vars() {
         printf "%-25s = %s\n" "$var" "${!var:-<NOT SET>}"
         if [[ -z "${!var:-}" ]]; then
             missing_vars+=("$var")
+            return 1
         fi
     done
     
@@ -71,6 +71,41 @@ check_db_connectivity() {
     done
 
     echo "[entrypoint.sh] Error: Cannot connect to database at $db_host:$db_port after $max_retries attempts" >&2
+    exit 1
+}
+
+check_db_authentication() {
+    local db_host db_port db_name max_retries=5 retry_interval=5
+    db_host=$(echo "$SPRING_DATASOURCE_URL" | sed -E 's|jdbc:[^:]+://([^:/]+).*|\1|')
+    db_port=$(echo "$SPRING_DATASOURCE_URL" | sed -E 's|jdbc:[^:]+://[^:/]+:?([0-9]+).*|\1|')
+    db_name=$(echo "$SPRING_DATASOURCE_URL" | sed -E 's|jdbc:[^:]+://[^/]+/([^?]*).*|\1|')
+    db_port=${db_port:-5432}
+
+    echo "[entrypoint.sh] Checking database authentication for user $SPRING_DATASOURCE_USERNAME to $db_host:$db_port/$db_name"
+    
+    for ((i=1; i<=$max_retries; i++)); do
+        # Use PGPASSWORD environment variable to pass password to psql securely
+        if PGPASSWORD="$SPRING_DATASOURCE_PASSWORD" psql -h "$db_host" -p "$db_port" -U "$SPRING_DATASOURCE_USERNAME" -d "$db_name" -c "SELECT 1" > /dev/null 2>&1; then
+            echo "[entrypoint.sh] Successfully authenticated to database with provided credentials"
+            return 0
+        else
+            echo "[entrypoint.sh] Attempt $i/$max_retries: Authentication failed. Retrying in ${retry_interval}s..."
+            if [[ $i -lt $max_retries ]]; then
+                sleep "$retry_interval"
+            fi
+        fi
+    done
+
+    echo "[entrypoint.sh] ERROR: Authentication failed for user $SPRING_DATASOURCE_USERNAME" >&2
+    echo "[entrypoint.sh] Please check that:"
+    echo "  1. The user $SPRING_DATASOURCE_USERNAME exists in the database"
+    echo "  2. The password is correct"
+    echo "  3. The user has appropriate permissions"
+    
+    # Optional: Try to get more specific error information
+    echo "[entrypoint.sh] Attempting to get detailed error information:"
+    PGPASSWORD="$SPRING_DATASOURCE_PASSWORD" psql -h "$db_host" -p "$db_port" -U "$SPRING_DATASOURCE_USERNAME" -d "$db_name" -c "SELECT 1" 2>&1 | grep -v "password"
+    
     exit 1
 }
 
@@ -157,6 +192,7 @@ main() {
 
     validate_env_vars
     check_db_connectivity
+    check_db_authentication
 
     case "${ENV}" in
         dev) setup_dev_env ;;
