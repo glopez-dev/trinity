@@ -17,3 +17,5 @@ devops/ansible/inventory.yml
 devops/ansible/variables.yml
 
 .secrets/
+
+.scannerwork/
