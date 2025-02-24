@@ -24,6 +24,8 @@ data:
   # Used to make requests to the PayPal API
   SPRING_PAYPAL_CLIENT_ID: ""
 
+  SPRING_JWT_EXPIRATION: "86400000"
+
   ###########################
   ## Frontend Configuration #
   ###########################
