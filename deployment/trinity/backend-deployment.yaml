@@ -22,18 +22,16 @@ spec:
         envFrom:
         - configMapRef:
             name: trinity-config
-        env:
-        - name: SPRING_DATASOURCE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: trinity-secrets
-              key: postgres-password
+        - secretKeyRef:
+            name: trinity-secrets
+
         readinessProbe:
           httpGet:
             path: /actuator/health
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
+
         livenessProbe:
           httpGet:
             path: /actuator/health
