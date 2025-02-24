@@ -1,7 +1,7 @@
 spring:
   # Application Name
   application:
-    name: ${SPRING_APP_NAME:t-dev-701-backend-api}
+    name: ${SPRING_APP_NAME}
 
   # Database Configuration
   datasource:
@@ -48,12 +48,8 @@ logging:
 
 # JWT Configuration (New)
 jwt:
-  secret: ${JWT_SECRET}
-  expiration: ${JWT_EXPIRATION:86400000}
-
-# API URL Configuration
-api:
-  url: ${NEXT_PUBLIC_API_URL}
+  secret: ${SPRING_JWT_SECRET}
+  expiration: ${SPRING_JWT_EXPIRATION}
 
 app:
   cors:
@@ -72,6 +68,6 @@ springdoc:
 # PayPal Configuration
 paypal:
   client:
-    id: ${PAYPAL_CLIENT_ID}
-    secret: ${PAYPAL_SECRET}
+    id: ${SPRING_PAYPAL_CLIENT_ID}
+    secret: ${SPRING_PAYPAL_SECRET}
   mode: live
