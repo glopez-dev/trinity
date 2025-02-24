@@ -86,6 +86,7 @@ check_db_authentication() {
     for ((i=1; i<=$max_retries; i++)); do
         # Capture both stdout and stderr in error_output variable
         error_output=$(PGPASSWORD="$SPRING_DATASOURCE_PASSWORD" psql -h "$db_host" -p "$db_port" -U "$SPRING_DATASOURCE_USERNAME" -d "$db_name" -c "SELECT 1" 2>&1)
+        echo $error_output
         
         if [ $? -eq 0 ]; then
             echo "[entrypoint] Successfully authenticated to database with provided credentials"
