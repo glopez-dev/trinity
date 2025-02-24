@@ -22,8 +22,6 @@ spec:
         envFrom:
         - configMapRef:
             name: trinity-config
-        - secretRef:
-            name: trinity-secrets
         env:
         - name: SPRING_DATASOURCE_PASSWORD
           valueFrom:
