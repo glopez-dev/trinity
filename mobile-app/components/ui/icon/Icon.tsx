@@ -1,7 +1,9 @@
 import {icons, LucideProps} from 'lucide-react-native';
 
-interface IconProps extends Omit<LucideProps, 'ref'> {
+interface IconProps extends LucideProps {
     name: keyof typeof icons;
+    color: string;
+    testID: string;
 }
 
 const Icon = ({ name, ...props }: IconProps) => {
