@@ -88,6 +88,7 @@ export const FlashMessage = ({
                 }
             ]}
             accessibilityRole="alert"
+            testID={`flash-message-${type}`}
         >
             <View style={styles.content}>
                 <View style={styles.icon}>{getIcon(type)}</View>
