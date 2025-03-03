@@ -1,12 +1,13 @@
 import {Stack} from 'expo-router';
-import {SafeAreaView, useColorScheme} from 'react-native';
+import {useColorScheme} from 'react-native';
 import {FlashMessagesProvider} from '@/lib/stores/flashMessage/FlashMessageProvider';
+import {SafeAreaProvider} from "react-native-safe-area-context";
 
 export default function RootLayout() {
     const colorScheme = useColorScheme();
 
     return (
-        <SafeAreaView style={{flex: 1}}>
+        <SafeAreaProvider>
             <FlashMessagesProvider>
                 <Stack
                     screenOptions={{
@@ -15,8 +16,9 @@ export default function RootLayout() {
                     }}
                 >
                     <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
+                    <Stack.Screen name="(auth)" options={{headerShown: false}}/>
                 </Stack>
             </FlashMessagesProvider>
-        </SafeAreaView>
+        </SafeAreaProvider>
     );
 }

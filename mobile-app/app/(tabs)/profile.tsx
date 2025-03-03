@@ -1,11 +1,11 @@
-import {View, Text} from "react-native";
+import {SafeAreaView, Text} from "react-native";
 
 export default function Profile() {
     return (
-        <View>
+        <SafeAreaView style={{flex: 1}}>
             <Text>
                 Profile
             </Text>
-        </View>
+        </SafeAreaView>
     )
 }
