@@ -1,11 +1,11 @@
-import {View, Text} from "react-native";
+import {View, Text, SafeAreaView} from "react-native";
 
 export default function Cart() {
     return (
-        <View>
+        <SafeAreaView style={{flex: 1}}>
             <Text>
                 Cart
             </Text>
-        </View>
+        </SafeAreaView>
     )
 }

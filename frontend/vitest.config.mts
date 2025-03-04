@@ -7,9 +7,22 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         setupFiles: ['vitestSetup.ts'],
+        reporters: ['default', 'junit'],
+        outputFile: {
+            junit: './reports/junit.xml'
+        },
         coverage: {
             provider: 'v8',
-            reporter: ['json', 'text', 'html'],
+            reporter: ['text', 'cobertura'],
+            reportsDirectory: './reports/coverage',
+            reportOnFailure: true,
+            thresholds: {
+                lines: 80,
+                branches: 80,
+                functions: 80,
+                statements: 80
+            },
+            clean: true,
             enabled: true,
             exclude: [
                 'node_modules',

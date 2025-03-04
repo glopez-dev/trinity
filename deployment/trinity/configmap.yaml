@@ -5,10 +5,30 @@ metadata:
   name: trinity-config
   namespace: trinity-prod
 data:
-  JWT_EXPIRATION: "86400000"
-  NEXT_DEV_API_URL: "http://backend-service.trinity-prod.svc.cluster.local:8080"
-  NEXT_PROD_API_URL: "http://backend-service.trinity-prod.svc.cluster.local:8080"
-  PAYPAL_CLIENT_ID: ""
-  SPRING_CORS_ALLOWED_ORIGINS: "http://frontend-service.trinity-prod.svc.cluster.local:3000"
+  ##########################
+  ## Backend Configuration #
+  ##########################
+
+  # Name of the application
+  SPRING_APP_NAME: trinity-api
+
+  # Used by the backend to request the database
   SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres.trinity-prod.svc.cluster.local:5432/trinity"
+
+  # Used by the backend to connect to the database
   SPRING_DATASOURCE_USERNAME: "trinity-api"
+
+  # Allows the frontend to make requests to the backend
+  SPRING_CORS_ALLOWED_ORIGINS: "http://frontend-service.trinity-prod.svc.cluster.local:3000"
+
+  # Used to make requests to the PayPal API
+  SPRING_PAYPAL_CLIENT_ID: ""
+
+  SPRING_JWT_EXPIRATION: "86400000"
+
+  ###########################
+  ## Frontend Configuration #
+  ###########################
+
+  # Used by the frontend to make requests to the backend
+  NEXT_PUBLIC_API_URL: "http://backend-service.trinity-prod.svc.cluster.local:8080"

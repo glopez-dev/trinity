@@ -1,11 +1,11 @@
-import {View, Text} from "react-native";
+import {SafeAreaView, Text} from "react-native";
 
 export default function Scan() {
     return (
-        <View>
+        <SafeAreaView style={{flex: 1}}>
             <Text>
                 Scan
             </Text>
-        </View>
+        </SafeAreaView>
     )
 }

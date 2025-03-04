@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: silica5518/t-dev-701-backend:prod-892cab99
+        image: silica5518/t-dev-701-backend:prod-43138ea6
         ports:
         - containerPort: 8080
         envFrom:
@@ -24,18 +24,14 @@ spec:
             name: trinity-config
         - secretRef:
             name: trinity-secrets
-        env:
-        - name: SPRING_DATASOURCE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: trinity-secrets
-              key: postgres-password
+
         readinessProbe:
           httpGet:
             path: /actuator/health
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10
+
         livenessProbe:
           httpGet:
             path: /actuator/health

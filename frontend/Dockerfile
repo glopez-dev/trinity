@@ -52,7 +52,11 @@ FROM base AS prod
 ENV NEXT_PUBLIC_ENVIRONMENT=prod
 ENV NEXT_TELEMETRY_DISABLED=1
 
+COPY --from=build /app/package.json /app/
+COPY --from=build /app/package-lock.json /app/
+COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/.next /app/.next
+COPY --from=build /app/public ./public
 
 CMD ["start"]
 

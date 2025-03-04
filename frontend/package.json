@@ -1,4 +1,4 @@
-{
+  {
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
@@ -7,10 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint --strict",
-    "test": "vitest --run --reporter=junit --outputFile=reports/report.xml",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest --watch",
-    "test:coverage": "vitest run --coverage --reporter=junit --outputFile=coverage/lcov.json",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "sonar": "sonar-scanner -Dproject.settings=./sonar-project.properties"
   },
   "dependencies": {
     "@types/js-cookie": "^3.0.6",
@@ -32,12 +33,14 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@sonar/scan": "^4.2.7",
     "@testing-library/react": "^16.1.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitest/coverage-v8": "^2.1.8",
     "@vitest/ui": "^2.1.8",
+    "c8": "^10.1.3",
     "eslint": "^9",
     "eslint-config-next": "15.1.0",
     "jsdom": "^25.0.1",
