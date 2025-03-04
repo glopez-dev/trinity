@@ -12,30 +12,15 @@
 # Backend environment configuration anchor
 # This anchor defines common environment variables used across backend services
 x-backend-env: &backend-env
-  # PostgreSQL Database Configuration
-  # Maps to spring.datasource.url in application.properties
-  SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB}"
-  # Maps to spring.datasource.username in application.properties
-  SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-  # Maps to spring.datasource.password in application.properties
-  # Using Docker secret for security
+  SPRING_APP_NAME: ${SPRING_APP_NAME}
+  SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL} 
+  SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
   SPRING_DATASOURCE_PASSWORD: /run/secrets/postgres_password
-  # PayPal Configuration
-  PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
-  PAYPAL_CLIENT_SECRET: ${PAYPAL_SECRET}
-  # CORS Configuration
+  SPRING_JWT_SECRET: /run/secrets/jwt_secret
+  SPRING_JWT_EXPIRATION: ${SPRING_JWT_EXPIRATION}
   SPRING_CORS_ALLOWED_ORIGINS: ${SPRING_CORS_ALLOWED_ORIGINS}
-  # Custom JWT Configuration
-  # Maps to jwt.secret in application.properties
-  # Using Docker secret for security
-  JWT_SECRET: /run/secrets/jwt_secret
-
-
-  # Maps to jwt.expiration in application.properties
-  # Value in milliseconds (24 hours)
-  JWT_EXPIRATION: 86400000
-  NEXT_DEV_API_URL: ${NEXT_DEV_API_URL}
-  NEXT_PROD_API_URL: ${NEXT_PROD_API_URL}
+  SPRING_PAYPAL_CLIENT_ID: ${SPRING_PAYPAL_CLIENT_ID}
+  SPRING_PAYPAL_CLIENT_SECRET: ${SPRING_PAYPAL_CLIENT_SECRET}
 
 x-backend-common: &backend-common
   networks: 

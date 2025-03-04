@@ -25,9 +25,6 @@ public class PaypalConfig {
     public String mode;
 
     public APIContext getAPIContext() {
-        // System.out.println("clientId: " + clientId);
-        // System.out.println("clientSecret: " + clientSecret);
-        // System.out.println("mode: " + mode);
         return new APIContext(clientId, clientSecret, mode);
     }
 }
