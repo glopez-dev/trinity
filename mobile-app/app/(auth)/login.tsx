@@ -12,7 +12,7 @@ import {
     Alert
 } from "react-native";
 import { useState } from "react";
-import axios from "axios";
+import { api } from "@/lib/API/api";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -26,7 +26,7 @@ export default function Login() {
         }
 
         try {
-            const response = await axios.post("https://trinity.epitech-msc2026.me/api/v1/auth/login", {
+            const response = await api.post("/auth/login", { 
                 email,
                 password
             });
@@ -34,13 +34,8 @@ export default function Login() {
             console.log("Réponse API :", response.data);
             Alert.alert("Succès", "Connexion réussie !");
             
-          
             const token = response.data.token;
             console.log("Token :", token);
-            // changer de page
-      
-
-
         } catch (error) {
             console.error("Erreur lors de la connexion :", error);
             Alert.alert("Erreur", "Une erreur s'est produite lors de la connexion.");
@@ -83,6 +78,7 @@ export default function Login() {
         </SafeAreaView>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: {

@@ -8,10 +8,45 @@ import {
     KeyboardAvoidingView, 
     Platform, 
     TouchableWithoutFeedback, 
-    Keyboard 
+    Keyboard,
+    Alert
 } from "react-native";
+import { useState } from "react";
+import { api } from "@/lib/API/api"; 
 
 export default function Register() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
+    const handleRegister = async () => {
+        if (!email || !password || !confirmPassword) {
+            Alert.alert("Erreur", "Veuillez remplir tous les champs.");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            Alert.alert("Erreur", "Les mots de passe ne correspondent pas.");
+            return;
+        }
+
+        try {
+            const response = await api.post("/auth/register", {
+                email,
+                password
+            });
+
+            console.log("Réponse API :", response.data);
+            Alert.alert("Succès", "Inscription réussie !");
+            
+            
+        } catch (error) {
+            console.error("Erreur lors de l'inscription :", error);
+            Alert.alert("Erreur", "Une erreur s'est produite lors de l'inscription., ");
+
+        }
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -20,28 +55,35 @@ export default function Register() {
                     style={styles.inner}
                 >
                     <Text style={styles.title}>Trinity</Text>
-                    <Text style={styles.subtitle}>Connexion</Text>
+                    <Text style={styles.subtitle}>Inscription</Text>
 
                     <View style={styles.inputContainer}>
                         <TextInput 
                             style={styles.input} 
                             placeholder="Email" 
                             keyboardType="email-address" 
+                            value={email}
+                            onChangeText={setEmail}
+                            autoCapitalize="none"
                         />
                         <TextInput 
                             style={styles.input} 
                             placeholder="Mot de passe" 
                             secureTextEntry 
+                            value={password}
+                            onChangeText={setPassword}
                         />
                         <TextInput 
                             style={styles.input} 
-                            placeholder="Confirmer le Mot de passe" 
+                            placeholder="Confirmer le mot de passe" 
                             secureTextEntry 
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
                         />
                     </View>
 
-                    <TouchableOpacity style={styles.button}>
-                        <Text style={styles.buttonText}>Se connecter</Text>
+                    <TouchableOpacity style={styles.button} onPress={handleRegister}>
+                        <Text style={styles.buttonText}>S'inscrire</Text>
                     </TouchableOpacity>
                 </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
@@ -49,6 +91,7 @@ export default function Register() {
     );
 }
 
+// Styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
