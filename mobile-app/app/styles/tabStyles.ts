@@ -5,6 +5,10 @@ const styles = StyleSheet.create({
        
         backgroundColor: '#4A6741',
         
+        paddingTop: 5,
+     
+        
+       
     },
 
    
