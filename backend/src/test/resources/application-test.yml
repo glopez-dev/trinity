@@ -1,12 +1,27 @@
+#####################################
+# Spring Boot Configuration
+#####################################
 spring:
+  application:
+    name: ${SPRING_APP_NAME:trinity-test}
+    version: ${SPRING_APP_VERSION:0.0.1-TEST}
+
   config:
     activate:
       on-profile: test
+
+#####################################
+### Datasource Configuration
+#####################################
   datasource:
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
     driverClassName: org.h2.Driver
     username: sa
     password: ""
+
+#####################################
+### JPA/Hibernate Configuration
+#####################################
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -15,13 +30,18 @@ spring:
         hibernate:
           format_sql: true
     show-sql: false
+
   h2:
     console:
       enabled: true
       path: /h2-console
+
   main:
     banner-mode: off
 
+#####################################
+### DevTools Configuration
+#####################################
   devtools:
     restart:
       enabled: true
@@ -30,10 +50,16 @@ spring:
     livereload:
       enabled: true
 
+#####################################
+### Web Configuration
+#####################################
   web:
     resources:
       add-mappings: false
 
+#####################################
+# Server Configuration
+#####################################
 server:
   error:
     whitelabel:
@@ -48,6 +74,10 @@ management:
     health:
       show-details: always
 
+
+#####################################
+# Logging Configuration
+#####################################
 logging:
   level:
     root: WARN
@@ -57,10 +87,16 @@ logging:
       hibernate.SQL: ERROR 
       hibernate.type.descriptor.sql: ERROR 
 
+#####################################
+# Swagger Configuration
+#####################################
 jwt:
-  secret: ${JWT_SECRET:your_jwt_secret_key_here}
-  expiration: ${JWT_EXPIRATION:86400000}  # 24 hours in milliseconds
+  secret: ${SPRING_JWT_SECRET:your_jwt_secret_key_here}
+  expiration: ${SPRING_JWT_EXPIRATION:86400000}  # 24 hours in milliseconds
 
+#####################################
+# Swagger Configuration
+#####################################
 springdoc:
   api-docs:
     path: /api-docs

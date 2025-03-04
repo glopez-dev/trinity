@@ -1,19 +1,23 @@
-#############################
-# Spring Boot Configuration #
-#############################
+#####################################
+# Spring Boot Configuration
+#####################################
 spring:
   application:
-    name: ${SPRING_APP_NAME:t-dev-701-backend-api}
+    name: ${SPRING_APP_NAME}
     version: ${SPRING_APP_VERSION:0.0.1-SNAPSHOT}
-  
-  # Database Configuration
+
+  #####################################
+  ### Database Configuration
+  #####################################
   datasource:
-    url: jdbc:postgresql://${POSTGRES_DB_HOST:localhost}:${POSTGRES_DB_PORT:5432}/${POSTGRES_DB:trinity}
-    username: ${POSTGRES_USER:trinity}
-    password: ${POSTGRES_PASSWORD:trinity}
+    url: ${SPRING_DATASOURCE_URL} 
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
-  
+
+  #####################################
   # JPA/Hibernate Configuration
+  #####################################
   jpa:
     open-in-view: false
     show-sql: true
@@ -23,7 +27,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  # DevTools Configuration
+  #####################################
+  ### DevTools Configuration
+  #####################################
   devtools:
     restart:
       enabled: true
@@ -32,7 +38,9 @@ spring:
     livereload:
       enabled: true
 
-  # Web Configuration
+  #####################################
+  ### Web Configuration
+  #####################################
   web:
     resources:
       add-mappings: false
@@ -54,6 +62,9 @@ management:
     health:
       show-details: always
 
+#####################################
+# Logging Configuration
+#####################################
 logging:
   level:
     org:
@@ -62,15 +73,23 @@ logging:
         security: TRACE
       hibernate: ERROR
 
+#####################################
+# JWT Configuration
+#####################################
 jwt:
-  secret: ${JWT_SECRET:your_jwt_secret_key_here}
-  expiration: ${JWT_EXPIRATION:86400000}  # 24 hours in milliseconds
+  secret: ${SPRING_JWT_SECRET}
+  expiration: ${SPRING_JWT_EXPIRATION}
 
+#####################################
+# CORS Configuration
+#####################################
 app:
   cors:
-    allowed-origins: ${SPRING_CORS_ALLOWED_ORIGINS:*}
+    allowed-origins: ${SPRING_CORS_ALLOWED_ORIGINS}
 
-
+#####################################
+# Swagger Configuration
+#####################################
 springdoc:
   api-docs:
     path: /api/v1/api-docs
@@ -81,8 +100,11 @@ springdoc:
     config-url: /api/v1/api-docs/swagger-config
   pathsToMatch: /api/v1/**
 
+#####################################
+# Paypal Configuration
+#####################################
 paypal:
   client:
-    id: ${PAYPAL_CLIENT_ID}
-    secret: ${PAYPAL_SECRET}
+    id: ${SPRING_PAYPAL_CLIENT_ID}
+    secret: ${SPRING_PAYPAL_CLIENT_SECRET}
   mode: sandbox
