@@ -13,14 +13,18 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { api } from "@/lib/API/api"; 
+import { router } from "expo-router";
+
 
 export default function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [firstName, setFirstName] = useState("");  // Nouveau champ
+    const [lastName, setLastName] = useState("");    // Nouveau champ
 
     const handleRegister = async () => {
-        if (!email || !password || !confirmPassword) {
+        if (!email || !password || !confirmPassword || !firstName || !lastName) {
             Alert.alert("Erreur", "Veuillez remplir tous les champs.");
             return;
         }
@@ -33,17 +37,18 @@ export default function Register() {
         try {
             const response = await api.post("/auth/register", {
                 email,
-                password
+                password,
+                firstName,
+                lastName,
+                role: "EMPLOYEE"  // Le rôle est maintenant en dur
             });
 
             console.log("Réponse API :", response.data);
             Alert.alert("Succès", "Inscription réussie !");
-            
+            router.replace("/login");
             
         } catch (error) {
             console.error("Erreur lors de l'inscription :", error);
-            Alert.alert("Erreur", "Une erreur s'est produite lors de l'inscription., ");
-
         }
     };
 
@@ -65,6 +70,18 @@ export default function Register() {
                             value={email}
                             onChangeText={setEmail}
                             autoCapitalize="none"
+                        />
+                        <TextInput 
+                            style={styles.input} 
+                            placeholder="Prénom" // Nouveau champ
+                            value={firstName}
+                            onChangeText={setFirstName}
+                        />
+                        <TextInput 
+                            style={styles.input} 
+                            placeholder="Nom" // Nouveau champ
+                            value={lastName}
+                            onChangeText={setLastName}
                         />
                         <TextInput 
                             style={styles.input} 
