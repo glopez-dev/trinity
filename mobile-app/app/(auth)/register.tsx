@@ -2,26 +2,25 @@ import {
     SafeAreaView, 
     Text, 
     View, 
-    TextInput, 
-    TouchableOpacity, 
-    StyleSheet, 
     KeyboardAvoidingView, 
     Platform, 
     TouchableWithoutFeedback, 
     Keyboard,
-    Alert
+    Alert,
+    StyleSheet
 } from "react-native";
 import { useState } from "react";
 import { api } from "@/lib/API/api"; 
 import { router } from "expo-router";
-
+import Button from "@/components/ui/buttons/Button"; 
+import Input from "@/components/ui/input/Input";
 
 export default function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [firstName, setFirstName] = useState("");  // Nouveau champ
-    const [lastName, setLastName] = useState("");    // Nouveau champ
+    const [firstName, setFirstName] = useState("");  
+    const [lastName, setLastName] = useState("");    
 
     const handleRegister = async () => {
         if (!email || !password || !confirmPassword || !firstName || !lastName) {
@@ -40,7 +39,7 @@ export default function Register() {
                 password,
                 firstName,
                 lastName,
-                role: "EMPLOYEE"  // Le rôle est maintenant en dur
+                role: "EMPLOYEE"  
             });
 
             console.log("Réponse API :", response.data);
@@ -51,6 +50,10 @@ export default function Register() {
             console.error("Erreur lors de l'inscription :", error);
         }
     };
+
+    function redirection(): void {
+        router.replace("/login");
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -63,52 +66,54 @@ export default function Register() {
                     <Text style={styles.subtitle}>Inscription</Text>
 
                     <View style={styles.inputContainer}>
-                        <TextInput 
-                            style={styles.input} 
-                            placeholder="Email" 
-                            keyboardType="email-address" 
+                        <Input 
+                            placeholder="Email"
                             value={email}
                             onChangeText={setEmail}
-                            autoCapitalize="none"
+                          
                         />
-                        <TextInput 
-                            style={styles.input} 
-                            placeholder="Prénom" // Nouveau champ
+                        <Input 
+                            placeholder="Prénom"
                             value={firstName}
                             onChangeText={setFirstName}
                         />
-                        <TextInput 
-                            style={styles.input} 
-                            placeholder="Nom" // Nouveau champ
+                        <Input 
+                            placeholder="Nom"
                             value={lastName}
                             onChangeText={setLastName}
                         />
-                        <TextInput 
-                            style={styles.input} 
-                            placeholder="Mot de passe" 
-                            secureTextEntry 
+                        <Input 
+                            placeholder="Mot de passe"
                             value={password}
                             onChangeText={setPassword}
+                            
                         />
-                        <TextInput 
-                            style={styles.input} 
-                            placeholder="Confirmer le mot de passe" 
-                            secureTextEntry 
+                        <Input 
+                            placeholder="Confirmer le mot de passe"
                             value={confirmPassword}
                             onChangeText={setConfirmPassword}
+                           
                         />
                     </View>
 
-                    <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                        <Text style={styles.buttonText}>S'inscrire</Text>
-                    </TouchableOpacity>
+                    <Button 
+                        title="S'inscrire"
+                        color="primary" 
+                        action={handleRegister} 
+                        size="full"  
+                    />
+                    <Button 
+                        title="Login"
+                        color="primary"  
+                        action={redirection} 
+                        size="full"  
+                    />
                 </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
         </SafeAreaView>
     );
 }
 
-// Styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -133,25 +138,9 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         width: "100%",
-        marginBottom: 20,
+       
     },
-    input: {
-        backgroundColor: "#fff",
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 10,
-        borderWidth: 1,
-        borderColor: "#ccc",
-    },
-    button: {
-        backgroundColor: "#4A6741",
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 8,
-    },
-    buttonText: {
-        color: "#fff",
-        fontSize: 16,
-        fontWeight: "bold",
+    containerbuton: {
+        marginTop: 10,
     },
 });
