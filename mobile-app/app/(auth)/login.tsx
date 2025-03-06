@@ -1,22 +1,13 @@
-import { 
-    SafeAreaView, 
-    Text, 
-    View, 
-    TextInput, 
-    TouchableOpacity, 
-    StyleSheet, 
-    KeyboardAvoidingView, 
-    Platform, 
-    TouchableWithoutFeedback, 
-    Keyboard,
-    Alert
-} from "react-native";
+import { SafeAreaView, Text, View, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
 import { useState } from "react";
+import { useRouter } from "expo-router";
 import { api } from "@/lib/API/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const router = useRouter();  
 
     const handleLogin = async () => {
         console.log("Email :", email);
@@ -32,10 +23,14 @@ export default function Login() {
             });
 
             console.log("Réponse API :", response.data);
-            Alert.alert("Succès", "Connexion réussie !");
             
-            const token = response.data.token;
+            const token = response.data.jwt;
             console.log("Token :", token);
+            await AsyncStorage.setItem('userToken', token);
+
+           
+            console.log("Redirection vers /tabs/index");
+            router.replace("/");
         } catch (error) {
             console.error("Erreur lors de la connexion :", error);
             Alert.alert("Erreur", "Une erreur s'est produite lors de la connexion.");
@@ -78,6 +73,7 @@ export default function Login() {
         </SafeAreaView>
     );
 }
+
 
 
 const styles = StyleSheet.create({
