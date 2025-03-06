@@ -1,8 +1,20 @@
-import { SafeAreaView, Text, View, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
+import { 
+    SafeAreaView, 
+    Text, 
+    View, 
+    TextInput, 
+    StyleSheet, 
+    KeyboardAvoidingView, 
+    Platform, 
+    TouchableWithoutFeedback, 
+    Keyboard, 
+    Alert 
+} from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { api } from "@/lib/API/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Button from "@/components/ui/buttons/Button"; // Importation du composant Button personnalisé
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -28,7 +40,6 @@ export default function Login() {
             console.log("Token :", token);
             await AsyncStorage.setItem('userToken', token);
 
-           
             console.log("Redirection vers /tabs/index");
             router.replace("/");
         } catch (error) {
@@ -36,6 +47,10 @@ export default function Login() {
             Alert.alert("Erreur", "Une erreur s'est produite lors de la connexion.");
         }
     };
+
+       function redirection(): void {
+            router.replace("/register");
+        }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -59,22 +74,30 @@ export default function Login() {
                         <TextInput 
                             style={styles.input} 
                             placeholder="Mot de passe" 
-                            secureTextEntry 
+                            secureTextEntry
                             value={password}
                             onChangeText={setPassword}
                         />
                     </View>
 
-                    <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                        <Text style={styles.buttonText}>Se connecter</Text>
-                    </TouchableOpacity>
+                    <Button 
+                        title="Login"
+                        color="primary" 
+                        action={handleLogin} 
+                        size="full"  
+                    />
+                      <Button 
+                        title="S'inscrire"
+                        color="primary" 
+                        action={redirection} 
+                        size="full"  
+                    />
+                    
                 </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
         </SafeAreaView>
     );
 }
-
-
 
 const styles = StyleSheet.create({
     container: {
@@ -109,16 +132,5 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         borderWidth: 1,
         borderColor: "#ccc",
-    },
-    button: {
-        backgroundColor: "#4A6741",
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 8,
-    },
-    buttonText: {
-        color: "#fff",
-        fontSize: 16,
-        fontWeight: "bold",
     },
 });
