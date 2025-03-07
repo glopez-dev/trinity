@@ -2,7 +2,7 @@ import {
     SafeAreaView, 
     Text, 
     View, 
-    TextInput, 
+   
     StyleSheet, 
     KeyboardAvoidingView, 
     Platform, 
@@ -14,7 +14,8 @@ import { useState } from "react";
 import { useRouter } from "expo-router";
 import { api } from "@/lib/API/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Button from "@/components/ui/buttons/Button"; // Importation du composant Button personnalisé
+import Button from "@/components/ui/buttons/Button"; 
+import Input from "@/components/ui/input/Input"
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -63,22 +64,26 @@ export default function Login() {
                     <Text style={styles.subtitle}>Connexion</Text>
 
                     <View style={styles.inputContainer}>
-                        <TextInput 
-                            style={styles.input} 
-                            placeholder="Email" 
-                            keyboardType="email-address" 
+                     
+                    <Input 
+                            placeholder="Email"
                             value={email}
                             onChangeText={setEmail}
-                            autoCapitalize="none"
+
+                          
                         />
-                        <TextInput 
-                            style={styles.input} 
-                            placeholder="Mot de passe" 
-                            secureTextEntry
+
+                        <Input 
+                            placeholder="Mot de passe"
                             value={password}
                             onChangeText={setPassword}
+                            isPassword
+                           
                         />
+
                     </View>
+
+                     <View style={styles.containerbuton}>
 
                     <Button 
                         title="Login"
@@ -92,6 +97,8 @@ export default function Login() {
                         action={redirection} 
                         size="full"  
                     />
+                    </View>
+                  
                     
                 </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
@@ -133,4 +140,11 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#ccc",
     },
+    containerbuton: {
+        width: "100%",
+        
+    },
+
+
+
 });

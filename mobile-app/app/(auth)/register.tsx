@@ -86,15 +86,19 @@ export default function Register() {
                             placeholder="Mot de passe"
                             value={password}
                             onChangeText={setPassword}
+                            isPassword
                             
                         />
                         <Input 
                             placeholder="Confirmer le mot de passe"
                             value={confirmPassword}
                             onChangeText={setConfirmPassword}
+                            isPassword
                            
                         />
                     </View>
+
+                    <View style={styles.containerbuton}>
 
                     <Button 
                         title="S'inscrire"
@@ -108,6 +112,7 @@ export default function Register() {
                         action={redirection} 
                         size="full"  
                     />
+                    </View>
                 </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
         </SafeAreaView>
@@ -141,6 +146,12 @@ const styles = StyleSheet.create({
        
     },
     containerbuton: {
+        width: "100%",
         marginTop: 10,
     },
+
+    
+
+   
+
 });

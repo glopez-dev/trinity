@@ -5,9 +5,10 @@ interface InputProps {
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
+  isPassword?: boolean;
 }
 
-const Input: React.FC<InputProps> = ({ value, onChangeText, placeholder }) => {
+const Input: React.FC<InputProps> = ({ value, onChangeText, placeholder, isPassword = false }) => {
   return (
     <View style={styles.inputContainer}>
       <TextInput
@@ -15,6 +16,7 @@ const Input: React.FC<InputProps> = ({ value, onChangeText, placeholder }) => {
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
+        secureTextEntry={isPassword} // Cache le texte si c'est un mot de passe
       />
     </View>
   );
