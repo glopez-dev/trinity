@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
         minWidth: 100,
         borderRadius: 4,
         alignSelf: 'center',
+        marginBottom: 10,
 
     },
     text: {

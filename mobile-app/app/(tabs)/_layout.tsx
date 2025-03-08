@@ -1,13 +1,12 @@
 import { Tabs } from 'expo-router';
 import { Text } from 'react-native';  // Assurez-vous que Text est bien importé de react-native
 import styles from '../styles/tabStyles';
+import { AuthProvider } from "@/context/AuthProvider";
 import { Home, ScanBarcode, History, ShoppingCart, User } from 'lucide-react-native';
-import cart from '../../Assets/Cart';
-
 
 export default function TabLayout() {
     return (
-        <Tabs screenOptions={{ tabBarStyle: styles.tabar }}>
+ <AuthProvider>       <Tabs screenOptions={{ tabBarStyle: styles.tabar }}>
             <Tabs.Screen
                 name="index"
                 options={{
@@ -96,5 +95,7 @@ export default function TabLayout() {
                 }}
             />
         </Tabs>
+        </AuthProvider>
+
     );
 }
