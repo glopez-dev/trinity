@@ -4,6 +4,7 @@ import styles from '../styles/tabStyles';
 import { AuthProvider } from "@/context/AuthProvider";
 import { Home, ScanBarcode, History, ShoppingCart, User } from 'lucide-react-native';
 
+
 export default function TabLayout() {
     return (
  <AuthProvider>       <Tabs screenOptions={{ tabBarStyle: styles.tabar }}>

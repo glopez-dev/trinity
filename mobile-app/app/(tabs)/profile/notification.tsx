@@ -1,10 +1,10 @@
 import {SafeAreaView, Text} from "react-native";
 
-export default function Profile() {
+export default function Notification() {
     return (
         <SafeAreaView style={{flex: 1}}>
             <Text>
-                Profile
+                Notifications
             </Text>
         </SafeAreaView>
     )

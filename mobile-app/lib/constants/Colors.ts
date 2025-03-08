@@ -8,4 +8,5 @@ export const colors = {
     accent: '#CD502B',
     accentHover: '#B14725',
     accentActive: '#933B1E',
+    grey_1: '#9199A5'
 }
