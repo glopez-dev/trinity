@@ -16,7 +16,7 @@ const Input: React.FC<InputProps> = ({ value, onChangeText, placeholder, isPassw
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        secureTextEntry={isPassword} // Cache le texte si c'est un mot de passe
+        secureTextEntry={isPassword}
       />
     </View>
   );

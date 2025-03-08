@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Text } from 'react-native';  // Assurez-vous que Text est bien importé de react-native
+import { Text } from 'react-native';
 import styles from '../styles/tabStyles';
 import { AuthProvider } from "@/context/AuthProvider";
 import { Home, ScanBarcode, History, ShoppingCart, User } from 'lucide-react-native';
