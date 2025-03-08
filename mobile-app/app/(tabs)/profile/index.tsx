@@ -11,11 +11,11 @@ export default function Profile() {
             flex: 1,
         }]}>
             <View style={styles.container}>
-                <ProfileHeader/>
-                <View accessibilityHint={'content'} style={styles.btnContainer}>
+                <ProfileHeader name={'John Doe'} email={'john.doe@gmail.com'}/>
+                <View accessibilityHint={'body'} style={styles.btnContainer}>
                     <ProfileButton title={'Mes commandes'} link={'/history'} icon={'ShoppingBag'}/>
                     <ProfileButton title={'Informations personnelles'} link={'/profile/informations'} icon={'UserRoundCog'}/>
-                    <ProfileButton title={'Adresse de livrasion'} link={'/profile/address'} icon={'Truck'}/>
+                    <ProfileButton title={'Adresse de livraison'} link={'/profile/address'} icon={'Truck'}/>
                     <ProfileButton title={'Notifications'} link={'/profile/notification'} icon={'BellRing'}/>
                 </View>
                 <View accessibilityHint={'footer'} style={styles.footer}>
