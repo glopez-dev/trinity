@@ -1,31 +1,33 @@
-import { 
-    SafeAreaView, 
-    Text, 
+import {
+    SafeAreaView,
+    Text,
     View,
-    StyleSheet, 
-    KeyboardAvoidingView, 
-    Platform, 
-    TouchableWithoutFeedback, 
-    Keyboard
+    StyleSheet,
+    KeyboardAvoidingView,
+    Platform,
+    TouchableWithoutFeedback,
+    Keyboard, Image
 } from "react-native";
 import { useState } from "react";
-import { useRouter } from "expo-router";
+import {Link, useRouter} from "expo-router";
 import { api } from "@/lib/API/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Button from "@/components/ui/buttons/Button"; 
 import Input from "@/components/ui/input/Input";
-import { FlashMessage } from "@/components/ui/flashMessage/FlashMessage";
-import { MessageType } from "@/lib/types/flashMessage/types";
+import {useFlashMessage} from "@/lib/stores/flashMessage/useFlashStore";
+import {colors} from "@/lib/constants/Colors";
+import {useAuthStore} from "@/lib/stores/auth/useAuthStore";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [flashMessage, setFlashMessage] = useState<{ message: string, type: MessageType } | null>(null);
-    const router = useRouter();  
+    const router = useRouter();
+    const flash = useFlashMessage();
+    const {initialize} = useAuthStore();
 
     const handleLogin = async () => {
         if (!email || !password) {
-            setFlashMessage({ message: "Veuillez remplir tous les champs.", type: "error" });
+            flash.error("Veuillez remplir tous les champs.");
             return;
         }
 
@@ -33,21 +35,16 @@ export default function Login() {
             const response = await api.post("/auth/login", { email, password });
             const token = response.data.jwt;
             await AsyncStorage.setItem('userToken', token);
-
-            setFlashMessage({ message: "Connexion réussie !", type: "success" });
+            initialize();
+            flash.success( "Connexion réussie !");
 
             setTimeout(() => {
                 router.replace("/");
             }, 2000);
         } catch (error) {
-            console.error("Erreur lors de la connexion :", error);
-            setFlashMessage({ message: "Une erreur s'est produite lors de la connexion.", type: "error" });
+            flash.error('Une erreur s\'est produite lors de la connexion.');
         }
     };
-
-    function redirection() {
-        router.replace("/register");
-    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -56,13 +53,6 @@ export default function Login() {
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
                     style={styles.inner}
                 >
-                    {flashMessage && (
-                        <FlashMessage 
-                            message={flashMessage.message} 
-                            type={flashMessage.type} 
-                            onClose={() => setFlashMessage(null)}
-                        />
-                    )}
 
                     <Text style={styles.title}>Trinity</Text>
                     <Text style={styles.subtitle}>Connexion</Text>
@@ -83,7 +73,9 @@ export default function Login() {
 
                     <View style={styles.containerButton}>
                         <Button title="Login" color="primary" action={handleLogin} size="full" />
-                        <Button title="S'inscrire" color="primary" action={redirection} size="full" />
+                        <Text style={styles.text}>
+                            Vous n'avez pas de compte ? <Link style={styles.link} href={'/register'}>S'inscrire</Link>
+                        </Text>
                     </View>
                 </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
@@ -103,8 +95,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     title: {
-        fontSize: 32,
-        fontWeight: "bold",
+        fontSize: 50,
+        fontFamily: 'CabinetGrotesk-ExtraBold',
         color: "#4A6741",
         marginBottom: 10,
     },
@@ -120,5 +112,14 @@ const styles = StyleSheet.create({
     containerButton: {
         width: "100%",
     },
+    text: {
+        textAlign: "center",
+        marginTop: 10,
+        marginBottom: 10,
+    },
+    link: {
+        color: colors.primary,
+        textDecorationLine: "underline",
+    }
 });
 

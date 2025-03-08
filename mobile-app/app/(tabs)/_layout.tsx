@@ -1,25 +1,35 @@
-import { Tabs } from 'expo-router';
-import { Text } from 'react-native';
+import {Redirect, Tabs, useRouter} from 'expo-router';
+import {Text} from 'react-native';
 import styles from '../styles/tabStyles';
-import { AuthProvider } from "@/context/AuthProvider";
-import { Home, ScanBarcode, History, ShoppingCart, User } from 'lucide-react-native';
-
+import {History, Home, ScanBarcode, ShoppingCart, User} from 'lucide-react-native';
+import {useAuthStore} from "@/lib/stores/auth/useAuthStore";
 
 export default function TabLayout() {
+    const {isAuth} = useAuthStore();
+
+    if (!isAuth()) {
+        return <Redirect href={'/login'} />
+    }
+
     return (
- <AuthProvider>       <Tabs screenOptions={{ tabBarStyle: styles.tabar }}>
+        <Tabs screenOptions={{tabBarStyle: styles.tabar}}>
             <Tabs.Screen
                 name="index"
                 options={{
                     title: 'Accueil',
                     headerShown: false,
-                    tabBarIcon: ({ color, size, focused }) => (
-                        <Home color={color} size={focused ? 27 : 25} />
+                    tabBarIcon: ({color, size, focused}) => (
+                        <Home color={color} size={focused ? 27 : 25}/>
                     ),
                     tabBarActiveTintColor: 'white',
                     tabBarInactiveTintColor: 'white',
-                    tabBarLabel: ({ focused }) => (
-                        <Text style={{ fontWeight: focused ? 'bold' : 'normal',paddingTop:5,color:'white',fontSize: 13 }}>
+                    tabBarLabel: ({focused}) => (
+                        <Text style={{
+                            fontWeight: focused ? 'bold' : 'normal',
+                            paddingTop: 5,
+                            color: 'white',
+                            fontSize: 13
+                        }}>
                             Accueil
                         </Text>
                     ),
@@ -30,15 +40,20 @@ export default function TabLayout() {
                 options={{
                     title: 'Panier',
                     headerShown: false,
-                    tabBarIcon: ({ color, size, focused }) => (
-                        <ShoppingCart color={color} size={focused ? 27 : 25} />
+                    tabBarIcon: ({color, size, focused}) => (
+                        <ShoppingCart color={color} size={focused ? 27 : 25}/>
 
 
                     ),
                     tabBarActiveTintColor: 'white',
                     tabBarInactiveTintColor: 'white',
-                    tabBarLabel: ({ focused }) => (
-                        <Text style={{ fontWeight: focused ? 'bold' : 'normal', color:'white',paddingTop:5,fontSize: 13 }}>
+                    tabBarLabel: ({focused}) => (
+                        <Text style={{
+                            fontWeight: focused ? 'bold' : 'normal',
+                            color: 'white',
+                            paddingTop: 5,
+                            fontSize: 13
+                        }}>
                             Panier
                         </Text>
                     ),
@@ -49,13 +64,18 @@ export default function TabLayout() {
                 options={{
                     title: 'Scanner',
                     headerShown: false,
-                    tabBarIcon: ({ color, size, focused }) => (
-                        <ScanBarcode color={color} size={focused ? 27 : 25} />
+                    tabBarIcon: ({color, size, focused}) => (
+                        <ScanBarcode color={color} size={focused ? 27 : 25}/>
                     ),
                     tabBarActiveTintColor: 'white',
                     tabBarInactiveTintColor: 'white',
-                    tabBarLabel: ({ focused }) => (
-                        <Text style={{ fontWeight: focused ? 'bold' : 'normal',color:'white',paddingTop:5,fontSize: 13  }}>
+                    tabBarLabel: ({focused}) => (
+                        <Text style={{
+                            fontWeight: focused ? 'bold' : 'normal',
+                            color: 'white',
+                            paddingTop: 5,
+                            fontSize: 13
+                        }}>
                             Scanner
                         </Text>
                     ),
@@ -66,13 +86,18 @@ export default function TabLayout() {
                 options={{
                     title: 'Historique',
                     headerShown: false,
-                    tabBarIcon: ({ color, size, focused }) => (
-                        <History color={color} size={focused ? 27 : 25} />
+                    tabBarIcon: ({color, size, focused}) => (
+                        <History color={color} size={focused ? 27 : 25}/>
                     ),
-                      tabBarActiveTintColor: 'white',
+                    tabBarActiveTintColor: 'white',
                     tabBarInactiveTintColor: 'white',
-                    tabBarLabel: ({ focused }) => (
-                        <Text style={{ fontWeight: focused ? 'bold' : 'normal',color:'white',paddingTop:5, fontSize: 13  }}>
+                    tabBarLabel: ({focused}) => (
+                        <Text style={{
+                            fontWeight: focused ? 'bold' : 'normal',
+                            color: 'white',
+                            paddingTop: 5,
+                            fontSize: 13
+                        }}>
                             Historique
                         </Text>
                     ),
@@ -83,20 +108,23 @@ export default function TabLayout() {
                 options={{
                     title: 'Profil',
                     headerShown: false,
-                    tabBarIcon: ({ color, size, focused }) => (
-                        <User color={color} size={focused ? 27 : 25} />
+                    tabBarIcon: ({color, size, focused}) => (
+                        <User color={color} size={focused ? 27 : 25}/>
                     ),
                     tabBarActiveTintColor: 'white',
                     tabBarInactiveTintColor: 'white',
-                    tabBarLabel: ({ focused }) => (
-                        <Text style={{ fontWeight: focused ? 'bold' : 'normal',color:'white',paddingTop:5 ,fontSize: 13 }}>
+                    tabBarLabel: ({focused}) => (
+                        <Text style={{
+                            fontWeight: focused ? 'bold' : 'normal',
+                            color: 'white',
+                            paddingTop: 5,
+                            fontSize: 13
+                        }}>
                             Profil
                         </Text>
                     ),
                 }}
             />
         </Tabs>
-        </AuthProvider>
-
     );
 }

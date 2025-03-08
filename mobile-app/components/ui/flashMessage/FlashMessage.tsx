@@ -10,6 +10,7 @@ import {
     getProgressColor,
     getIconColor
 } from './flashMessageStyles';
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 interface FlashMessageProps {
     message: string;
@@ -41,10 +42,11 @@ export const FlashMessage = ({
     const [visible, setVisible] = useState(true);
     const slideAnimation = useState(new Animated.Value(-100))[0];
     const progressAnimation = useState(new Animated.Value(0))[0];
+    const insets = useSafeAreaInsets();
 
     useEffect(() => {
         Animated.timing(slideAnimation, {
-            toValue: 16,
+            toValue: insets.top + 16,
             duration: 300,
             useNativeDriver: true,
         }).start();

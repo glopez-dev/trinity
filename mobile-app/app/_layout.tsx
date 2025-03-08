@@ -4,6 +4,7 @@ import {FlashMessagesProvider} from '@/lib/stores/flashMessage/FlashMessageProvi
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {useFonts} from "expo-font";
 import {useEffect} from "react";
+import {AuthProvider} from "@/lib/stores/auth/AuthProvider";
 
 
 SplashScreen.preventAutoHideAsync();
@@ -11,7 +12,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
     const colorScheme = useColorScheme();
     const [loaded, error] = useFonts({
-        'DM Sans': require('@/assets/fonts/DMSans-VariableFont.ttf')
+        'CabinetGrotesk-ExtraBold': require('@/assets/fonts/CabinetGrotesk-Extrabold.otf'),
     })
 
     useEffect(() => {
@@ -27,17 +28,19 @@ export default function RootLayout() {
     return (
         <SafeAreaProvider>
             <FlashMessagesProvider>
-                <Stack
-                    screenOptions={{
-                        headerShown: false,
-                        contentStyle: {backgroundColor: colorScheme === 'dark' ? '#000' : '#fff'},
-                    }}
-                >
-                    <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
-                    <Stack.Screen name="(auth)" options={{headerShown: false}}/>
-                    <Stack.Screen name="(modals)" options={{headerShown: false}}/>
-                    <Stack.Screen name="products" options={{headerShown: false}}/>
-                </Stack>
+                <AuthProvider>
+                    <Stack
+                        screenOptions={{
+                            headerShown: false,
+                            contentStyle: {backgroundColor: colorScheme === 'dark' ? '#000' : '#fff'},
+                        }}
+                    >
+                        <Stack.Screen name="(auth)" options={{headerShown: false}}/>
+                        <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
+                        <Stack.Screen name="(modals)" options={{headerShown: false}}/>
+                        <Stack.Screen name="products" options={{headerShown: false}}/>
+                    </Stack>
+                </AuthProvider>
             </FlashMessagesProvider>
         </SafeAreaProvider>
     );

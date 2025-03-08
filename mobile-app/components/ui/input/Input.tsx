@@ -17,6 +17,7 @@ const Input: React.FC<InputProps> = ({ value, onChangeText, placeholder, isPassw
         onChangeText={onChangeText}
         placeholder={placeholder}
         secureTextEntry={isPassword}
+        autoCapitalize="none"
       />
     </View>
   );

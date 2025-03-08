@@ -1,37 +1,41 @@
-import { 
-    SafeAreaView, 
-    Text, 
-    View, 
-    KeyboardAvoidingView, 
-    Platform, 
-    TouchableWithoutFeedback, 
+import {
     Keyboard,
-    StyleSheet
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TouchableWithoutFeedback,
+    View
 } from "react-native";
-import { useState } from "react";
-import { api } from "@/lib/API/api"; 
-import { router } from "expo-router";
-import Button from "@/components/ui/buttons/Button"; 
+import {useState} from "react";
+import {api} from "@/lib/API/api";
+import {Link, router} from "expo-router";
+import Button from "@/components/ui/buttons/Button";
 import Input from "@/components/ui/input/Input";
-import { FlashMessage } from "@/components/ui/flashMessage/FlashMessage";
-import { MessageType } from "@/lib/types/flashMessage/types";
+import {FlashMessage} from "@/components/ui/flashMessage/FlashMessage";
+import {colors} from "@/lib/constants/Colors";
+import {useFlashMessage} from "@/lib/stores/flashMessage/useFlashStore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {useAuthStore} from "@/lib/stores/auth/useAuthStore";
 
 export default function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [firstName, setFirstName] = useState("");  
-    const [lastName, setLastName] = useState("");    
-    const [flashMessage, setFlashMessage] = useState<{ message: string, type: MessageType } | null>(null);
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const flash = useFlashMessage();
+    const {initialize} = useAuthStore();
 
     const handleRegister = async () => {
         if (!email || !password || !confirmPassword || !firstName || !lastName) {
-            setFlashMessage({ message: "Veuillez remplir tous les champs.", type: "error" });
+            flash.error('Veuillez remplir tous les champs.');
             return;
         }
 
         if (password !== confirmPassword) {
-            setFlashMessage({ message: "Les mots de passe ne correspondent pas.", type: "error" });
+            flash.error('Les mots de passe ne correspondent pas.');
             return;
         }
 
@@ -41,19 +45,21 @@ export default function Register() {
                 password,
                 firstName,
                 lastName,
-                role: "EMPLOYEE"  
+                role: "EMPLOYEE"
             });
 
-            console.log("Réponse API :", response.data);
-            setFlashMessage({ message: "Inscription réussie !", type: "success" });
+            const token = response.data.jwt;
+            await AsyncStorage.setItem('userToken', token);
+            initialize();
 
+            flash.success('Inscription réussie !');
             setTimeout(() => {
                 router.replace("/login");
             }, 2000);
-            
+
         } catch (error) {
             console.error("Erreur lors de l'inscription :", error);
-            setFlashMessage({ message: "Une erreur s'est produite lors de l'inscription.", type: "error" });
+            flash.error("Une erreur s'est produite lors de l'inscription.");
         }
     };
 
@@ -64,32 +70,27 @@ export default function Register() {
     return (
         <SafeAreaView style={styles.container}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <KeyboardAvoidingView 
+                <KeyboardAvoidingView
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
                     style={styles.inner}
                 >
-                    {flashMessage && (
-                        <FlashMessage 
-                            message={flashMessage.message} 
-                            type={flashMessage.type} 
-                            onClose={() => setFlashMessage(null)}
-                        />
-                    )}
-
                     <Text style={styles.title}>Trinity</Text>
                     <Text style={styles.subtitle}>Inscription</Text>
 
                     <View style={styles.inputContainer}>
-                        <Input placeholder="Email" value={email} onChangeText={setEmail} />
-                        <Input placeholder="Prénom" value={firstName} onChangeText={setFirstName} />
-                        <Input placeholder="Nom" value={lastName} onChangeText={setLastName} />
-                        <Input placeholder="Mot de passe" value={password} onChangeText={setPassword} isPassword />
-                        <Input placeholder="Confirmer le mot de passe" value={confirmPassword} onChangeText={setConfirmPassword} isPassword />
+                        <Input placeholder="Email" value={email} onChangeText={setEmail}/>
+                        <Input placeholder="Prénom" value={firstName} onChangeText={setFirstName}/>
+                        <Input placeholder="Nom" value={lastName} onChangeText={setLastName}/>
+                        <Input placeholder="Mot de passe" value={password} onChangeText={setPassword} isPassword/>
+                        <Input placeholder="Confirmer le mot de passe" value={confirmPassword}
+                               onChangeText={setConfirmPassword} isPassword/>
                     </View>
 
                     <View style={styles.containerButton}>
-                        <Button title="S'inscrire" color="primary" action={handleRegister} size="full" />
-                        <Button title="Login" color="primary" action={redirection} size="full" />
+                        <Button title="S'inscrire" color="primary" action={handleRegister} size="full"/>
+                        <Text style={styles.text}>
+                            Vous avec déjà un compte ? <Link style={styles.link} href={'/login'}>Connectez vous</Link>
+                        </Text>
                     </View>
                 </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
@@ -100,7 +101,7 @@ export default function Register() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#F5F1E8",
+        backgroundColor: colors.secondary,
     },
     inner: {
         flex: 1,
@@ -109,9 +110,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     title: {
-        fontSize: 32,
-        fontWeight: "bold",
-        color: "#4A6741",
+        fontSize: 50,
+        fontFamily: 'CabinetGrotesk-ExtraBold',
+        color: colors.primary,
         marginBottom: 10,
     },
     subtitle: {
@@ -126,4 +127,13 @@ const styles = StyleSheet.create({
     containerButton: {
         width: "100%",
     },
+    text: {
+        textAlign: "center",
+        marginTop: 10,
+        marginBottom: 10,
+    },
+    link: {
+        color: colors.primary,
+        textDecorationLine: "underline",
+    }
 });

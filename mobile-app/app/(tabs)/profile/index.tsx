@@ -3,8 +3,16 @@ import Button from "@/components/ui/buttons/Button";
 import {colors} from "@/lib/constants/Colors";
 import ProfileButton from "@/components/feature/profile/button/ProfileButton";
 import ProfileHeader from "@/components/feature/profile/header/ProfileHeader";
+import {useAuthStore} from "@/lib/stores/auth/useAuthStore";
+import {useRouter} from "expo-router";
 
 export default function Profile() {
+    const {logout} = useAuthStore();
+    const router = useRouter();
+    const handleLogout = async () => {
+        await logout();
+        router.push('/login')
+    }
     return (
         <SafeAreaView style={[{
             backgroundColor: colors.secondary,
@@ -19,7 +27,7 @@ export default function Profile() {
                     <ProfileButton title={'Notifications'} link={'/profile/notification'} icon={'BellRing'}/>
                 </View>
                 <View accessibilityHint={'footer'} style={styles.footer}>
-                    <Button title={'Déconnexion'} action={() => console.log('Déconnexion')} size={'full'}/>
+                    <Button title={'Déconnexion'} action={handleLogout} size={'full'}/>
                 </View>
             </View>
         </SafeAreaView>
