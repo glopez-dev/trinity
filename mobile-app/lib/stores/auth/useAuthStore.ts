@@ -33,7 +33,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                     set({ user: decodedUser });
                 } catch (error) {
                     console.log("Token invalide");
-                    await AsyncStorage.removeItem("userToken");
                 }
             }
         } catch (error) {

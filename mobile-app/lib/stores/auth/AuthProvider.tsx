@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAuthStore } from './useAuthStore';
 
 interface AuthProviderProps {
@@ -8,9 +8,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const initialize = useAuthStore(state => state.initialize);
 
-    useEffect(() => {
-        initialize();
-    }, [initialize]);
+    initialize();
 
     return <>{children}</>;
 };
