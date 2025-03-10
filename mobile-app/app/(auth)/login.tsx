@@ -1,18 +1,18 @@
 import {
-    SafeAreaView,
-    Text,
-    View,
-    StyleSheet,
+    Keyboard,
     KeyboardAvoidingView,
     Platform,
+    SafeAreaView,
+    StyleSheet,
+    Text,
     TouchableWithoutFeedback,
-    Keyboard, Image
+    View
 } from "react-native";
-import { useState } from "react";
+import {useState} from "react";
 import {Link, useRouter} from "expo-router";
-import { api } from "@/lib/API/api";
+import {api} from "@/lib/API/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Button from "@/components/ui/buttons/Button"; 
+import Button from "@/components/ui/buttons/Button";
 import Input from "@/components/ui/input/Input";
 import {useFlashMessage} from "@/lib/stores/flashMessage/useFlashStore";
 import {colors} from "@/lib/constants/Colors";
@@ -32,11 +32,11 @@ export default function Login() {
         }
 
         try {
-            const response = await api.post("/auth/login", { email, password });
+            const response = await api.post("/auth/login", {email, password});
             const token = response.data.jwt;
             await AsyncStorage.setItem('userToken', token);
             initialize();
-            flash.success( "Connexion réussie !");
+            flash.success("Connexion réussie !");
 
             setTimeout(() => {
                 router.replace("/");
@@ -49,7 +49,7 @@ export default function Login() {
     return (
         <SafeAreaView style={styles.container}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <KeyboardAvoidingView 
+                <KeyboardAvoidingView
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
                     style={styles.inner}
                 >
@@ -58,12 +58,12 @@ export default function Login() {
                     <Text style={styles.subtitle}>Connexion</Text>
 
                     <View style={styles.inputContainer}>
-                        <Input 
+                        <Input
                             placeholder="Email"
                             value={email}
                             onChangeText={setEmail}
                         />
-                        <Input 
+                        <Input
                             placeholder="Mot de passe"
                             value={password}
                             onChangeText={setPassword}
@@ -72,7 +72,7 @@ export default function Login() {
                     </View>
 
                     <View style={styles.containerButton}>
-                        <Button title="Login" color="primary" action={handleLogin} size="full" />
+                        <Button title="Login" color="primary" action={handleLogin} size="full"/>
                         <Text style={styles.text}>
                             Vous n'avez pas de compte ? <Link style={styles.link} href={'/register'}>S'inscrire</Link>
                         </Text>

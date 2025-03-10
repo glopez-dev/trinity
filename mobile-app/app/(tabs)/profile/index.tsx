@@ -23,9 +23,7 @@ export default function Profile() {
                 <View accessibilityHint={'body'} style={styles.btnContainer}>
                     <ProfileButton title={'Mes commandes'} link={'/history'} icon={'ShoppingBag'}/>
                     <ProfileButton title={'Informations personnelles'} link={'/profile/informations'} icon={'UserRoundCog'}/>
-                    <ProfileButton title={'Adresse de livraison'} link={'/profile/address'} icon={'Truck'}/>
-                    <ProfileButton title={'Notifications'} link={'/profile/notification'} icon={'BellRing'}/>
-                </View>
+                 </View>
                 <View accessibilityHint={'footer'} style={styles.footer}>
                     <Button title={'Déconnexion'} action={handleLogout} size={'full'}/>
                 </View>
