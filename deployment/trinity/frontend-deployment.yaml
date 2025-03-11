@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: silica5518/t-dev-701-frontend:prod-1de3f164
+        image: silica5518/t-dev-701-frontend:prod-bdaeca1d
         ports:
         - containerPort: 3000
         envFrom:
