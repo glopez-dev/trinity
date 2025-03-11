@@ -31,4 +31,4 @@ data:
   ###########################
 
   # Used by the frontend to make requests to the backend
-  NEXT_PUBLIC_API_URL: "https://trinity.epitech-msc2026.me/api/v1"
+  NEXT_PUBLIC_API_URL: "https://trinity.epitech-msc2026.me"
