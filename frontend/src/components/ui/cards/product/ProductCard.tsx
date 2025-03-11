@@ -49,6 +49,10 @@ export const ProductCard = ({product}: ProductCardProps) => {
                     <p className={styles.cardItemName}>Dernière mise à jour</p>
                     <p className={styles.cardItemValue}>{product.lastUpdate ? product.lastUpdate : 'Aucune'}</p>
                 </div>
+                <div className={styles.cardItem}>
+                    <p className={styles.cardItemName}>Codebar</p>
+                    <p className={styles.cardItemValue}>{product.barcode}</p>
+                </div>
             </div>
         </div>
     );
