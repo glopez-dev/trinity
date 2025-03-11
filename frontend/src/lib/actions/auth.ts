@@ -3,6 +3,7 @@ import {LoginResponse} from "@/lib/types/user/auth";
 import {api} from "@/lib/api/api";
 import axios from "axios";
 
+// Login action
 export const login = async (formData: Login): Promise<LoginResponse | Error> => {
     try {
         const response = await api.post('/api/v1/auth/login', formData);
