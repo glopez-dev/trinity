@@ -25,17 +25,17 @@ import lombok.experimental.SuperBuilder;
  */
 public class Customer extends AbstractUser {
 
-    @Column(unique = true, nullable = false)
-    private String paypalUserId;
+    @Column(unique = true)
+    private String stripeUserId;
 
-    @Column(nullable = false)
+    @Column()
     private Instant tokenExpiresAt;
 
-    @Column(nullable = false)
-    private String paypalAccessToken;
+    @Column()
+    private String stripeAccessToken;
 
-    @Column(nullable = false)
-    private String paypalRefreshToken;
+    @Column()
+    private String stripeRefreshToken;
 
     @Builder.Default
     @Column(nullable = false)
@@ -53,8 +53,8 @@ public class Customer extends AbstractUser {
         Assert.notNull(refreshToken, "Refresh token must not be null");
         Assert.notNull(expiresIn, "Expiration time must not be null");
 
-        this.setPaypalAccessToken(accessToken);
-        this.setPaypalRefreshToken(refreshToken);
+        this.setStripeAccessToken(accessToken);
+        this.setStripeRefreshToken(refreshToken);
         this.setTokenExpiresAt(Instant.now().plusSeconds(expiresIn));
     }
 

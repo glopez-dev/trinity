@@ -53,7 +53,7 @@ public abstract class AbstractUser implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserType type;
 
-    @Column(nullable = true)
+    @Column()
     private Instant lastLoginAt;
 
     @Builder.Default

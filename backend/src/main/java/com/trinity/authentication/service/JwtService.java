@@ -4,8 +4,10 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
+import com.trinity.user.model.AbstractUser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -34,7 +36,21 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
-        return this.generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> extraClaims = new HashMap<>();
+
+        // JWT crypté pour éviter d'avoir role : 'ADMIN' en clair
+        if (userDetails instanceof AbstractUser) {
+            AbstractUser user = (AbstractUser) userDetails;
+
+            // Génère un UUID basé sur le type d'utilisateur et son ID
+            UUID roleUuid = UUID.nameUUIDFromBytes(
+                    (user.getType().name() + ":" + user.getId().toString()).getBytes()
+            );
+
+            extraClaims.put("roleId", roleUuid.toString());
+        }
+
+        return this.generateToken(extraClaims, userDetails);
     }
 
     public String generateToken(
