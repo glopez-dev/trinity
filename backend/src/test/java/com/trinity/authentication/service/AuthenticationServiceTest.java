@@ -9,14 +9,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.trinity.authentication.dto.AuthenticationResponse;
-import com.trinity.authentication.dto.LoginRequest;
 import com.trinity.authentication.dto.RegisterRequest;
+import com.trinity.authentication.dto.LoginRequest;
 import com.trinity.user.constant.EmployeeRole;
 import com.trinity.user.constant.UserType;
 import com.trinity.user.model.Employee;
+import com.trinity.user.repository.CustomerRepository;
 import com.trinity.user.repository.EmployeeRepository;
 
 import java.util.Optional;
@@ -31,6 +33,9 @@ class AuthenticationServiceTest {
     private EmployeeRepository employeeRepository;
 
     @Mock
+    private CustomerRepository customerRepository;
+
+    @Mock
     private PasswordEncoder passwordEncoder;
 
     @Mock
@@ -39,13 +44,16 @@ class AuthenticationServiceTest {
     @Mock
     private AuthenticationManager authenticationManager;
 
+    @Mock
+    private UserDetailsService userDetailsService;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void testRegister() {
+    void testRegisterEmployee() {
         // Given
         RegisterRequest request = new RegisterRequest();
         request.setEmail("test@example.com");
@@ -59,15 +67,16 @@ class AuthenticationServiceTest {
                 .hashedPassword("encodedPassword")
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
+                .role(request.getRole())
                 .type(UserType.EMPLOYEE)
                 .build();
 
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPassword");
+        when(employeeRepository.existsByEmail(request.getEmail())).thenReturn(false);
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
-        when(jwtService.generateToken(employee)).thenReturn("jwtToken");
-
+        when(jwtService.generateToken(any(Employee.class))).thenReturn("jwtToken");
         // When
-        AuthenticationResponse response = authenticationService.register(request);
+        AuthenticationResponse response = authenticationService.registerEmployee(request);
 
         // Then
         assertNotNull(response);
@@ -90,7 +99,7 @@ class AuthenticationServiceTest {
                 .type(UserType.EMPLOYEE)
                 .build();
 
-        when(employeeRepository.findByEmail(request.getEmail())).thenReturn(Optional.of(employee));
+        when(userDetailsService.loadUserByUsername(request.getEmail())).thenReturn(employee);
         when(jwtService.generateToken(employee)).thenReturn("jwtToken");
 
         // When
@@ -100,6 +109,6 @@ class AuthenticationServiceTest {
         assertNotNull(response);
         assertEquals("jwtToken", response.getJwt());
         verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(employeeRepository, times(1)).findByEmail(request.getEmail());
+        verify(userDetailsService, times(1)).loadUserByUsername(request.getEmail());
     }
 }

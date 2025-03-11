@@ -17,18 +17,18 @@ class CustomerTest {
         // Given
         String email = "test@example.com";
         String hashedPassword = "hashedPassword";
-        String paypalUserId = "paypalUserId";
-        String paypalAccessToken = "accessToken";
-        String paypalRefreshToken = "refreshToken";
+        String stripeUserId = "stripeUserId";
+        String stripeAccessToken = "accessToken";
+        String stripeRefreshToken = "refreshToken";
         Instant tokenExpiresAt = Instant.now().plusSeconds(3600);
 
         // When
         Customer customer = Customer.builder()
                 .email(email)
                 .hashedPassword(hashedPassword)
-                .paypalUserId(paypalUserId)
-                .paypalAccessToken(paypalAccessToken)
-                .paypalRefreshToken(paypalRefreshToken)
+                .stripeUserId(stripeUserId)
+                .stripeAccessToken(stripeAccessToken)
+                .stripeRefreshToken(stripeRefreshToken)
                 .tokenExpiresAt(tokenExpiresAt)
                 .type(UserType.CUSTOMER)
                 .build();
@@ -37,9 +37,9 @@ class CustomerTest {
         assertNotNull(customer);
         assertEquals("test@example.com", customer.getEmail());
         assertEquals("hashedPassword", customer.getHashedPassword());
-        assertEquals("paypalUserId", customer.getPaypalUserId());
-        assertEquals("accessToken", customer.getPaypalAccessToken());
-        assertEquals("refreshToken", customer.getPaypalRefreshToken());
+        assertEquals("stripeUserId", customer.getStripeUserId());
+        assertEquals("accessToken", customer.getStripeAccessToken());
+        assertEquals("refreshToken", customer.getStripeRefreshToken());
         assertEquals(tokenExpiresAt, customer.getTokenExpiresAt());
         assertEquals(UserType.CUSTOMER, customer.getType());
     }
@@ -91,8 +91,8 @@ class CustomerTest {
         customer.updatePayPalToken("newAccessToken", "newRefreshToken", 3600L);
 
         // Then
-        assertEquals("newAccessToken", customer.getPaypalAccessToken());
-        assertEquals("newRefreshToken", customer.getPaypalRefreshToken());
+        assertEquals("newAccessToken", customer.getStripeAccessToken());
+        assertEquals("newRefreshToken", customer.getStripeRefreshToken());
         assertFalse(customer.isTokenExpired());
     }
 

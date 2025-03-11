@@ -36,6 +36,5 @@ public class RegisterRequest {
     private String lastName;
 
     @Schema(description = "User's role in the system", example = "EMPLOYEE")
-    @NotNull(message = "Role cannot be null")
-    private EmployeeRole role;
+    private EmployeeRole role = EmployeeRole.EMPLOYEE;
 }

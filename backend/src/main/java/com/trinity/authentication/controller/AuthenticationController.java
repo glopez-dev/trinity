@@ -1,5 +1,6 @@
 package com.trinity.authentication.controller;
 
+import com.trinity.authentication.dto.CustomerRegisterRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,9 +24,14 @@ public class AuthenticationController {
         this.authService = authService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(authService.register(request));
+    @PostMapping("/register/employee")
+    public ResponseEntity<AuthenticationResponse> registerEmployee(@Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(authService.registerEmployee(request));
+    }
+
+    @PostMapping("/register/customer")
+    public ResponseEntity<AuthenticationResponse> registerCustomer(@Valid @RequestBody CustomerRegisterRequest request) {
+        return ResponseEntity.ok(authService.registerCustomer(request));
     }
 
     @PostMapping("/login")

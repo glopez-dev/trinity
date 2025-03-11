@@ -1,9 +1,14 @@
 package com.trinity.authentication.service;
 
-import java.time.Instant;
-
+import com.trinity.authentication.dto.CustomerRegisterRequest;
+import com.trinity.user.model.Customer;
+import com.trinity.user.repository.CustomerRepository;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +25,18 @@ import lombok.RequiredArgsConstructor;
 public class AuthenticationService {
 
     private final EmployeeRepository employeeRepository;
+    private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService; 
+    private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    @Transactional
+    public AuthenticationResponse registerEmployee(RegisterRequest request) {
+
+        if (employeeRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email already in use");
+        }
 
         Employee employee = Employee.builder()
                 .email(request.getEmail())
@@ -38,8 +50,33 @@ public class AuthenticationService {
 
         String jwtToken = jwtService.generateToken(savedEmployee);
 
-        return new AuthenticationResponse(jwtToken);
+        return AuthenticationResponse.builder()
+                .jwt(jwtToken)
+                .build();
 
+    }
+
+    @Transactional
+    public AuthenticationResponse registerCustomer(@Valid CustomerRegisterRequest request) {
+
+        if (customerRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email already in use");
+        }
+
+        Customer customer = Customer.builder()
+                .email(request.getEmail())
+                .hashedPassword(passwordEncoder.encode(request.getPassword()))
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .build();
+
+        Customer savedCustomer = customerRepository.save(customer);
+
+        String jwtToken = jwtService.generateToken(savedCustomer);
+
+        return AuthenticationResponse.builder()
+                .jwt(jwtToken)
+                .build();
     }
 
     public AuthenticationResponse login(LoginRequest request) {
@@ -51,18 +88,13 @@ public class AuthenticationService {
             )
         );
 
-        Employee employee = employeeRepository
-            .findByEmail(request.getEmail())
-            .orElseThrow();
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
 
-        employee.setLastLoginAt(Instant.now());
-        employeeRepository.save(employee);
-
-        String jwtToken = jwtService.generateToken(employee);
+        String jwtToken = jwtService.generateToken(userDetails);
 
         return AuthenticationResponse.builder()
                 .jwt(jwtToken)
                 .build();
     }
-    
+
 }
