@@ -5,7 +5,7 @@ import axios from "axios";
 
 export const login = async (formData: Login): Promise<LoginResponse | Error> => {
     try {
-        const response = await api.post('/auth/login', formData);
+        const response = await api.post('/api/v1/auth/login', formData);
         if (response.status !== 200) {
             throw new Error('Une erreur est survenue !');
         }
