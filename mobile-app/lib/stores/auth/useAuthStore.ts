@@ -1,6 +1,6 @@
-import { create } from 'zustand';
+import {create} from 'zustand';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 
 interface User {
     id: string;
@@ -14,6 +14,7 @@ interface AuthState {
     initialize: () => Promise<void>;
     logout: () => Promise<void>;
     isAuth: () => boolean;
+    getToken: () => Promise<string | null>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -47,6 +48,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         set({ user: null });
 
     },
+
+    getToken: async () => {
+        return await AsyncStorage.getItem("userToken");
+    }
 }));
 
 export const initializeAuth = () => {

@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import {useState} from "react";
 import {Link, useRouter} from "expo-router";
-import {api} from "@/lib/API/api";
+import {api} from "@/lib/api/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Button from "@/components/ui/buttons/Button";
 import Input from "@/components/ui/input/Input";
@@ -42,6 +42,7 @@ export default function Login() {
                 router.replace("/");
             }, 2000);
         } catch (error) {
+            console.log(error);
             flash.error('Une erreur s\'est produite lors de la connexion.');
         }
     };

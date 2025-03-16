@@ -9,7 +9,7 @@ import {
     View
 } from "react-native";
 import {useState} from "react";
-import {api} from "@/lib/API/api";
+import {api} from "@/lib/api/api";
 import {Link, router} from "expo-router";
 import Button from "@/components/ui/buttons/Button";
 import Input from "@/components/ui/input/Input";
