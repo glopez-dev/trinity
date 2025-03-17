@@ -12,31 +12,12 @@ export default function TabLayout() {
     }
 
     return (
-        <Tabs screenOptions={{tabBarStyle: styles.tabar}}>
+        <Tabs   screenOptions={{tabBarStyle: styles.tabar}}>
+
             <Tabs.Screen
+            
                 name="index"
-                options={{
-                    title: 'Accueil',
-                    headerShown: false,
-                    tabBarIcon: ({color, size, focused}) => (
-                        <Home color={color} size={focused ? 27 : 25}/>
-                    ),
-                    tabBarActiveTintColor: 'white',
-                    tabBarInactiveTintColor: 'white',
-                    tabBarLabel: ({focused}) => (
-                        <Text style={{
-                            fontWeight: focused ? 'bold' : 'normal',
-                            paddingTop: 5,
-                            color: 'white',
-                            fontSize: 13
-                        }}>
-                            Accueil
-                        </Text>
-                    ),
-                }}
-            />
-            <Tabs.Screen
-                name="cart"
+
                 options={{
                     title: 'Panier',
                     headerShown: false,
@@ -61,6 +42,7 @@ export default function TabLayout() {
             />
             <Tabs.Screen
                 name="scan"
+                
                 options={{
                     title: 'Scanner',
                     headerShown: false,
