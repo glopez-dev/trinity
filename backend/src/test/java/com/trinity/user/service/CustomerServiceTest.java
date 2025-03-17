@@ -72,10 +72,10 @@ class CustomerServiceTest {
                 .build();
 
         updateCustomerDTO = UpdateCustomerDTO.builder()
-                .firstName("John Updated")
-                .lastName("Doe Updated")
-                .email("updated.john.doe@example.com")
-                .password("updatedPassword")
+                .firstName(Optional.of("John Updated"))
+                .lastName(Optional.of("Doe Updated"))
+                .email(Optional.of("updated.john.doe@example.com"))
+                .password(Optional.of("updatedPassword"))
                 .build();
     }
 
@@ -153,9 +153,9 @@ class CustomerServiceTest {
         // Given
         Customer updatedCustomer = Customer.builder()
                 .id(customerId)
-                .firstName(updateCustomerDTO.getFirstName())
-                .lastName(updateCustomerDTO.getLastName())
-                .email(updateCustomerDTO.getEmail())
+                .firstName(updateCustomerDTO.getFirstName().get())
+                .lastName(updateCustomerDTO.getLastName().get())
+                .email(updateCustomerDTO.getEmail().get())
                 .hashedPassword("updatedHashedPassword")
                 .stripeUserId("stripe123")
                 .status(UserStatus.ACTIVE)
@@ -163,8 +163,8 @@ class CustomerServiceTest {
                 .build();
 
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
-        when(customerRepository.existsByEmail(updateCustomerDTO.getEmail())).thenReturn(false);
-        when(passwordEncoder.encode(updateCustomerDTO.getPassword())).thenReturn("updatedHashedPassword");
+        when(customerRepository.existsByEmail(updateCustomerDTO.getEmail().get())).thenReturn(false);
+        when(passwordEncoder.encode(updateCustomerDTO.getPassword().get())).thenReturn("updatedHashedPassword");
         when(customerRepository.save(any(Customer.class))).thenReturn(updatedCustomer);
 
         // When
@@ -173,14 +173,15 @@ class CustomerServiceTest {
         // Then
         assertNotNull(result);
         assertEquals(customerId, result.getId());
-        assertEquals(updateCustomerDTO.getFirstName(), result.getFirstName());
-        assertEquals(updateCustomerDTO.getLastName(), result.getLastName());
-        assertEquals(updateCustomerDTO.getEmail(), result.getEmail());
+        assertEquals(updateCustomerDTO.getFirstName().get(), result.getFirstName());
+        assertEquals(updateCustomerDTO.getLastName().get(), result.getLastName());
+        assertEquals(updateCustomerDTO.getEmail().get(), result.getEmail());
 
         verify(customerRepository, times(1)).findById(customerId);
-        verify(customerRepository, times(1)).existsByEmail(updateCustomerDTO.getEmail());
-        verify(passwordEncoder, times(1)).encode(updateCustomerDTO.getPassword());
+        verify(customerRepository, times(1)).existsByEmail(updateCustomerDTO.getEmail().get());
+        verify(passwordEncoder, times(1)).encode(updateCustomerDTO.getPassword().get());
         verify(customerRepository, times(1)).save(any(Customer.class));
+
     }
 
     @Test

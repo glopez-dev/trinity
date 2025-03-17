@@ -33,8 +33,7 @@ public class CreateEmployeeDTO {
     @NotEmpty(message = "Last name cannot be empty")
     private String lastName;
 
-    @Schema(description = "Employee's role in the organization", required = true)
-    @NotNull(message = "Role cannot be null")
+    @Schema(description = "Employee's role in the organization")
     private EmployeeRole role;
  
     @Schema(description = "Date when the employee was hired", example = "2023-01-01T00:00:00Z")
