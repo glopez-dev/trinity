@@ -12,4 +12,6 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     @NonNull Optional<Product> findById(@NonNull UUID id);
 
+    Optional<Product> findByBarcode(String barcode);
+
 }

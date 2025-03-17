@@ -1,24 +1,37 @@
 package com.trinity.product.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.trinity.product.adapter.OpenFoodFactsAdapter;
+import com.trinity.product.dto.api.ReadProductDTO;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactSearchResponse;
-import com.trinity.product.exception.ApiException;
+import com.trinity.product.dto.open_food_facts.OpenFoodFactsProduct;
+import com.trinity.product.mapper.ProductMapper;
+import com.trinity.product.model.Product;
 
 import reactor.core.publisher.Mono;
 
-class OpenFoodFactsServiceTest {
+class OpenFoodFactsServiceBarcodeTest {
 
     @Mock
     private WebClient webClient;
+
+    @Mock
+    private ProductMapper productMapper;
 
     @SuppressWarnings("rawtypes")
     @Mock
@@ -34,42 +47,125 @@ class OpenFoodFactsServiceTest {
     @InjectMocks
     private OpenFoodFactsService openFoodFactsService;
 
+    private String barcode;
+    private OpenFoodFactSearchResponse openFoodFactsResponse;
+    private Product product;
+    private ReadProductDTO readProductDTO;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        barcode = "3017620422003";
+
+        // Set up the OpenFoodFactsProduct
+        OpenFoodFactsProduct openFoodFactsProduct = new OpenFoodFactsProduct();
+        openFoodFactsProduct.setCode(barcode);
+        openFoodFactsProduct.setBrands("Ferrero");
+        openFoodFactsProduct.setGenericNameFr("Nutella");
+
+        // Set up the OpenFoodFactSearchResponse
+        openFoodFactsResponse = new OpenFoodFactSearchResponse();
+        openFoodFactsResponse.setProducts(Collections.singletonList(openFoodFactsProduct));
+
+        // Set up the Product
+        product = Product.builder()
+                .barcode(barcode)
+                .brand("Ferrero")
+                .name("Nutella")
+                .build();
+
+        // Set up the ReadProductDTO
+        readProductDTO = new ReadProductDTO();
+        readProductDTO.setBarcode(barcode);
+        readProductDTO.setBrand("Ferrero");
+        readProductDTO.setName("Nutella");
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    void testGetSearchResponseJson_Success() {
-        // Given
-        URI uri = URI.create("https://world.openfoodfacts.org/cgi/search.pl?search_terms=test&fields=products,allergens_imported,allergens,code,brands,brand_imported,compared_to_category,grade,ingredients_text_fr,nutrient_levels,nutriments,product_name_fr_imported,quantity_imported,selected_images,nutriscore_grade,generic_name_fr,generic_name_en,ingredients_text_en&page_size=10&json=1&sort_by=unique_scans_n");
-        OpenFoodFactSearchResponse expectedResponse = new OpenFoodFactSearchResponse();
-
+    void getProductByBarcode_ValidBarcode_ReturnsProduct() {
+        // Set up the WebClient mock chain
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(uri)).thenReturn((WebClient.RequestHeadersSpec<?>) requestHeadersSpec);
+        when(requestHeadersUriSpec.uri(any(URI.class))).thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(OpenFoodFactSearchResponse.class)).thenReturn(Mono.just(expectedResponse));
+        when(responseSpec.bodyToMono(OpenFoodFactSearchResponse.class)).thenReturn(Mono.just(openFoodFactsResponse));
+
+        // Mock OpenFoodFactsAdapter
+        try (var mockedStatic = mockStatic(OpenFoodFactsAdapter.class)) {
+            mockedStatic.when(() -> OpenFoodFactsAdapter.adapt(any()))
+                    .thenReturn(Collections.singletonList(product));
+
+            when(productMapper.toDTO(product)).thenReturn(readProductDTO);
+
+            // When
+            ReadProductDTO result = openFoodFactsService.getProductByBarcode(barcode);
+
+            // Then
+            assertNotNull(result);
+            assertEquals(barcode, result.getBarcode());
+            assertEquals("Ferrero", result.getBrand());
+            assertEquals("Nutella", result.getName());
+
+            // Verify URI
+            ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
+            verify(requestHeadersUriSpec).uri(uriCaptor.capture());
+            String capturedUri = uriCaptor.getValue().toString();
+            assertTrue(capturedUri.contains(barcode));
+            assertTrue(capturedUri.contains("world.openfoodfacts.org/api/v0/product/"));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void getProductByBarcode_ProductNotFound_ReturnsNull() {
+        // Set up the WebClient mock chain
+        when(webClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(any(URI.class))).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+
+        // Create a response with no products
+        OpenFoodFactSearchResponse emptyResponse = new OpenFoodFactSearchResponse();
+        emptyResponse.setProducts(Collections.emptyList());
+        when(responseSpec.bodyToMono(OpenFoodFactSearchResponse.class)).thenReturn(Mono.just(emptyResponse));
 
         // When
-        OpenFoodFactSearchResponse actualResponse = openFoodFactsService.getSearchResponseJson(uri);
+        ReadProductDTO result = openFoodFactsService.getProductByBarcode(barcode);
 
         // Then
-        assertEquals(expectedResponse, actualResponse);
+        assertNull(result);
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    void testGetSearchResponseJson_ApiException() {
-        // Given
-        URI uri = URI.create("https://world.openfoodfacts.org/cgi/search.pl?search_terms=test&fields=products,allergens_imported,allergens,code,brands,brand_imported,compared_to_category,grade,ingredients_text_fr,nutrient_levels,nutriments,product_name_fr_imported,quantity_imported,selected_images,nutriscore_grade,generic_name_fr,generic_name_en,ingredients_text_en&page_size=10&json=1&sort_by=unique_scans_n");
+    void getProductByBarcode_ApiError_ReturnsNull() {
+        // Set up the WebClient mock chain to throw an exception
+        when(webClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(any(URI.class))).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(OpenFoodFactSearchResponse.class))
+                .thenReturn(Mono.error(new RuntimeException("API Error")));
+
+        // When
+        ReadProductDTO result = openFoodFactsService.getProductByBarcode(barcode);
+
+        // Then
+        assertNull(result);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void getProductByBarcode_NullResponse_ReturnsNull() {
 
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(uri)).thenReturn(requestHeadersSpec);
+        when(requestHeadersUriSpec.uri(any(URI.class))).thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(OpenFoodFactSearchResponse.class)).thenReturn(Mono.error(new RuntimeException("API error")));
+        when(responseSpec.bodyToMono(OpenFoodFactSearchResponse.class)).thenReturn(Mono.empty());
 
-        // When & Then
-        assertThrows(ApiException.class, () -> openFoodFactsService.getSearchResponseJson(uri));
+        // When
+        ReadProductDTO result = openFoodFactsService.getProductByBarcode(barcode);
+
+        // Then
+        assertNull(result);
     }
 }

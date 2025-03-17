@@ -2,7 +2,10 @@ package com.trinity.product.service;
 
 import java.net.URI;
 import java.util.List;
+import java.util.logging.LogManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -23,7 +26,7 @@ public class OpenFoodFactsService {
     static final String FIELDS_TO_GET = "products,allergens_imported,allergens,code,brands,brand_imported,compared_to_category,grade,ingredients_text_fr,nutrient_levels,nutriments,product_name_fr_imported,quantity_imported,selected_images,nutriscore_grade,generic_name_fr,generic_name_en,ingredients_text_en"; 
     private final WebClient webClient;
     private final ProductMapper productMapper;
-
+    private static final Logger logger = LoggerFactory.getLogger(OpenFoodFactsService.class);
     
     public URI buildUri(String searchTerm) {
         return UriComponentsBuilder.fromHttpUrl("https://world.openfoodfacts.org/cgi/search.pl")
@@ -56,5 +59,29 @@ public class OpenFoodFactsService {
             .map(productMapper::toDTO)
             .toList();
     }
+    public ReadProductDTO getProductByBarcode(String barcode) {
+        URI uri = UriComponentsBuilder.fromHttpUrl("https://world.openfoodfacts.org/api/v0/product/" + barcode + ".json")
+                .build()
+                .toUri();
+
+        try {
+            OpenFoodFactSearchResponse response = webClient.get()
+                    .uri(uri)
+                    .retrieve()
+                    .bodyToMono(OpenFoodFactSearchResponse.class)
+                    .onErrorMap(error -> new ApiException("OpenFoodFacts API error", error))
+                    .block();
+
+            if (response != null && response.getProducts() != null && !response.getProducts().isEmpty()) {
+                Product product = OpenFoodFactsAdapter.adapt(response).get(0);
+                return productMapper.toDTO(product);
+            }
+            return null;
+        } catch (Exception e) {
+            logger.error("Error fetching product by barcode {}: {}", barcode, e.getMessage());
+            return null;
+        }
+    }
+
 
 }

@@ -2,28 +2,29 @@ package com.trinity.product.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.trinity.product.dto.api.CreateProductDTO;
 import com.trinity.product.dto.api.ReadProductDTO;
-import com.trinity.product.dto.api.UpdateProductDTO;
-import com.trinity.product.exception.InvalidProductDataException;
+import com.trinity.product.exception.ProductNotFoundException;
 import com.trinity.product.mapper.ProductMapper;
 import com.trinity.product.model.Product;
 import com.trinity.product.repository.ProductRepository;
 
-
 @ExtendWith(MockitoExtension.class)
-class ProductServiceTest {
+class ProductServiceScanTest {
 
     @Mock
     private ProductRepository productRepository;
@@ -31,127 +32,206 @@ class ProductServiceTest {
     @Mock
     private ProductMapper productMapper;
 
+    @Mock
+    private OpenFoodFactsService openFoodFactsService;
+
     @InjectMocks
     private ProductService productService;
 
-    private CreateProductDTO createProductDTO;
+    private String barcode;
+    private UUID productId;
     private Product product;
-    private Product savedProduct;
     private ReadProductDTO readProductDTO;
 
     @BeforeEach
     void setUp() {
-        createProductDTO = new CreateProductDTO();
-        createProductDTO.setBarcode("1234567890123");
-        createProductDTO.setBrand("Test Brand");
-        createProductDTO.setName("Test Product");
-        createProductDTO.setPrice(BigDecimal.TEN);
-        CreateProductDTO.StockDto stockDTO = new CreateProductDTO.StockDto();
-        stockDTO.setMinThreshold(0);
-        stockDTO.setQuantity(5);
-        stockDTO.setMaxThreshold(10);
-        createProductDTO.setStock(stockDTO);
-        
-        product = new Product();
-        product.setId(UUID.randomUUID());
-        
-        savedProduct = new Product();
-        savedProduct.setId(UUID.randomUUID());
-        
+        barcode = "1234567890123";
+        productId = UUID.randomUUID();
+
+        Product.Stock stock = Product.Stock.builder()
+                .quantity(10)
+                .minThreshold(5)
+                .maxThreshold(100)
+                .build();
+
+        product = Product.builder()
+                .id(productId)
+                .barcode(barcode)
+                .name("Test Product")
+                .brand("Test Brand")
+                .price(new BigDecimal("9.99"))
+                .stock(stock)
+                .build();
+
+        ReadProductDTO.StockDto stockDto = new ReadProductDTO.StockDto();
+        stockDto.setQuantity(10);
+        stockDto.setMinThreshold(5);
+        stockDto.setMaxThreshold(100);
+
         readProductDTO = new ReadProductDTO();
-        readProductDTO.setId(savedProduct.getId());
+        readProductDTO.setId(productId);
+        readProductDTO.setBarcode(barcode);
+        readProductDTO.setName("Test Product");
+        readProductDTO.setBrand("Test Brand");
+        readProductDTO.setPrice(new BigDecimal("9.99"));
+        readProductDTO.setStock(stockDto);
     }
 
     @Test
-    void testCreateProduct() {
+    void scanProduct_WhenProductFoundInDatabase_ShouldReturnIt() {
         // GIVEN
-        when(productMapper.toEntity(createProductDTO)).thenReturn(product);
-        when(productRepository.save(product)).thenReturn(savedProduct);
-        when(productMapper.toDTO(savedProduct)).thenReturn(readProductDTO);
+        when(productRepository.findByBarcode(barcode)).thenReturn(Optional.of(product));
+        when(productMapper.toDTO(product)).thenReturn(readProductDTO);
 
         // WHEN
-        ReadProductDTO result = productService.createProduct(createProductDTO);
+        ReadProductDTO result = productService.scanProduct(barcode);
 
         // THEN
-        verify(productMapper).toEntity(createProductDTO);
-        verify(productRepository).save(product);
-        verify(productMapper).toDTO(savedProduct);
+        verify(productRepository).findByBarcode(barcode);
+        verify(productMapper).toDTO(product);
+        verifyNoInteractions(openFoodFactsService);
+
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(savedProduct.getId());
+        assertThat(result.getId()).isEqualTo(productId);
+        assertThat(result.getBarcode()).isEqualTo(barcode);
     }
 
-
-
     @Test
-    void testUpdateProduct_Success() {
+    void scanProduct_WhenProductNotInDatabaseButInOpenFoodFacts_ShouldCreateAndReturnIt() {
         // GIVEN
-        UUID productId = UUID.randomUUID();
-        Product existingProduct = new Product();
-        existingProduct.setId(productId);
-        Product.Stock stock = new Product.Stock();
-        stock.setQuantity(10);
-        existingProduct.setStock(stock);
-
-        UpdateProductDTO updateDTO = new UpdateProductDTO();
-        updateDTO.setName(Optional.of("Updated Name"));
-        updateDTO.setPrice(Optional.of(BigDecimal.valueOf(19)));
-        updateDTO.setQuantity(Optional.of(4));
-
-        when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
-        when(productRepository.save(existingProduct)).thenReturn(existingProduct);
-        ReadProductDTO updatedDTO = new ReadProductDTO();
-        updatedDTO.setId(productId);
-        when(productMapper.toDTO(existingProduct)).thenReturn(updatedDTO);
+        when(productRepository.findByBarcode(barcode)).thenReturn(Optional.empty());
+        when(openFoodFactsService.getProductByBarcode(barcode)).thenReturn(readProductDTO);
+        when(productMapper.toEntity(any(CreateProductDTO.class))).thenReturn(product);
+        when(productRepository.save(product)).thenReturn(product);
+        when(productMapper.toDTO(product)).thenReturn(readProductDTO);
 
         // WHEN
-        ReadProductDTO result = productService.updateProduct(productId, updateDTO);
+        ReadProductDTO result = productService.scanProduct(barcode);
 
         // THEN
-        verify(productRepository).findById(productId);
-        verify(productRepository).save(existingProduct);
-        assertThat(existingProduct.getName()).isEqualTo("Updated Name");
-        assertThat(existingProduct.getPrice()).isEqualTo(BigDecimal.valueOf(19));
-        assertThat(existingProduct.getStock().getQuantity()).isEqualTo(14);
+        verify(productRepository).findByBarcode(barcode);
+        verify(openFoodFactsService).getProductByBarcode(barcode);
+        verify(productRepository).save(any(Product.class));
+
+        assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(productId);
+        assertThat(result.getBarcode()).isEqualTo(barcode);
     }
 
     @Test
-    void testUpdateProduct_NegativePrice() {
+    void scanProduct_WhenProductNotFoundAnywhere_ShouldThrowException() {
         // GIVEN
-        UUID productId = UUID.randomUUID();
-        Product existingProduct = new Product();
-        existingProduct.setId(productId);
-        when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
+        when(productRepository.findByBarcode(barcode)).thenReturn(Optional.empty());
+        when(openFoodFactsService.getProductByBarcode(barcode)).thenReturn(null);
 
-        UpdateProductDTO updateDTO = new UpdateProductDTO();
-        updateDTO.setPrice(Optional.of(BigDecimal.valueOf(-2)));
+        // WHEN & THEN
+        assertThatExceptionOfType(ProductNotFoundException.class)
+                .isThrownBy(() -> productService.scanProduct(barcode))
+                .withMessageContaining("Product with barcode " + barcode + " not found");
 
-        // WHEN - THEN
-        assertThatExceptionOfType(InvalidProductDataException.class)
-            .isThrownBy(() -> productService.updateProduct(productId, updateDTO))
-            .withMessageContaining("Price cannot be negative");
+        verify(productRepository).findByBarcode(barcode);
+        verify(openFoodFactsService).getProductByBarcode(barcode);
+        verify(productRepository, never()).save(any(Product.class));
     }
 
     @Test
-    void testUpdateProduct_NegativeStock() {
+    void scanProduct_WhenProductFromOpenFoodFactsHasNullPrice_ShouldSetDefaultPrice() {
         // GIVEN
-        UUID productId = UUID.randomUUID();
-        Product existingProduct = new Product();
-        existingProduct.setId(productId);
-        Product.Stock stock = new Product.Stock();
-        stock.setQuantity(4);
-        existingProduct.setStock(stock);
-        when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
+        ReadProductDTO openFoodFactsDTO = new ReadProductDTO();
+        openFoodFactsDTO.setBarcode(barcode);
+        openFoodFactsDTO.setName("OpenFoodFacts Product");
+        openFoodFactsDTO.setBrand("OpenFoodFacts Brand");
+        openFoodFactsDTO.setPrice(null);
 
-        UpdateProductDTO updateDTO = new UpdateProductDTO();
-        updateDTO.setQuantity(Optional.of(-11));
+        Product productWithDefaultPrice = Product.builder()
+                .id(productId)
+                .barcode(barcode)
+                .name("OpenFoodFacts Product")
+                .brand("OpenFoodFacts Brand")
+                .price(new BigDecimal("0.00"))
+                .build();
 
-        // WHEN - THEN
-        assertThatExceptionOfType(InvalidProductDataException.class)
-            .isThrownBy(() -> productService.updateProduct(productId, updateDTO))
-            .withMessageContaining("Stock quantity cannot be negative");
+        ReadProductDTO resultDTO = new ReadProductDTO();
+        resultDTO.setId(productId);
+        resultDTO.setBarcode(barcode);
+        resultDTO.setName("OpenFoodFacts Product");
+        resultDTO.setBrand("OpenFoodFacts Brand");
+        resultDTO.setPrice(new BigDecimal("0.00"));
+
+        when(productRepository.findByBarcode(barcode)).thenReturn(Optional.empty());
+        when(openFoodFactsService.getProductByBarcode(barcode)).thenReturn(openFoodFactsDTO);
+        when(productMapper.toEntity(any(CreateProductDTO.class))).thenReturn(productWithDefaultPrice);
+        when(productRepository.save(productWithDefaultPrice)).thenReturn(productWithDefaultPrice);
+        when(productMapper.toDTO(productWithDefaultPrice)).thenReturn(resultDTO);
+
+        // WHEN
+        ReadProductDTO result = productService.scanProduct(barcode);
+
+        // THEN
+        verify(productRepository).findByBarcode(barcode);
+        verify(openFoodFactsService).getProductByBarcode(barcode);
+        verify(productRepository).save(any(Product.class));
+
+        assertThat(result).isNotNull();
+        assertThat(result.getPrice()).isEqualTo(new BigDecimal("0.00"));
     }
 
+    @Test
+    void scanProduct_WhenProductFromOpenFoodFactsHasNullStock_ShouldSetDefaultStock() {
+        // GIVEN
+        ReadProductDTO openFoodFactsDTO = new ReadProductDTO();
+        openFoodFactsDTO.setBarcode(barcode);
+        openFoodFactsDTO.setName("OpenFoodFacts Product");
+        openFoodFactsDTO.setBrand("OpenFoodFacts Brand");
+        openFoodFactsDTO.setPrice(new BigDecimal("5.99"));
+        openFoodFactsDTO.setStock(null);
 
+        Product.Stock defaultStock = Product.Stock.builder()
+                .quantity(0)
+                .minThreshold(5)
+                .maxThreshold(100)
+                .build();
 
+        Product productWithDefaultStock = Product.builder()
+                .id(productId)
+                .barcode(barcode)
+                .name("OpenFoodFacts Product")
+                .brand("OpenFoodFacts Brand")
+                .price(new BigDecimal("5.99"))
+                .stock(defaultStock)
+                .build();
+
+        ReadProductDTO resultDTO = new ReadProductDTO();
+        resultDTO.setId(productId);
+        resultDTO.setBarcode(barcode);
+        resultDTO.setName("OpenFoodFacts Product");
+        resultDTO.setBrand("OpenFoodFacts Brand");
+        resultDTO.setPrice(new BigDecimal("5.99"));
+
+        ReadProductDTO.StockDto defaultStockDto = new ReadProductDTO.StockDto();
+        defaultStockDto.setQuantity(0);
+        defaultStockDto.setMinThreshold(5);
+        defaultStockDto.setMaxThreshold(100);
+        resultDTO.setStock(defaultStockDto);
+
+        when(productRepository.findByBarcode(barcode)).thenReturn(Optional.empty());
+        when(openFoodFactsService.getProductByBarcode(barcode)).thenReturn(openFoodFactsDTO);
+        when(productMapper.toEntity(any(CreateProductDTO.class))).thenReturn(productWithDefaultStock);
+        when(productRepository.save(productWithDefaultStock)).thenReturn(productWithDefaultStock);
+        when(productMapper.toDTO(productWithDefaultStock)).thenReturn(resultDTO);
+
+        // WHEN
+        ReadProductDTO result = productService.scanProduct(barcode);
+
+        // THEN
+        verify(productRepository).findByBarcode(barcode);
+        verify(openFoodFactsService).getProductByBarcode(barcode);
+        verify(productRepository).save(any(Product.class));
+
+        assertThat(result).isNotNull();
+        assertThat(result.getStock()).isNotNull();
+        assertThat(result.getStock().getQuantity()).isEqualTo(0);
+        assertThat(result.getStock().getMinThreshold()).isEqualTo(5);
+        assertThat(result.getStock().getMaxThreshold()).isEqualTo(100);
+    }
 }
