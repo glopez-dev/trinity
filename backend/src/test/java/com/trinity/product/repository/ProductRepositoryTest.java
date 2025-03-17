@@ -42,9 +42,6 @@ class ProductRepositoryTest {
 
     @Test
     void findById_ShouldReturnProduct_WhenProductExists() {
-        // Given
-        // Product is created in setUp()
-
         // When
         Optional<Product> foundProduct = productRepository.findById(productId);
 
@@ -107,13 +104,39 @@ class ProductRepositoryTest {
 
     @Test
     void delete_ShouldRemoveProduct() {
-        // Given
-        // Product is created in setUp()
-
         // When
         productRepository.delete(product);
 
         // Then
         assertThat(productRepository.findById(productId)).isEmpty();
+    }
+
+    @Test
+    void findByBarcode_ShouldReturnProduct_WhenProductExists() {
+        // When
+        Optional<Product> foundProduct = productRepository.findByBarcode("123456789");
+
+        // Then
+        assertThat(foundProduct)
+                .isPresent()
+                .get()
+                .satisfies(p -> {
+                    assertThat(p.getId()).isEqualTo(productId);
+                    assertThat(p.getBarcode()).isEqualTo("123456789");
+                    assertThat(p.getName()).isEqualTo("Test Product");
+                    assertThat(p.getBrand()).isEqualTo("Test Brand");
+                });
+    }
+
+    @Test
+    void findByBarcode_ShouldReturnEmpty_WhenProductDoesNotExist() {
+        // Given
+        String nonExistentBarcode = "000000000";
+
+        // When
+        Optional<Product> foundProduct = productRepository.findByBarcode(nonExistentBarcode);
+
+        // Then
+        assertThat(foundProduct).isEmpty();
     }
 }

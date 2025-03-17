@@ -3,6 +3,7 @@ package com.trinity.product.controller;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/v1/product")
@@ -75,6 +77,16 @@ public class ProductController {
     public ResponseEntity<Void> deleteProduct(@PathVariable UUID productId) {
         productService.deleteProduct(productId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/scan/{barcode}")
+    @Operation(summary = "Scan a product", description = "Scan a product by its barcode, retrieve from database or OpenFoodFacts")
+    public ResponseEntity<ReadProductDTO> scanProduct(@PathVariable String barcode) {
+        if (barcode == null || !barcode.matches("^[0-9]{8,13}$")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid barcode format");
+        }
+        ReadProductDTO product = productService.scanProduct(barcode);
+        return ResponseEntity.ok(product);
     }
 
 }
