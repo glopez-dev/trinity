@@ -43,7 +43,6 @@ public class AuthenticationService {
                 .hashedPassword(passwordEncoder.encode(request.getPassword()))
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
-                .role(request.getRole())
                 .build();
 
         Employee savedEmployee = employeeRepository.save(employee);

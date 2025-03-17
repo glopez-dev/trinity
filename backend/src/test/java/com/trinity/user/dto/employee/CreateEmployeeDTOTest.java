@@ -145,25 +145,4 @@ class CreateEmployeeDTOTest {
                 .extracting(ConstraintViolation::getMessage)
                 .contains("Last name cannot be empty");
     }
-
-    @Test
-    void givenNullRole_whenValidated_thenViolation() {
-        // Given
-        CreateEmployeeDTO dto = new CreateEmployeeDTO(
-                "test@example.com",
-                "secretPassword",
-                "John",
-                "Doe",
-                null,
-                Instant.now()
-        );
-
-        // When
-        Set<ConstraintViolation<CreateEmployeeDTO>> violations = validator.validate(dto);
-
-        // Then
-        assertThat(violations)
-                .extracting(ConstraintViolation::getMessage)
-                .contains("Role cannot be null");
-    }
 }

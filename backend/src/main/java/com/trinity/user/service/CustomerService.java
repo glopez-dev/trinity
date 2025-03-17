@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.trinity.user.constant.UserStatus;
+import com.trinity.user.constant.UserType;
 import com.trinity.user.dto.customer.CreateCustomerDTO;
 import com.trinity.user.dto.customer.ReadCustomerDTO;
 import com.trinity.user.dto.customer.UpdateCustomerDTO;
@@ -35,6 +36,7 @@ public class CustomerService {
                 .email(createCustomerDTO.getEmail())
                 .hashedPassword(passwordEncoder.encode(createCustomerDTO.getPassword()))
                 .status(UserStatus.ACTIVE)
+                .type(UserType.CUSTOMER)
                 .build();
 
         Customer savedCustomer = customerRepository.save(customer);
@@ -70,23 +72,27 @@ public class CustomerService {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Customer not found with id: " + id));
 
-        if (customerUpdateDTO.getEmail() != null && !customerUpdateDTO.getEmail().equals(customer.getEmail())) {
-            if (customerRepository.existsByEmail(customerUpdateDTO.getEmail())) {
-                throw new IllegalArgumentException("Email already in use");
+        if (customerUpdateDTO.getEmail() != null && customerUpdateDTO.getEmail().isPresent()) {
+            String newEmail = customerUpdateDTO.getEmail().get();
+            if (!newEmail.equals(customer.getEmail())) {
+                if (customerRepository.existsByEmail(newEmail)) {
+                    throw new IllegalArgumentException("Email already in use");
+                }
+                customer.setEmail(newEmail);
             }
-            customer.setEmail(customerUpdateDTO.getEmail());
         }
 
-        if (customerUpdateDTO.getFirstName() != null) {
-            customer.setFirstName(customerUpdateDTO.getFirstName());
+        if (customerUpdateDTO.getFirstName() != null && customerUpdateDTO.getFirstName().isPresent()) {
+            customer.setFirstName(customerUpdateDTO.getFirstName().get());
         }
 
-        if (customerUpdateDTO.getLastName() != null) {
-            customer.setLastName(customerUpdateDTO.getLastName());
+        if (customerUpdateDTO.getLastName() != null && customerUpdateDTO.getLastName().isPresent()) {
+            customer.setLastName(customerUpdateDTO.getLastName().get());
         }
 
-        if (customerUpdateDTO.getPassword() != null) {
-            customer.setHashedPassword(passwordEncoder.encode(customerUpdateDTO.getPassword()));
+        if (customerUpdateDTO.getPassword() != null && customerUpdateDTO.getPassword().isPresent()) {
+            String newPassword = customerUpdateDTO.getPassword().get();
+            customer.setHashedPassword(passwordEncoder.encode(newPassword));
         }
 
         Customer updatedCustomer = customerRepository.save(customer);
