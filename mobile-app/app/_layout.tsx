@@ -2,6 +2,7 @@ import {Stack} from 'expo-router';
 import {useColorScheme} from 'react-native';
 import {FlashMessagesProvider} from '@/lib/stores/flashMessage/FlashMessageProvider';
 import {SafeAreaProvider} from "react-native-safe-area-context";
+import Headers from "@/components/ui/header/Header";
 
 export default function RootLayout() {
     const colorScheme = useColorScheme();
@@ -9,6 +10,7 @@ export default function RootLayout() {
     return (
         <SafeAreaProvider>
             <FlashMessagesProvider>
+                <Headers />
                 <Stack
                     screenOptions={{
                         headerShown: false,
