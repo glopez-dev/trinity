@@ -4,6 +4,7 @@ import {FlashMessagesProvider} from '@/lib/stores/flashMessage/FlashMessageProvi
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {useFonts} from "expo-font";
 import {useEffect} from "react";
+import Headers from "@/components/ui/header/Header";
 import {AuthProvider} from "@/lib/stores/auth/AuthProvider";
 
 
@@ -29,6 +30,7 @@ export default function RootLayout() {
         <SafeAreaProvider>
             <FlashMessagesProvider>
                 <AuthProvider>
+                    <Headers />
                     <Stack
                         screenOptions={{
                             headerShown: false,
