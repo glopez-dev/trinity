@@ -44,6 +44,11 @@ spring:
   web:
     resources:
       add-mappings: false
+  
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
 
 ########################
 # Server Configuration #
@@ -108,3 +113,10 @@ paypal:
     id: ${SPRING_PAYPAL_CLIENT_ID}
     secret: ${SPRING_PAYPAL_CLIENT_SECRET}
   mode: sandbox
+
+#####################################
+# Stripe Configuration
+#####################################
+stripe:
+  api:
+    key: ${SPRING_STRIPE_SECRET_KEY}
