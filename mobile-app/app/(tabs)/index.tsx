@@ -1,27 +1,11 @@
-import {SafeAreaView, Text, View} from "react-native";
-import React, {useEffect} from "react";
-import {getProducts} from "@/lib/api/products/productsCall";
+import {View, Text, SafeAreaView} from "react-native";
 
-export default function Home() {
-    const [products, setProducts] = React.useState([]);
-
-    useEffect(() => {
-        const fetchProducts = async () => {
-            getProducts().then(data => {
-                setProducts(data);
-            })
-            console.log('products', products)
-        }
-
-        fetchProducts();
-    }, [])
-
-
+export default function Cart() {
     return (
-        <SafeAreaView>
-            <View>
-                <Text>Home</Text>
-            </View>
+        <SafeAreaView style={{flex: 1}}>
+            <Text>
+                Cart
+            </Text>
         </SafeAreaView>
-    );
+    )
 }
