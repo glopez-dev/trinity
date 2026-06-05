@@ -14,6 +14,7 @@ import com.trinity.user.constant.UserStatus;
 import com.trinity.user.dto.employee.CreateEmployeeDTO;
 import com.trinity.user.dto.employee.ReadEmployeeDTO;
 import com.trinity.user.dto.employee.UpdateEmployeeDTO;
+import com.trinity.user.interfaces.rest.mapper.EmployeeApiMapper;
 import com.trinity.user.model.Employee;
 import com.trinity.user.repository.EmployeeRepository;
 
@@ -26,6 +27,7 @@ public class EmployeeService {
     private static final String NOT_FOUND_MESSAGE = "Employee not found";
     private final EmployeeRepository employeeRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmployeeApiMapper employeeApiMapper;
 
     private Employee findById(UUID employeeId) {
         return employeeRepository.findById(employeeId)
@@ -46,7 +48,7 @@ public class EmployeeService {
 
         newEmployee = employeeRepository.save(newEmployee);
 
-        return new ReadEmployeeDTO(newEmployee);
+        return employeeApiMapper.toResponse(newEmployee);
     }
 
     @Transactional(readOnly = true)
@@ -58,14 +60,14 @@ public class EmployeeService {
         }
 
         return employees.stream()
-            .map(ReadEmployeeDTO::new)
+            .map(employeeApiMapper::toResponse)
             .toList();
     }
 
     @Transactional(readOnly = true)
     public ReadEmployeeDTO getEmployee(UUID employeeId) {
         Employee employee = findById(employeeId);
-        return new ReadEmployeeDTO(employee);
+        return employeeApiMapper.toResponse(employee);
     }
 
     @Transactional
@@ -81,7 +83,7 @@ public class EmployeeService {
 
         Employee updatedEmployee = employeeRepository.save(employee);
 
-        return new ReadEmployeeDTO(updatedEmployee);
+        return employeeApiMapper.toResponse(updatedEmployee);
     }
 
     @Transactional

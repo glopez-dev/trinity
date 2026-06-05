@@ -5,13 +5,17 @@ import java.time.Instant;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import com.trinity.user.constant.EmployeeRole;
 import com.trinity.user.constant.UserStatus;
 import com.trinity.user.constant.UserType;
+import com.trinity.user.interfaces.rest.mapper.EmployeeApiMapper;
 import com.trinity.user.model.Employee;
 
 
 class ReadEmployeeDTOTest {
+
+    private final EmployeeApiMapper mapper = Mappers.getMapper(EmployeeApiMapper.class);
 
     private Employee mockEmployee;
 
@@ -33,10 +37,9 @@ class ReadEmployeeDTOTest {
     }
 
     @Test
-    void givenEmployee_whenUsingEmployeeConstructor_thenFieldsMatch() {
-        // Given (mockEmployee is set)
+    void givenEmployee_whenMappedToResponse_thenFieldsMatch() {
         // When
-        ReadEmployeeDTO dto = new ReadEmployeeDTO(mockEmployee);
+        ReadEmployeeDTO dto = mapper.toResponse(mockEmployee);
         // Then
         assertThat(dto.getId()).isEqualTo(mockEmployee.getId());
         assertThat(dto.getEmail()).isEqualTo(mockEmployee.getEmail());

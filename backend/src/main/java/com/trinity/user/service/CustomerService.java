@@ -9,6 +9,7 @@ import com.trinity.user.constant.UserType;
 import com.trinity.user.dto.customer.CreateCustomerDTO;
 import com.trinity.user.dto.customer.ReadCustomerDTO;
 import com.trinity.user.dto.customer.UpdateCustomerDTO;
+import com.trinity.user.interfaces.rest.mapper.CustomerApiMapper;
 import com.trinity.user.model.Customer;
 import com.trinity.user.repository.CustomerRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,6 +24,7 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CustomerApiMapper customerApiMapper;
 
     @Transactional
     public ReadCustomerDTO createCustomer(CreateCustomerDTO createCustomerDTO) {
@@ -41,7 +43,7 @@ public class CustomerService {
 
         Customer savedCustomer = customerRepository.save(customer);
 
-        return mapToReadCustomerDTO(savedCustomer);
+        return customerApiMapper.toResponse(savedCustomer);
     }
 
     @Transactional(readOnly = true)
@@ -49,7 +51,7 @@ public class CustomerService {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Customer not found with id: " + id));
 
-        return mapToReadCustomerDTO(customer);
+        return customerApiMapper.toResponse(customer);
     }
 
     @Transactional(readOnly = true)
@@ -57,13 +59,13 @@ public class CustomerService {
         Customer customer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Customer not found with email: " + email));
 
-        return mapToReadCustomerDTO(customer);
+        return customerApiMapper.toResponse(customer);
     }
 
     @Transactional(readOnly = true)
     public List<ReadCustomerDTO> getAllCustomers() {
         return customerRepository.findAll().stream()
-                .map(this::mapToReadCustomerDTO)
+                .map(customerApiMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -97,7 +99,7 @@ public class CustomerService {
 
         Customer updatedCustomer = customerRepository.save(customer);
 
-        return mapToReadCustomerDTO(updatedCustomer);
+        return customerApiMapper.toResponse(updatedCustomer);
     }
 
     @Transactional
@@ -117,20 +119,6 @@ public class CustomerService {
         customer.activate();
         Customer activatedCustomer = customerRepository.save(customer);
 
-        return mapToReadCustomerDTO(activatedCustomer);
-    }
-
-    private ReadCustomerDTO mapToReadCustomerDTO(Customer customer) {
-        return ReadCustomerDTO.builder()
-                .id(customer.getId())
-                .firstName(customer.getFirstName())
-                .lastName(customer.getLastName())
-                .email(customer.getEmail())
-                .lastLoginAt(customer.getLastLoginAt())
-                .status(customer.getStatus())
-                .type(customer.getType())
-                .createdAt(customer.getCreatedAt())
-                .updatedAt(customer.getUpdatedAt())
-                .build();
+        return customerApiMapper.toResponse(activatedCustomer);
     }
 }

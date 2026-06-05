@@ -14,13 +14,16 @@ import com.trinity.user.dto.customer.ReadCustomerDTO;
 import com.trinity.user.dto.customer.UpdateCustomerDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.trinity.user.constant.UserStatus;
 import com.trinity.user.constant.UserType;
+import com.trinity.user.interfaces.rest.mapper.CustomerApiMapper;
 import com.trinity.user.model.Customer;
 import com.trinity.user.repository.CustomerRepository;
 
@@ -33,6 +36,9 @@ class CustomerServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Spy
+    private CustomerApiMapper customerApiMapper = Mappers.getMapper(CustomerApiMapper.class);
 
     @InjectMocks
     private CustomerService customerService;

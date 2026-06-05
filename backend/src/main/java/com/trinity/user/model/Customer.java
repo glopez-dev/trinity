@@ -41,10 +41,7 @@ public class Customer extends AbstractUser {
     private UserType type = UserType.CUSTOMER;
 
     public boolean isTokenExpired() {
-        boolean expirationDateIsDefined = this.getTokenExpiresAt() != null;
-        boolean expirationDateIsPassed = Instant.now().isAfter(this.getTokenExpiresAt());
-
-        return expirationDateIsDefined && expirationDateIsPassed;
+        return this.tokenExpiresAt != null && Instant.now().isAfter(this.tokenExpiresAt);
     }
 
     public void updateStripeToken(String accessToken, String refreshToken, Long expiresIn) {

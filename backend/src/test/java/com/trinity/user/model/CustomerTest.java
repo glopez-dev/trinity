@@ -83,6 +83,15 @@ class CustomerTest {
     }
 
     @Test
+    void testTokenNotExpiredWhenExpirationUndefined() {
+        // Given a customer without a token expiration date
+        Customer customer = new Customer();
+
+        // When / Then — must not throw and report not expired
+        assertFalse(customer.isTokenExpired());
+    }
+
+    @Test
     void testUpdateStripeToken() {
         // Given
         Customer customer = new Customer();

@@ -6,13 +6,16 @@ import java.util.UUID;
 import com.trinity.user.constant.EmployeeRole;
 import com.trinity.user.constant.UserStatus;
 import com.trinity.user.constant.UserType;
-import com.trinity.user.model.Employee;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Employee Data Transfer Object for reading employee information")
 public class ReadEmployeeDTO {
@@ -52,19 +55,4 @@ public class ReadEmployeeDTO {
 
     @Schema(description = "Date when the employee was terminated, if applicable")
     private Instant terminationDate;
-
-    public ReadEmployeeDTO(Employee employee) {
-        this.id = employee.getId();
-        this.email = employee.getEmail();
-        this.firstName = employee.getFirstName();
-        this.lastName = employee.getLastName();
-        this.role = employee.getRole();
-        this.type = employee.getType();
-        this.status = employee.getStatus();
-        this.createdAt = employee.getCreatedAt();
-        this.updatedAt = employee.getUpdatedAt();
-        this.lastLoginAt = employee.getLastLoginAt();
-        this.hireDate = employee.getHireDate();
-        this.terminationDate = employee.getTerminationDate();
-    }
 }
