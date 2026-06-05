@@ -2,11 +2,9 @@ package com.trinity.cart.service;
 
 import com.trinity.cart.domain.Cart;
 import com.trinity.cart.domain.CartItem;
+import com.trinity.cart.domain.port.CartRepositoryPort;
 import com.trinity.cart.dto.CartItemRequest;
 import com.trinity.cart.dto.CartRequest;
-import com.trinity.cart.mapper.CartPersistenceMapper;
-import com.trinity.cart.model.CartEntity;
-import com.trinity.cart.repository.CartRepository;
 import com.trinity.common.domain.exception.BusinessRuleViolation;
 import com.trinity.common.domain.exception.NotFoundException;
 import com.trinity.common.domain.vo.Money;
@@ -17,29 +15,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CartService {
 
-    private final CartRepository cartRepository;
-    private final CartPersistenceMapper cartPersistenceMapper;
+    private final CartRepositoryPort cartRepository;
 
     @Transactional
     public void createCart(UUID customerId) {
         if (cartRepository.existsByCustomerId(customerId)) {
             throw new BusinessRuleViolation("A cart already exists for customer: " + customerId);
         }
-        Cart cart = Cart.builder()
+        cartRepository.save(Cart.builder()
                 .customerId(customerId)
-                .build();
-        cartRepository.save(cartPersistenceMapper.toEntity(cart));
+                .build());
     }
 
     @Transactional(readOnly = true)
     public CartRequest getCart(UUID customerId) {
-        Cart cart = loadDomainCart(customerId);
+        Cart cart = loadCart(customerId);
         return CartRequest.builder()
                 .customerId(cart.getCustomerId())
                 .items(setCartItemToSetCartItemRequest(cart.getItems()))
@@ -65,8 +62,7 @@ public class CartService {
 
     @Transactional
     public void validateCart(UUID customerId) {
-        CartEntity entity = loadEntity(customerId);
-        Cart cart = cartPersistenceMapper.toDomain(entity);
+        Cart cart = loadCart(customerId);
         cart.validate();
         // TODO: notify the payment service before clearing the cart
         cartRepository.deleteByCustomerId(customerId);
@@ -74,34 +70,25 @@ public class CartService {
 
     @Transactional
     public void removeCart(UUID customerId) {
-        loadEntity(customerId);
+        loadCart(customerId);
         cartRepository.deleteByCustomerId(customerId);
     }
 
     @Transactional(readOnly = true)
     public Money getTotalAmount(UUID customerId) {
-        return loadDomainCart(customerId).getTotalAmount();
+        return loadCart(customerId).getTotalAmount();
     }
 
-    /**
-     * Load-mutate-save: the domain mutates in place and is detached, so the
-     * managed entity must be updated and saved explicitly (no dirty checking).
-     */
-    private void mutate(UUID customerId, java.util.function.Consumer<Cart> mutation) {
-        CartEntity entity = loadEntity(customerId);
-        Cart cart = cartPersistenceMapper.toDomain(entity);
+    /** Load the domain aggregate, apply a domain mutation, persist it back. */
+    private void mutate(UUID customerId, Consumer<Cart> mutation) {
+        Cart cart = loadCart(customerId);
         mutation.accept(cart);
-        cartPersistenceMapper.updateEntity(entity, cart);
-        cartRepository.save(entity);
+        cartRepository.save(cart);
     }
 
-    private CartEntity loadEntity(UUID customerId) {
+    private Cart loadCart(UUID customerId) {
         return cartRepository.findByCustomerId(customerId)
                 .orElseThrow(() -> new NotFoundException("Cart not found for customer: " + customerId));
-    }
-
-    private Cart loadDomainCart(UUID customerId) {
-        return cartPersistenceMapper.toDomain(loadEntity(customerId));
     }
 
     private Set<CartItemRequest> setCartItemToSetCartItemRequest(Set<CartItem> cartItems) {

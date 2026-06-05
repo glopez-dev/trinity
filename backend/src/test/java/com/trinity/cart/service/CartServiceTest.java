@@ -2,9 +2,6 @@ package com.trinity.cart.service;
 
 import com.trinity.cart.dto.CartItemRequest;
 import com.trinity.cart.dto.CartRequest;
-import com.trinity.cart.mapper.CartPersistenceMapper;
-import com.trinity.cart.model.CartEntity;
-import com.trinity.cart.repository.CartRepository;
 import com.trinity.common.domain.exception.BusinessRuleViolation;
 import com.trinity.common.domain.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +20,7 @@ class CartServiceTest {
 
     @BeforeEach
     void setUp() {
-        cartService = new CartService(new InMemoryCartRepository(), new CartPersistenceMapper());
+        cartService = new CartService(new InMemoryCartRepositoryPort());
         customerId = UUID.randomUUID();
         cartItemRequest = CartItemRequest.builder()
                 .productId(UUID.randomUUID())

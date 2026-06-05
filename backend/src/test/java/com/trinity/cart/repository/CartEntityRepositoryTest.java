@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CartEntityRepositoryTest {
 
     @Autowired
-    private CartRepository cartRepository;
+    private JpaCartRepository cartRepository;
 
     @Autowired
     private TestEntityManager entityManager;
