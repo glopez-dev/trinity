@@ -55,4 +55,13 @@ class CartItemTest {
         BigDecimal expectedTotalPrice = unitPrice.multiply(BigDecimal.valueOf(3));
         assertEquals(expectedTotalPrice, cartItem.getTotalPrice());
     }
+
+    @Test
+    void unitPrice_isNormalizedToScaleTwo() {
+        // Sub-cent unit prices must be normalized so the domain agrees with the
+        // scale-2 persisted columns and totals stay reproducible across a reload.
+        CartItem item = new CartItem(productId, productName, new BigDecimal("0.333"), 3);
+        assertEquals(new BigDecimal("0.33"), item.getUnitPrice());
+        assertEquals(new BigDecimal("0.99"), item.getTotalPrice());
+    }
 }

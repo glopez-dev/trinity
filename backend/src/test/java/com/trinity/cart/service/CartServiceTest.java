@@ -2,11 +2,17 @@ package com.trinity.cart.service;
 
 import com.trinity.cart.dto.CartItemRequest;
 import com.trinity.cart.dto.CartRequest;
+import com.trinity.cart.mapper.CartPersistenceMapper;
+import com.trinity.cart.model.CartEntity;
+import com.trinity.cart.repository.CartRepository;
+import com.trinity.common.domain.exception.BusinessRuleViolation;
+import com.trinity.common.domain.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class CartServiceTest {
@@ -17,7 +23,7 @@ class CartServiceTest {
 
     @BeforeEach
     void setUp() {
-        cartService = new CartService();
+        cartService = new CartService(new InMemoryCartRepository(), new CartPersistenceMapper());
         customerId = UUID.randomUUID();
         cartItemRequest = CartItemRequest.builder()
                 .productId(UUID.randomUUID())
@@ -57,14 +63,14 @@ class CartServiceTest {
         cartService.createCart(customerId);
         cartService.addItemToCart(customerId, cartItemRequest);
         cartService.validateCart(customerId);
-        assertThrows(IllegalArgumentException.class, () -> cartService.getCart(customerId));
+        assertThrows(NotFoundException.class, () -> cartService.getCart(customerId));
     }
 
     @Test
     void testRemoveCart() {
         cartService.createCart(customerId);
         cartService.removeCart(customerId);
-        assertThrows(IllegalArgumentException.class, () -> cartService.getCart(customerId));
+        assertThrows(NotFoundException.class, () -> cartService.getCart(customerId));
     }
 
     @Test
@@ -73,5 +79,16 @@ class CartServiceTest {
         cartService.cancelCart(customerId);
         CartRequest cartRequest = cartService.getCart(customerId);
         assertTrue(cartRequest.getItems().isEmpty());
+    }
+
+    @Test
+    void testGetCart_notFound_throwsNotFound() {
+        assertThrows(NotFoundException.class, () -> cartService.getCart(customerId));
+    }
+
+    @Test
+    void testCreateCart_duplicateCustomer_throwsBusinessRuleViolation() {
+        cartService.createCart(customerId);
+        assertThrows(BusinessRuleViolation.class, () -> cartService.createCart(customerId));
     }
 }

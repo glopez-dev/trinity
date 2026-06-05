@@ -3,6 +3,7 @@ package com.trinity.common.interfaces.rest;
 import com.trinity.common.domain.exception.BusinessRuleViolation;
 import com.trinity.common.domain.exception.NotFoundException;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -44,6 +45,11 @@ class GlobalExceptionHandlerTest {
         @GetMapping("/boom/illegal-state")
         String illegalState() {
             throw new IllegalStateException("bad state");
+        }
+
+        @GetMapping("/boom/data-integrity")
+        String dataIntegrity() {
+            throw new DataIntegrityViolationException("unique constraint");
         }
 
         @GetMapping("/boom/unexpected")
@@ -93,6 +99,13 @@ class GlobalExceptionHandlerTest {
     @Test
     void illegalState_mapsTo409() throws Exception {
         mockMvc.perform(get("/boom/illegal-state"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409));
+    }
+
+    @Test
+    void dataIntegrityViolation_mapsTo409() throws Exception {
+        mockMvc.perform(get("/boom/data-integrity"))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value(409));
     }

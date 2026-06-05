@@ -4,10 +4,14 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 
 @Data
 public class CartItem {
+
+    private static final int MONEY_SCALE = 2;
+
     private UUID productId;
     private String productName;
     private int quantity;
@@ -26,7 +30,9 @@ public class CartItem {
         this.productId = productId;
         this.productName = productName;
         this.quantity = quantity;
-        this.unitPrice = unitPrice;
+        // Normalize to the scale the money columns persist at, so the total stays
+        // reproducible across a reload (no sub-cent drift).
+        this.unitPrice = unitPrice.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
         calculateTotalPrice();
     }
 

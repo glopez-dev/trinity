@@ -60,8 +60,8 @@ public class CartEntity {
 
     @Embedded
     @AttributeOverrides({
-        @AttributeOverride(name = "amount", column = @Column(name = "total_amount", precision = 19, scale = 2)),
-        @AttributeOverride(name = "currency", column = @Column(name = "currency", length = 3))
+        @AttributeOverride(name = "amount", column = @Column(name = "total_amount", precision = 19, scale = 2, nullable = false)),
+        @AttributeOverride(name = "currency", column = @Column(name = "currency", length = 3, nullable = false))
     })
     private MoneyEmbeddable totalAmount;
 
