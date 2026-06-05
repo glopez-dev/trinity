@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.trinity.product.model.Product;
+import com.trinity.product.model.ProductImageUrl;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -138,5 +139,35 @@ class ProductRepositoryTest {
 
         // Then
         assertThat(foundProduct).isEmpty();
+    }
+
+    @Test
+    void save_ShouldPersistSelectedImages_inDistinctColumns() {
+        // Given a product with per-size, per-locale image URLs
+        Product withImages = Product.builder()
+            .barcode("555000111")
+            .name("Imaged Product")
+            .price(new BigDecimal("4.50"))
+            .selectedImages(Product.SelectedImages.builder()
+                .display(ProductImageUrl.builder().en("display-en.jpg").fr("display-fr.jpg").build())
+                .small(ProductImageUrl.builder().en("small-en.jpg").fr("small-fr.jpg").build())
+                .thumb(ProductImageUrl.builder().en("thumb-en.jpg").fr("thumb-fr.jpg").build())
+                .build())
+            .build();
+
+        // When
+        UUID id = productRepository.save(withImages).getId();
+        productRepository.flush();
+
+        // Then — images must round-trip (regression: they were never persisted before)
+        assertThat(productRepository.findById(id))
+            .isPresent()
+            .get()
+            .satisfies(p -> {
+                assertThat(p.getSelectedImages().getDisplay().getEn()).isEqualTo("display-en.jpg");
+                assertThat(p.getSelectedImages().getDisplay().getFr()).isEqualTo("display-fr.jpg");
+                assertThat(p.getSelectedImages().getSmall().getEn()).isEqualTo("small-en.jpg");
+                assertThat(p.getSelectedImages().getThumb().getFr()).isEqualTo("thumb-fr.jpg");
+            });
     }
 }

@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.trinity.product.dto.open_food_facts.ImageUrls;
+import com.trinity.product.model.ProductImageUrl;
 
 
 class ProductTest {
@@ -166,9 +166,9 @@ class ProductTest {
     void testGetSelectedImages() {
         // Given
         Product.SelectedImages selectedImages = Product.SelectedImages.builder()
-                .display(new ImageUrls())
-                .small(new ImageUrls())
-                .thumb(new ImageUrls())
+                .display(new ProductImageUrl())
+                .small(new ProductImageUrl())
+                .thumb(new ProductImageUrl())
                 .build();
         product.setSelectedImages(selectedImages);
 

@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import com.trinity.product.dto.open_food_facts.ImageUrls;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactSearchResponse;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactsNutrientLevels;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactsNutriments;
@@ -14,6 +15,7 @@ import com.trinity.product.model.Product;
 import com.trinity.product.model.Product.NutrientLevels;
 import com.trinity.product.model.Product.Nutriments;
 import com.trinity.product.model.Product.SelectedImages;
+import com.trinity.product.model.ProductImageUrl;
 
 import lombok.AllArgsConstructor;
 
@@ -65,9 +67,19 @@ public class OpenFoodFactsAdapter {
         }
 
         return SelectedImages.builder()
-            .display(openFoodFactsSelectedImages.getFront().getDisplay())
-            .small(openFoodFactsSelectedImages.getFront().getSmall())
-            .thumb(openFoodFactsSelectedImages.getFront().getThumb())
+            .display(adaptImageUrl(openFoodFactsSelectedImages.getFront().getDisplay()))
+            .small(adaptImageUrl(openFoodFactsSelectedImages.getFront().getSmall()))
+            .thumb(adaptImageUrl(openFoodFactsSelectedImages.getFront().getThumb()))
+            .build();
+    }
+
+    private static ProductImageUrl adaptImageUrl(ImageUrls imageUrls) {
+        if (imageUrls == null) {
+            return null;
+        }
+        return ProductImageUrl.builder()
+            .en(imageUrls.getEn())
+            .fr(imageUrls.getFr())
             .build();
     }
 

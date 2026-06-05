@@ -2,22 +2,21 @@ package com.trinity.product.dto.open_food_facts;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Pure OpenFoodFacts JSON DTO for image URLs. Translated into the domain
+ * {@link com.trinity.product.model.ProductImageUrl} value object by the adapter.
+ */
 @Data
-@Embeddable
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ImageUrls {
-    @Column(insertable = false, updatable = false)
     private String en;
-    @Column(insertable = false, updatable = false)
     private String fr;
 }

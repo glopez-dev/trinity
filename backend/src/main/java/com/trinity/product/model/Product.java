@@ -7,8 +7,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import com.trinity.product.dto.open_food_facts.ImageUrls;
-
 import java.math.BigDecimal;
 
 import jakarta.persistence.*;
@@ -102,13 +100,25 @@ public class Product {
     public static class SelectedImages {
 
         @Embedded
-        private ImageUrls display;
- 
+        @AttributeOverrides({
+            @AttributeOverride(name = "en", column = @Column(name = "display_en")),
+            @AttributeOverride(name = "fr", column = @Column(name = "display_fr"))
+        })
+        private ProductImageUrl display;
+
         @Embedded
-        private ImageUrls small;
- 
+        @AttributeOverrides({
+            @AttributeOverride(name = "en", column = @Column(name = "small_en")),
+            @AttributeOverride(name = "fr", column = @Column(name = "small_fr"))
+        })
+        private ProductImageUrl small;
+
         @Embedded
-        private ImageUrls thumb;
+        @AttributeOverrides({
+            @AttributeOverride(name = "en", column = @Column(name = "thumb_en")),
+            @AttributeOverride(name = "fr", column = @Column(name = "thumb_fr"))
+        })
+        private ProductImageUrl thumb;
     }
 
     @LastModifiedDate

@@ -4,9 +4,9 @@ import org.springframework.stereotype.Service;
 
 import com.trinity.product.dto.api.CreateProductDTO;
 import com.trinity.product.dto.api.ReadProductDTO;
-import com.trinity.product.dto.open_food_facts.ImageUrls;
 import com.trinity.product.model.Product;
 import com.trinity.product.model.Product.NutrientLevels;
+import com.trinity.product.model.ProductImageUrl;
 
 @Service
 public class ProductMapper {
@@ -57,17 +57,17 @@ public class ProductMapper {
 
         if (productDTO.getSelectedImages() != null) {
             productEntity.setSelectedImages(Product.SelectedImages.builder()
-                .display(ImageUrls.builder()
+                .display(ProductImageUrl.builder()
                     .en(productDTO.getSelectedImages().getDisplay().getEn())
                     .fr(productDTO.getSelectedImages().getDisplay().getFr())
                     .build()
                 )
-                .small(ImageUrls.builder()
+                .small(ProductImageUrl.builder()
                     .en(productDTO.getSelectedImages().getSmall().getEn())
                     .fr(productDTO.getSelectedImages().getSmall().getFr())
                     .build()
                 )
-                .thumb(ImageUrls.builder()
+                .thumb(ProductImageUrl.builder()
                     .en(productDTO.getSelectedImages().getThumb().getEn())
                     .fr(productDTO.getSelectedImages().getThumb().getFr())
                     .build()

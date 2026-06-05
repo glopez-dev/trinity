@@ -11,7 +11,7 @@ import com.trinity.product.dto.api.CreateProductDTO.NutrimentsDto;
 import com.trinity.product.dto.api.CreateProductDTO.SelectedImagesDto;
 import com.trinity.product.dto.api.CreateProductDTO.StockDto;
 import com.trinity.product.dto.api.CreateProductDTO.SelectedImagesDto.DisplayImagesDto;
-import com.trinity.product.dto.open_food_facts.ImageUrls;
+import com.trinity.product.model.ProductImageUrl;
 import com.trinity.product.model.Product;
 import java.math.BigDecimal;
 
@@ -163,9 +163,9 @@ class ProductMapperTest {
         product.setNutriments(nm);
 
         Product.SelectedImages si = new Product.SelectedImages();
-        si.setDisplay(ImageUrls.builder().en("bigen.jpg").fr("bigfr.jpg").build());
-        si.setSmall(ImageUrls.builder().en("smallen.jpg").fr("smallfr.jpg").build());
-        si.setThumb(ImageUrls.builder().en("thumben.jpg").fr("thumbfr.jpg").build());
+        si.setDisplay(ProductImageUrl.builder().en("bigen.jpg").fr("bigfr.jpg").build());
+        si.setSmall(ProductImageUrl.builder().en("smallen.jpg").fr("smallfr.jpg").build());
+        si.setThumb(ProductImageUrl.builder().en("thumben.jpg").fr("thumbfr.jpg").build());
         product.setSelectedImages(si);
 
         Product.Stock stock = new Product.Stock();
