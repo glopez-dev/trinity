@@ -1,15 +1,10 @@
 package com.trinity.user.model;
 
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import com.trinity.user.constant.UserStatus;
 import com.trinity.user.constant.UserType;
@@ -31,7 +26,7 @@ import lombok.experimental.SuperBuilder;
  * Base abstract class for authentication entities.
  * Provides common fields and functionality for all auth types.
  */
-public abstract class AbstractUser implements UserDetails {
+public abstract class AbstractUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -102,36 +97,5 @@ public abstract class AbstractUser implements UserDetails {
 
     public boolean accountIsExpired() {
         return status == UserStatus.EXPIRED;
-    }
-
-    /* Spring security UserDetails interface implementation */
-
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(this.getType().name()));
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public String getPassword() {
-        return hashedPassword;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return !this.accountIsExpired();
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return !this.accountIsLocked();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
     }
 }

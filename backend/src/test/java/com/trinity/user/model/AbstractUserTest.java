@@ -2,10 +2,7 @@ package com.trinity.user.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.Instant;
-import java.util.Collection;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.trinity.user.constant.UserStatus;
 import com.trinity.user.constant.UserType;
@@ -116,83 +113,5 @@ class AbstractUserTest {
 
         // Then
         assertTrue(isExpired);
-    }
-
-    @Test
-    void testGetAuthorities() {
-        // Given
-        ConcreteUser user = new ConcreteUser();
-
-        // When
-        Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
-
-        // Then
-        assertNotNull(authorities);
-        assertEquals(1, authorities.size());
-        assertTrue(authorities.contains(new SimpleGrantedAuthority(UserType.EMPLOYEE.name())));
-    }
-
-    @Test
-    void testGetUsername() {
-        // Given
-        ConcreteUser user = new ConcreteUser();
-        user.setEmail("user@example.com");
-
-        // When
-        String username = user.getUsername();
-
-        // Then
-        assertEquals("user@example.com", username);
-    }
-
-    @Test
-    void testGetPassword() {
-        // Given
-        ConcreteUser user = new ConcreteUser();
-        user.setHashedPassword("hashedPassword");
-
-        // When
-        String password = user.getPassword();
-
-        // Then
-        assertEquals("hashedPassword", password);
-    }
-
-    @Test
-    void testIsAccountNonExpired() {
-        // Given
-        ConcreteUser user = new ConcreteUser();
-        user.setStatus(UserStatus.ACTIVE);
-
-        // When
-        boolean isNonExpired = user.isAccountNonExpired();
-
-        // Then
-        assertTrue(isNonExpired);
-    }
-
-    @Test
-    void testIsAccountNonLocked() {
-        // Given
-        ConcreteUser user = new ConcreteUser();
-        user.setStatus(UserStatus.ACTIVE);
-
-        // When
-        boolean isNonLocked = user.isAccountNonLocked();
-
-        // Then
-        assertTrue(isNonLocked);
-    }
-
-    @Test
-    void testIsEnabled() {
-        // Given
-        ConcreteUser user = new ConcreteUser();
-
-        // When
-        boolean isEnabled = user.isEnabled();
-
-        // Then
-        assertTrue(isEnabled);
     }
 }

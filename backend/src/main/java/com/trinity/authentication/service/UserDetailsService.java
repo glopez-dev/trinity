@@ -1,5 +1,7 @@
 package com.trinity.authentication.service;
 
+import com.trinity.user.infrastructure.security.AppUserDetails;
+import com.trinity.user.model.AbstractUser;
 import com.trinity.user.repository.CustomerRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,13 +21,14 @@ class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return employeeRepository.findByEmail(email)
-                .map(employee -> (UserDetails) employee)
+        AbstractUser user = employeeRepository.findByEmail(email)
+                .map(employee -> (AbstractUser) employee)
                 .orElseGet(() ->
                         customerRepository.findByEmail(email)
                                 .orElseThrow(() ->
                                         new UsernameNotFoundException("User not found with email: " + email)
                                 )
                 );
+        return new AppUserDetails(user);
     }
 }

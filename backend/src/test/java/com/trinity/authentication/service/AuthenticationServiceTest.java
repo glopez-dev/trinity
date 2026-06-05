@@ -17,11 +17,12 @@ import com.trinity.authentication.dto.RegisterRequest;
 import com.trinity.authentication.dto.LoginRequest;
 import com.trinity.user.constant.EmployeeRole;
 import com.trinity.user.constant.UserType;
+import com.trinity.user.infrastructure.security.AppUserDetails;
 import com.trinity.user.model.Employee;
 import com.trinity.user.repository.CustomerRepository;
 import com.trinity.user.repository.EmployeeRepository;
 
-import java.util.Optional;
+import org.springframework.security.core.userdetails.UserDetails;
 
 
 class AuthenticationServiceTest {
@@ -74,7 +75,7 @@ class AuthenticationServiceTest {
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPassword");
         when(employeeRepository.existsByEmail(request.getEmail())).thenReturn(false);
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
-        when(jwtService.generateToken(any(Employee.class))).thenReturn("jwtToken");
+        when(jwtService.generateToken(any(AppUserDetails.class))).thenReturn("jwtToken");
         // When
         AuthenticationResponse response = authenticationService.registerEmployee(request);
 
@@ -99,8 +100,9 @@ class AuthenticationServiceTest {
                 .type(UserType.EMPLOYEE)
                 .build();
 
-        when(userDetailsService.loadUserByUsername(request.getEmail())).thenReturn(employee);
-        when(jwtService.generateToken(employee)).thenReturn("jwtToken");
+        UserDetails userDetails = new AppUserDetails(employee);
+        when(userDetailsService.loadUserByUsername(request.getEmail())).thenReturn(userDetails);
+        when(jwtService.generateToken(userDetails)).thenReturn("jwtToken");
 
         // When
         AuthenticationResponse response = authenticationService.login(request);

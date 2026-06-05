@@ -1,6 +1,7 @@
 package com.trinity.authentication.service;
 
 import com.trinity.authentication.dto.CustomerRegisterRequest;
+import com.trinity.user.infrastructure.security.AppUserDetails;
 import com.trinity.user.model.Customer;
 import com.trinity.user.repository.CustomerRepository;
 import jakarta.transaction.Transactional;
@@ -47,7 +48,7 @@ public class AuthenticationService {
 
         Employee savedEmployee = employeeRepository.save(employee);
 
-        String jwtToken = jwtService.generateToken(savedEmployee);
+        String jwtToken = jwtService.generateToken(new AppUserDetails(savedEmployee));
 
         return AuthenticationResponse.builder()
                 .jwt(jwtToken)
@@ -71,7 +72,7 @@ public class AuthenticationService {
 
         Customer savedCustomer = customerRepository.save(customer);
 
-        String jwtToken = jwtService.generateToken(savedCustomer);
+        String jwtToken = jwtService.generateToken(new AppUserDetails(savedCustomer));
 
         return AuthenticationResponse.builder()
                 .jwt(jwtToken)

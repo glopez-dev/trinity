@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.Instant;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.trinity.user.constant.UserType;
 
@@ -136,27 +135,5 @@ class CustomerTest {
 
         // Then
         assertEquals(UserType.CUSTOMER, role);
-
-        assertTrue(customer.getAuthorities().contains(
-                new SimpleGrantedAuthority(UserType.CUSTOMER.name())));
-    }
-
-    @Test
-    void testUserDetailsImplementation() {
-        // Given
-        Customer customer = Customer.builder()
-                .email("test@example.com")
-                .hashedPassword("hashedPassword")
-                .build();
-
-        // When
-        String username = customer.getUsername();
-        String password = customer.getPassword();
-        boolean isEnabled = customer.isEnabled();
-
-        // Then
-        assertEquals("test@example.com", username);
-        assertEquals("hashedPassword", password);
-        assertTrue(isEnabled);
     }
 }
