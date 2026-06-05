@@ -1,199 +1,84 @@
 package com.trinity.payment.paypal.service;
 
-import com.trinity.payment.paypal.adapter.PaypalInvoiceAdapter;
-import com.trinity.payment.paypal.config.PaypalConfig;
+import com.trinity.payment.domain.port.InvoicingGateway;
 import com.trinity.payment.paypal.dto.InvoiceDTO;
-import com.paypal.api.payments.*;
-import com.paypal.base.rest.APIContext;
-import com.paypal.base.rest.PayPalRESTException;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+/**
+ * The application service is a thin orchestration over the InvoicingGateway port.
+ * SDK behavior is covered by PaypalInvoiceGatewayAdapterTest.
+ */
 @ExtendWith(MockitoExtension.class)
 class PaypalInvoiceServiceTest {
 
     @Mock
-    private PaypalConfig paypalConfig;
-
-    @Mock
-    private PaypalInvoiceAdapter invoiceAdapter;
-
-    @Mock
-    private APIContext apiContext;
+    private InvoicingGateway invoicingGateway;
 
     @InjectMocks
-    private PaypalInvoiceService paypalInvoiceService;
+    private PaypalInvoiceService service;
 
-    private Invoice mockInvoice;
-    private InvoiceDTO mockInvoiceDTO;
     private static final String INVOICE_ID = "INV2-QXWN-W3VH-Q8H7-XH8J";
-    private static MockedStatic<Invoice> invoiceMockedStatic;
 
-    @BeforeAll
-    static void setUpClass() {
-        invoiceMockedStatic = mockStatic(Invoice.class);
-    }
+    @Test
+    void createInvoice_delegatesToGateway() {
+        InvoiceDTO request = new InvoiceDTO();
+        InvoiceDTO created = new InvoiceDTO();
+        when(invoicingGateway.create(request)).thenReturn(created);
 
-    @AfterAll
-    static void tearDownClass() {
-        invoiceMockedStatic.close();
-    }
-
-    @BeforeEach
-    void setUp() {
-        mockInvoice = mock(Invoice.class);
-        mockInvoiceDTO = new InvoiceDTO();
-        when(paypalConfig.getAPIContext()).thenReturn(apiContext);
-        invoiceMockedStatic.when(() -> Invoice.get(any(APIContext.class), eq(INVOICE_ID))).thenReturn(mockInvoice);
+        assertThat(service.createInvoice(request)).isSameAs(created);
+        verify(invoicingGateway).create(request);
     }
 
     @Test
-    void createInvoice_Success() throws PayPalRESTException {
-        // Arrange
-        when(invoiceAdapter.mapToInvoice(any(InvoiceDTO.class))).thenReturn(mockInvoice);
-        when(invoiceAdapter.mapToInvoiceDTO(any(Invoice.class))).thenReturn(mockInvoiceDTO);
-        when(mockInvoice.create(any(APIContext.class))).thenReturn(mockInvoice);
-        InvoiceDTO requestDTO = new InvoiceDTO();
-
-        // Act
-        InvoiceDTO result = paypalInvoiceService.createInvoice(requestDTO);
-
-        // Assert
-        assertNotNull(result);
-        verify(mockInvoice).create(apiContext);
-        verify(invoiceAdapter).mapToInvoiceDTO(mockInvoice);
+    void sendInvoice_delegatesToGateway() {
+        service.sendInvoice(INVOICE_ID);
+        verify(invoicingGateway).send(INVOICE_ID);
     }
 
     @Test
-    void createInvoice_ThrowsException() throws PayPalRESTException {
-        // Arrange
-        InvoiceDTO requestDTO = new InvoiceDTO();
-        when(invoiceAdapter.mapToInvoice(any(InvoiceDTO.class))).thenReturn(mockInvoice);
-        doThrow(new PayPalRESTException("Error")).when(mockInvoice).create(any(APIContext.class));
+    void getInvoiceDTO_delegatesToGateway() {
+        InvoiceDTO dto = new InvoiceDTO();
+        when(invoicingGateway.get(INVOICE_ID)).thenReturn(dto);
 
-        // Act & Assert
-        PayPalInvoiceException exception = assertThrows(
-            PayPalInvoiceException.class,
-            () -> paypalInvoiceService.createInvoice(requestDTO)
-        );
-        assertEquals("Error creating invoice", exception.getMessage());
+        assertThat(service.getInvoiceDTO(INVOICE_ID)).isSameAs(dto);
     }
 
     @Test
-    void sendInvoice_Success() throws PayPalRESTException {
-        // Act
-        paypalInvoiceService.sendInvoice(INVOICE_ID);
+    void getAllInvoices_delegatesToGateway() {
+        List<InvoiceDTO> all = List.of(new InvoiceDTO());
+        when(invoicingGateway.getAll()).thenReturn(all);
 
-        // Assert
-        verify(mockInvoice).send(apiContext);
+        assertThat(service.getAllInvoices()).isEqualTo(all);
     }
 
     @Test
-    void getInvoice_Success() {
-        // Act
-        Invoice result = paypalInvoiceService.getInvoice(INVOICE_ID);
+    void updateInvoice_delegatesToGateway() {
+        InvoiceDTO request = new InvoiceDTO();
+        InvoiceDTO updated = new InvoiceDTO();
+        when(invoicingGateway.update(request)).thenReturn(updated);
 
-        // Assert
-        assertNotNull(result);
-        assertEquals(mockInvoice, result);
+        assertThat(service.updateInvoice(request)).isSameAs(updated);
     }
 
     @Test
-    void getAllInvoices_Success() {
-        // Arrange
-        Invoices mockInvoices = mock(Invoices.class);
-        List<Invoice> invoiceList = Arrays.asList(mockInvoice);
-        when(mockInvoices.getInvoices()).thenReturn(invoiceList);
-        invoiceMockedStatic.when(() -> Invoice.getAll(any(APIContext.class))).thenReturn(mockInvoices);
-        when(invoiceAdapter.mapToInvoiceDTO(any(Invoice.class))).thenReturn(mockInvoiceDTO);
-
-        // Act
-        List<InvoiceDTO> result = paypalInvoiceService.getAllInvoices();
-
-        // Assert
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
-        assertEquals(1, result.size());
+    void deleteInvoice_delegatesToGateway() {
+        service.deleteInvoice(INVOICE_ID);
+        verify(invoicingGateway).delete(INVOICE_ID);
     }
 
     @Test
-    void getAllInvoices_NullInvoiceList_returnsEmpty() {
-        // PayPal's Invoices.getInvoices() can be null when there are none.
-        Invoices mockInvoices = mock(Invoices.class);
-        when(mockInvoices.getInvoices()).thenReturn(null);
-        invoiceMockedStatic.when(() -> Invoice.getAll(any(APIContext.class))).thenReturn(mockInvoices);
-
-        List<InvoiceDTO> result = paypalInvoiceService.getAllInvoices();
-
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void updateInvoice_Success() throws PayPalRESTException {
-        // Arrange
-        when(invoiceAdapter.mapToInvoice(any(InvoiceDTO.class))).thenReturn(mockInvoice);
-        when(mockInvoice.update(apiContext)).thenReturn(mockInvoice); // Assure que update retourne un Invoice
-        doReturn(mockInvoiceDTO).when(invoiceAdapter).mapToInvoiceDTO(any(Invoice.class));
-        
-        InvoiceDTO requestDTO = new InvoiceDTO();
-    
-        // Act
-        InvoiceDTO result = paypalInvoiceService.updateInvoice(requestDTO);
-    
-        // Assert
-        assertNotNull(result);
-        verify(mockInvoice).update(apiContext);
-        verify(invoiceAdapter).mapToInvoiceDTO(mockInvoice);
-    }
-    
-
-    @Test
-    void deleteInvoice_Success() throws PayPalRESTException {
-        // Act
-        paypalInvoiceService.deleteInvoice(INVOICE_ID);
-
-        // Assert
-        verify(mockInvoice).delete(apiContext);
-    }
-
-    @Test
-    void cancelInvoice_Success() throws PayPalRESTException {
-        // Arrange
-        String reason = "Test cancellation";
-
-        // Act
-        paypalInvoiceService.cancelInvoice(INVOICE_ID, reason);
-
-        // Assert
-        verify(mockInvoice).cancel(eq(apiContext), any(CancelNotification.class));
-    }
-
-    @Test
-    void getInvoiceDTO_Success() {
-        // Arrange
-        when(invoiceAdapter.mapToInvoiceDTO(any(Invoice.class))).thenReturn(mockInvoiceDTO);
-
-        // Act
-        InvoiceDTO result = paypalInvoiceService.getInvoiceDTO(INVOICE_ID);
-
-        // Assert
-        assertNotNull(result);
-        verify(invoiceAdapter).mapToInvoiceDTO(mockInvoice);
+    void cancelInvoice_delegatesToGateway() {
+        service.cancelInvoice(INVOICE_ID, "reason");
+        verify(invoicingGateway).cancel(INVOICE_ID, "reason");
     }
 }
