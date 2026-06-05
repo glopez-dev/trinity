@@ -74,6 +74,72 @@ class StripePaymentAdapterTest {
     }
 
     @Test
+    void charge_requiresPaymentMethod_mapsToFailed() throws Exception {
+        PaymentIntent intent = mock(PaymentIntent.class);
+        when(intent.getId()).thenReturn("pi_decl");
+        when(intent.getStatus()).thenReturn("requires_payment_method");
+
+        Payment payment = Payment.initiate(Money.of(new BigDecimal("20.00"), "USD"), PaymentProvider.STRIPE);
+
+        try (MockedStatic<PaymentIntent> mocked = mockStatic(PaymentIntent.class)) {
+            mocked.when(() -> PaymentIntent.create(any(PaymentIntentCreateParams.class))).thenReturn(intent);
+
+            PaymentResult result = adapter.charge(payment, "pm_card");
+
+            assertThat(result.status()).isEqualTo(PaymentStatus.FAILED);
+        }
+    }
+
+    @Test
+    void charge_processing_mapsToPending() throws Exception {
+        PaymentIntent intent = mock(PaymentIntent.class);
+        when(intent.getId()).thenReturn("pi_proc");
+        when(intent.getStatus()).thenReturn("processing");
+
+        Payment payment = Payment.initiate(Money.of(new BigDecimal("20.00"), "USD"), PaymentProvider.STRIPE);
+
+        try (MockedStatic<PaymentIntent> mocked = mockStatic(PaymentIntent.class)) {
+            mocked.when(() -> PaymentIntent.create(any(PaymentIntentCreateParams.class))).thenReturn(intent);
+
+            PaymentResult result = adapter.charge(payment, "pm_card");
+
+            assertThat(result.status()).isEqualTo(PaymentStatus.PENDING);
+        }
+    }
+
+    @Test
+    void charge_zeroDecimalCurrency_doesNotMultiplyByHundred() throws Exception {
+        PaymentIntent intent = mock(PaymentIntent.class);
+        when(intent.getId()).thenReturn("pi_jpy");
+        when(intent.getStatus()).thenReturn("succeeded");
+
+        Payment payment = Payment.initiate(Money.of(new BigDecimal("1000"), "JPY"), PaymentProvider.STRIPE);
+
+        try (MockedStatic<PaymentIntent> mocked = mockStatic(PaymentIntent.class)) {
+            mocked.when(() -> PaymentIntent.create(any(PaymentIntentCreateParams.class)))
+                    .thenAnswer(inv -> {
+                        PaymentIntentCreateParams params = inv.getArgument(0);
+                        // JPY is zero-decimal: 1000 JPY must be sent as 1000, not 100000.
+                        assertThat(params.getAmount()).isEqualTo(1000L);
+                        return intent;
+                    });
+
+            adapter.charge(payment, "pm_card");
+        }
+    }
+
+    @Test
+    void charge_overflowAmount_isRejectedAsBusinessRuleViolation() {
+        Payment payment = Payment.initiate(
+                Money.of(new BigDecimal("99999999999999999"), "USD"), PaymentProvider.STRIPE);
+
+        // No Stripe call should be reached: the conversion overflow must surface as a
+        // domain error (mapped to 4xx), not a raw ArithmeticException -> 500.
+        assertThatThrownBy(() -> adapter.charge(payment, "pm_card"))
+                .isInstanceOf(BusinessRuleViolation.class);
+    }
+
+    @Test
     void charge_translatesStripeExceptionToBusinessRuleViolation() {
         Payment payment = Payment.initiate(Money.of(new BigDecimal("20.00"), "USD"), PaymentProvider.STRIPE);
 

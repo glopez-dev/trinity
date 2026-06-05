@@ -55,6 +55,14 @@ class PaymentTest {
     }
 
     @Test
+    void markAuthorized_rejectsBlankExternalRef() {
+        Payment payment = pendingPayment();
+
+        assertThrows(BusinessRuleViolation.class, () -> payment.markAuthorized(null));
+        assertThrows(BusinessRuleViolation.class, () -> payment.markAuthorized("  "));
+    }
+
+    @Test
     void markFailed_recordsReason() {
         Payment payment = pendingPayment();
 

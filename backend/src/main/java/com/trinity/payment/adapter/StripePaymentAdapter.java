@@ -86,9 +86,26 @@ public class StripePaymentAdapter implements PaymentGateway {
                 .build();
     }
 
-    /** Stripe uses minor units (cents). Valid for 2-decimal currencies only. */
+    /**
+     * Converts a Money to the provider's smallest unit, honoring the currency's
+     * actual fraction digits (e.g. JPY has 0, so 1000 JPY -> 1000, not 100000).
+     */
     private long toMinorUnits(Money money) {
-        return money.amount().movePointRight(2).longValueExact();
+        int fractionDigits = fractionDigitsOf(money.currency());
+        try {
+            return money.amount().movePointRight(fractionDigits).longValueExact();
+        } catch (ArithmeticException e) {
+            throw new BusinessRuleViolation("Payment amount is out of range: " + money.amount());
+        }
+    }
+
+    private int fractionDigitsOf(String currencyCode) {
+        try {
+            int digits = java.util.Currency.getInstance(currencyCode).getDefaultFractionDigits();
+            return digits >= 0 ? digits : 2;
+        } catch (IllegalArgumentException e) {
+            throw new BusinessRuleViolation("Unsupported currency: " + currencyCode);
+        }
     }
 
     private PaymentStatus mapStatus(String stripeStatus) {
@@ -97,7 +114,11 @@ public class StripePaymentAdapter implements PaymentGateway {
         }
         return switch (stripeStatus) {
             case "succeeded" -> PaymentStatus.SUCCEEDED;
-            case "requires_capture", "requires_confirmation", "requires_action" -> PaymentStatus.AUTHORIZED;
+            // Only a captured-or-holdable state is a genuine authorization. Under this
+            // server-only, no-redirect confirm flow, requires_action cannot complete.
+            case "requires_capture" -> PaymentStatus.AUTHORIZED;
+            case "requires_payment_method", "requires_action" -> PaymentStatus.FAILED;
+            case "processing", "requires_confirmation" -> PaymentStatus.PENDING;
             case "canceled" -> PaymentStatus.CANCELLED;
             default -> PaymentStatus.PENDING;
         };

@@ -62,6 +62,40 @@ class PaymentServiceTest {
     }
 
     @Test
+    void charge_cancelledResult_marksPaymentCancelled() {
+        when(stripeGateway.charge(any(Payment.class), any()))
+                .thenReturn(new PaymentResult("pi_c", PaymentStatus.CANCELLED, null, null));
+
+        Payment payment = paymentService.charge(
+                Money.of(new BigDecimal("5.00"), "USD"), PaymentProvider.STRIPE, "pm_x");
+
+        assertThat(payment.getStatus()).isEqualTo(PaymentStatus.CANCELLED);
+    }
+
+    @Test
+    void charge_pendingResult_leavesPaymentPending() {
+        when(stripeGateway.charge(any(Payment.class), any()))
+                .thenReturn(new PaymentResult("pi_p", PaymentStatus.PENDING, null, null));
+
+        Payment payment = paymentService.charge(
+                Money.of(new BigDecimal("5.00"), "USD"), PaymentProvider.STRIPE, "pm_x");
+
+        assertThat(payment.getStatus()).isEqualTo(PaymentStatus.PENDING);
+    }
+
+    @Test
+    void charge_authorizedResult_marksPaymentAuthorized() {
+        when(stripeGateway.charge(any(Payment.class), any()))
+                .thenReturn(new PaymentResult("pi_a", PaymentStatus.AUTHORIZED, null, null));
+
+        Payment payment = paymentService.charge(
+                Money.of(new BigDecimal("5.00"), "USD"), PaymentProvider.STRIPE, "pm_x");
+
+        assertThat(payment.getStatus()).isEqualTo(PaymentStatus.AUTHORIZED);
+        assertThat(payment.getExternalRef()).isEqualTo("pi_a");
+    }
+
+    @Test
     void createCheckout_returnsGatewayResult() {
         when(stripeGateway.createCheckout(any(), any(), any()))
                 .thenReturn(new PaymentResult("cs_1", PaymentStatus.PENDING, "https://pay", null));

@@ -44,13 +44,16 @@ public class PaymentService {
     }
 
     private void applyResult(Payment payment, PaymentResult result) {
-        if (result.status() == PaymentStatus.FAILED) {
-            payment.markFailed(result.failureReason());
-            return;
-        }
-        payment.markAuthorized(result.externalRef());
-        if (result.status() == PaymentStatus.SUCCEEDED) {
-            payment.markSucceeded();
+        switch (result.status()) {
+            case FAILED -> payment.markFailed(result.failureReason());
+            case CANCELLED -> payment.cancel();
+            case AUTHORIZED -> payment.markAuthorized(result.externalRef());
+            case SUCCEEDED -> {
+                payment.markAuthorized(result.externalRef());
+                payment.markSucceeded();
+            }
+            // PENDING: the charge is still in flight — leave the aggregate PENDING.
+            case PENDING -> { /* no-op */ }
         }
     }
 

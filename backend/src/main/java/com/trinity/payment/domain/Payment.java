@@ -1,5 +1,6 @@
 package com.trinity.payment.domain;
 
+import com.trinity.common.domain.exception.BusinessRuleViolation;
 import com.trinity.common.domain.vo.Money;
 import lombok.Getter;
 
@@ -44,6 +45,9 @@ public class Payment {
     }
 
     public void markAuthorized(String externalRef) {
+        if (externalRef == null || externalRef.isBlank()) {
+            throw new BusinessRuleViolation("An authorized payment must carry a provider reference");
+        }
         this.status.assertCanTransitionTo(PaymentStatus.AUTHORIZED);
         this.status = PaymentStatus.AUTHORIZED;
         this.externalRef = externalRef;
