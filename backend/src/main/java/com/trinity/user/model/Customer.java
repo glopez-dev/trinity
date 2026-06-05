@@ -3,8 +3,8 @@ package com.trinity.user.model;
 import java.time.Instant;
 
 import lombok.*;
-import org.springframework.util.Assert;
 
+import com.trinity.common.domain.exception.BusinessRuleViolation;
 import com.trinity.user.constant.UserType;
 
 import jakarta.persistence.Column;
@@ -20,8 +20,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor // Builder pattern requires all args constructor.
 @EqualsAndHashCode(callSuper = false)
 /**
- * Entity representing a customer authenticated through PayPal OAuth
- * @param expiresIn the number of seconds until the token expires
+ * Entity representing a customer, optionally linked to a Stripe OAuth account.
  */
 public class Customer extends AbstractUser {
 
@@ -48,10 +47,16 @@ public class Customer extends AbstractUser {
         return expirationDateIsDefined && expirationDateIsPassed;
     }
 
-    public void updatePayPalToken(String accessToken, String refreshToken, Long expiresIn) {
-        Assert.notNull(accessToken, "Access token must not be null");
-        Assert.notNull(refreshToken, "Refresh token must not be null");
-        Assert.notNull(expiresIn, "Expiration time must not be null");
+    public void updateStripeToken(String accessToken, String refreshToken, Long expiresIn) {
+        if (accessToken == null) {
+            throw new BusinessRuleViolation("Access token must not be null");
+        }
+        if (refreshToken == null) {
+            throw new BusinessRuleViolation("Refresh token must not be null");
+        }
+        if (expiresIn == null) {
+            throw new BusinessRuleViolation("Expiration time must not be null");
+        }
 
         this.setStripeAccessToken(accessToken);
         this.setStripeRefreshToken(refreshToken);

@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.trinity.common.domain.exception.BusinessRuleViolation;
 import com.trinity.user.constant.UserStatus;
 import com.trinity.user.constant.UserType;
 
@@ -74,14 +75,38 @@ public abstract class AbstractUser {
         this.lastLoginAt = Instant.now();
     }
 
-    public void setStatusInactive() {
-        this.status = UserStatus.INACTIVE;
-    }
+    /* Status state machine — transitions are validated against the current status. */
 
-    public void setStatusActive() {
+    public void activate() {
+        ensureNotDeleted("activate");
         this.status = UserStatus.ACTIVE;
     }
 
+    public void deactivate() {
+        ensureNotDeleted("deactivate");
+        this.status = UserStatus.INACTIVE;
+    }
+
+    public void lock() {
+        ensureNotDeleted("lock");
+        this.status = UserStatus.LOCKED;
+    }
+
+    public void markExpired() {
+        ensureNotDeleted("expire");
+        this.status = UserStatus.EXPIRED;
+    }
+
+    public void markDeleted() {
+        this.status = UserStatus.DELETED;
+    }
+
+    private void ensureNotDeleted(String transition) {
+        if (this.status == UserStatus.DELETED) {
+            throw new BusinessRuleViolation(
+                    "Cannot %s a deleted user".formatted(transition));
+        }
+    }
 
     public boolean accountIsLocked() {
         return status == UserStatus.LOCKED;

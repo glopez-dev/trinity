@@ -105,7 +105,7 @@ public class CustomerService {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Customer not found with id: " + id));
 
-        customer.setStatusInactive();
+        customer.deactivate();
         customerRepository.save(customer);
     }
 
@@ -114,7 +114,7 @@ public class CustomerService {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Customer not found with id: " + id));
 
-        customer.setStatusActive();
+        customer.activate();
         Customer activatedCustomer = customerRepository.save(customer);
 
         return mapToReadCustomerDTO(activatedCustomer);

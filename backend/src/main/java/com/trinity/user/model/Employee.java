@@ -2,6 +2,7 @@ package com.trinity.user.model;
 
 import java.time.Instant;
 
+import com.trinity.common.domain.exception.BusinessRuleViolation;
 import com.trinity.user.constant.EmployeeRole;
 import com.trinity.user.constant.UserType;
 
@@ -38,5 +39,34 @@ public class Employee extends AbstractUser {
     @Builder.Default
     @Column(nullable = false)
     private UserType type = UserType.EMPLOYEE;
+
+    /* Domain behavior */
+
+    /** Updates names, ignoring null values (partial update). */
+    public void rename(String firstName, String lastName) {
+        if (firstName != null) {
+            this.setFirstName(firstName);
+        }
+        if (lastName != null) {
+            this.setLastName(lastName);
+        }
+    }
+
+    public void changeRole(EmployeeRole role) {
+        if (role == null) {
+            throw new BusinessRuleViolation("Employee role must not be null");
+        }
+        this.role = role;
+    }
+
+    public void terminate(Instant terminationDate) {
+        if (terminationDate == null) {
+            throw new BusinessRuleViolation("Termination date must not be null");
+        }
+        if (this.hireDate != null && terminationDate.isBefore(this.hireDate)) {
+            throw new BusinessRuleViolation("Termination date must not be before hire date");
+        }
+        this.terminationDate = terminationDate;
+    }
 
 }

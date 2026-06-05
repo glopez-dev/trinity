@@ -40,24 +40,25 @@ class AbstractUserTest {
     }
 
     @Test
-    void testSetStatusInactive() {
+    void testDeactivate() {
         // Given
         ConcreteUser user = new ConcreteUser();
 
         // When
-        user.setStatusInactive();
+        user.deactivate();
 
         // Then
         assertEquals(UserStatus.INACTIVE, user.getStatus());
     }
 
     @Test
-    void testSetStatusActive() {
+    void testActivate() {
         // Given
         ConcreteUser user = new ConcreteUser();
+        user.setStatus(UserStatus.INACTIVE);
 
         // When
-        user.setStatusActive();
+        user.activate();
 
         // Then
         assertEquals(UserStatus.ACTIVE, user.getStatus());

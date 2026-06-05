@@ -7,7 +7,10 @@ import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.trinity.common.domain.exception.NotFoundException;
+import com.trinity.user.constant.UserStatus;
 import com.trinity.user.dto.employee.CreateEmployeeDTO;
 import com.trinity.user.dto.employee.ReadEmployeeDTO;
 import com.trinity.user.dto.employee.UpdateEmployeeDTO;
@@ -26,9 +29,10 @@ public class EmployeeService {
 
     private Employee findById(UUID employeeId) {
         return employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException(NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_MESSAGE));
     }
 
+    @Transactional
     public ReadEmployeeDTO createEmployee(CreateEmployeeDTO employeeDTO) {
 
         Employee newEmployee = Employee.builder()
@@ -38,13 +42,14 @@ public class EmployeeService {
             .lastName(employeeDTO.getLastName())
             .hireDate(Instant.now())
             .role(employeeDTO.getRole())
-            .build(); 
+            .build();
 
         newEmployee = employeeRepository.save(newEmployee);
 
         return new ReadEmployeeDTO(newEmployee);
     }
 
+    @Transactional(readOnly = true)
     public List<ReadEmployeeDTO> getAllEmployees() {
         List<Employee> employees = employeeRepository.findAll();
 
@@ -57,30 +62,43 @@ public class EmployeeService {
             .toList();
     }
 
+    @Transactional(readOnly = true)
     public ReadEmployeeDTO getEmployee(UUID employeeId) {
         Employee employee = findById(employeeId);
         return new ReadEmployeeDTO(employee);
     }
 
+    @Transactional
     public ReadEmployeeDTO updateEmployee(UUID employeeId, UpdateEmployeeDTO request) {
         Employee employee = findById(employeeId);
 
-        employee.setEmail(request.getEmail().orElse(employee.getEmail()));
-        employee.setFirstName(request.getFirstName().orElse(employee.getFirstName()));
-        employee.setLastName(request.getLastName().orElse(employee.getLastName()));
-        employee.setRole(request.getRole().orElse(employee.getRole()));
-        employee.setStatus(request.getStatus().orElse(employee.getStatus()));
-        employee.setUpdatedAt(Instant.now());
+        request.getEmail().ifPresent(employee::setEmail);
+        employee.rename(
+                request.getFirstName().orElse(null),
+                request.getLastName().orElse(null));
+        request.getRole().ifPresent(employee::changeRole);
+        request.getStatus().ifPresent(status -> applyStatus(employee, status));
 
         Employee updatedEmployee = employeeRepository.save(employee);
 
         return new ReadEmployeeDTO(updatedEmployee);
     }
 
+    @Transactional
     public void deleteEmployee(UUID employeeId) {
         Employee employee = findById(employeeId);
 
         employeeRepository.delete(employee);
+    }
+
+    private void applyStatus(Employee employee, UserStatus status) {
+        switch (status) {
+            case ACTIVE -> employee.activate();
+            case INACTIVE -> employee.deactivate();
+            case LOCKED -> employee.lock();
+            case EXPIRED -> employee.markExpired();
+            case DELETED -> employee.markDeleted();
+        }
     }
 
 }

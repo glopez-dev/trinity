@@ -6,6 +6,7 @@ import java.time.Instant;
 
 import org.junit.jupiter.api.Test;
 
+import com.trinity.common.domain.exception.BusinessRuleViolation;
 import com.trinity.user.constant.UserType;
 
 
@@ -82,12 +83,12 @@ class CustomerTest {
     }
 
     @Test
-    void testUpdatePayPalToken() {
+    void testUpdateStripeToken() {
         // Given
         Customer customer = new Customer();
 
         // When
-        customer.updatePayPalToken("newAccessToken", "newRefreshToken", 3600L);
+        customer.updateStripeToken("newAccessToken", "newRefreshToken", 3600L);
 
         // Then
         assertEquals("newAccessToken", customer.getStripeAccessToken());
@@ -96,33 +97,33 @@ class CustomerTest {
     }
 
     @Test
-    void testUpdatePayPalTokenNullAccessToken() {
+    void testUpdateStripeTokenNullAccessToken() {
         // Given
         Customer customer = new Customer();
 
         // When & Then
-        assertThrows(IllegalArgumentException.class, () ->
-                customer.updatePayPalToken(null, "refreshToken", 3600L));
+        assertThrows(BusinessRuleViolation.class, () ->
+                customer.updateStripeToken(null, "refreshToken", 3600L));
     }
 
     @Test
-    void testUpdatePayPalTokenNullRefreshToken() {
+    void testUpdateStripeTokenNullRefreshToken() {
         // Given
         Customer customer = new Customer();
 
         // When & Then
-        assertThrows(IllegalArgumentException.class, () ->
-                customer.updatePayPalToken("accessToken", null, 3600L));
+        assertThrows(BusinessRuleViolation.class, () ->
+                customer.updateStripeToken("accessToken", null, 3600L));
     }
 
     @Test
-    void testUpdatePayPalTokenNullExpiresIn() {
+    void testUpdateStripeTokenNullExpiresIn() {
         // Given
         Customer customer = new Customer();
 
         // When & Then
-        assertThrows(IllegalArgumentException.class, () ->
-                customer.updatePayPalToken("accessToken", "refreshToken", null));
+        assertThrows(BusinessRuleViolation.class, () ->
+                customer.updateStripeToken("accessToken", "refreshToken", null));
     }
 
     @Test
