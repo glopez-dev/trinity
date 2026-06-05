@@ -7,6 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import com.trinity.common.domain.exception.BusinessRuleViolation;
+
 import java.math.BigDecimal;
 
 import jakarta.persistence.*;
@@ -136,5 +138,50 @@ public class Product {
         private int quantity;
         private int minThreshold;
         private int maxThreshold;
+
+        public void reduceBy(int amount) {
+            if (amount < 0) {
+                throw new BusinessRuleViolation("Reduction amount must not be negative");
+            }
+            if (amount > this.quantity) {
+                throw new BusinessRuleViolation("Stock quantity cannot become negative");
+            }
+            this.quantity -= amount;
+        }
+
+        public void increaseBy(int amount) {
+            if (amount < 0) {
+                throw new BusinessRuleViolation("Increase amount must not be negative");
+            }
+            this.quantity += amount;
+        }
+
+        public boolean isBelowThreshold() {
+            return this.quantity < this.minThreshold;
+        }
+    }
+
+    /* Domain behavior */
+
+    public void changePrice(BigDecimal newPrice) {
+        if (newPrice == null) {
+            throw new BusinessRuleViolation("Price must not be null");
+        }
+        if (newPrice.compareTo(BigDecimal.ZERO) < 0) {
+            throw new BusinessRuleViolation("Price cannot be negative");
+        }
+        this.price = newPrice;
+    }
+
+    /** Applies a signed delta to the stock, rejecting a resulting negative quantity. */
+    public void adjustStock(int delta) {
+        if (this.stock == null) {
+            this.stock = Stock.builder().build();
+        }
+        if (delta >= 0) {
+            this.stock.increaseBy(delta);
+        } else {
+            this.stock.reduceBy(-delta);
+        }
     }
 }
