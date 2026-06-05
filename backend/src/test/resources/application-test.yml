@@ -91,7 +91,7 @@ logging:
 # Swagger Configuration
 #####################################
 jwt:
-  secret: ${SPRING_JWT_SECRET:your_jwt_secret_key_here}
+  secret: ${SPRING_JWT_SECRET:b24bfe05b10f876172094ffa542dd10b43437cd9934d95c844a5006e51a8038a}
   expiration: ${SPRING_JWT_EXPIRATION:86400000}  # 24 hours in milliseconds
 
 #####################################

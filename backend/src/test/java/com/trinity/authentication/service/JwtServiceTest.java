@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -21,6 +22,9 @@ import io.jsonwebtoken.security.Keys;
 
 
 class JwtServiceTest {
+
+    private static final String TEST_SECRET =
+            "b24bfe05b10f876172094ffa542dd10b43437cd9934d95c844a5006e51a8038a";
 
     @InjectMocks
     private JwtService jwtService;
@@ -33,13 +37,16 @@ class JwtServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        // The secret is now externalized (@Value("${jwt.secret}")), so it must be
+        // injected explicitly in unit tests.
+        ReflectionTestUtils.setField(jwtService, "secretKey", TEST_SECRET);
         when(userDetails.getUsername()).thenReturn("testUser");
 
         jwt = Jwts.builder()
             .setSubject("testUser")
             .setIssuedAt(new Date(System.currentTimeMillis()))
             .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-            .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode("b24bfe05b10f876172094ffa542dd10b43437cd9934d95c844a5006e51a8038a")), SignatureAlgorithm.HS256)
+            .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(TEST_SECRET)), SignatureAlgorithm.HS256)
             .compact();
     }
 
@@ -86,9 +93,9 @@ class JwtServiceTest {
             .setSubject("testUser")
             .setIssuedAt(new Date(System.currentTimeMillis() - 1000 * 60 * 60))
             .setExpiration(new Date(System.currentTimeMillis() - 1000 * 60 * 30))
-            .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode("b24bfe05b10f876172094ffa542dd10b43437cd9934d95c844a5006e51a8038a")), SignatureAlgorithm.HS256)
+            .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(TEST_SECRET)), SignatureAlgorithm.HS256)
             .compact();
-        
+
         // When & Then
         assertThrows(ExpiredJwtException.class, () -> {
             jwtService.isTokenExpired(expiredJwt);
