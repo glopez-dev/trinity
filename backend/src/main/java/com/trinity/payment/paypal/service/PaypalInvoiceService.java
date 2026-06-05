@@ -10,8 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
+import com.trinity.common.domain.exception.DomainException;
 import com.trinity.payment.paypal.dto.InvoiceDTO;
 
 
@@ -60,7 +62,10 @@ public class PaypalInvoiceService {
 
     public List<InvoiceDTO> getAllInvoices() {
         try {
-            Invoices invoices =  Invoice.getAll(paypalConfig.getAPIContext());
+            Invoices invoices = Invoice.getAll(paypalConfig.getAPIContext());
+            if (invoices == null || invoices.getInvoices() == null) {
+                return Collections.emptyList();
+            }
             return invoices.getInvoices().stream()
                     .map(invoiceAdapter::mapToInvoiceDTO)
                     .toList();
@@ -107,7 +112,7 @@ public class PaypalInvoiceService {
 
 }
 
-class PayPalInvoiceException extends RuntimeException {
+class PayPalInvoiceException extends DomainException {
     public PayPalInvoiceException(String message, Throwable cause) {
         super(message, cause);
     }

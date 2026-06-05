@@ -95,6 +95,25 @@ jwt:
   expiration: ${SPRING_JWT_EXPIRATION:86400000}  # 24 hours in milliseconds
 
 #####################################
+# Payment Configuration (dummy values for tests)
+#####################################
+stripe:
+  api:
+    key: ${SPRING_STRIPE_SECRET_KEY:sk_test_dummy}
+
+paypal:
+  client:
+    id: ${SPRING_PAYPAL_CLIENT_ID:dummy-client-id}
+    secret: ${SPRING_PAYPAL_CLIENT_SECRET:dummy-secret}
+  mode: sandbox
+
+payment:
+  checkout:
+    success-url: http://localhost:8080/success
+    cancel-url: http://localhost:8080/cancel
+    default-currency: USD
+
+#####################################
 # Swagger Configuration
 #####################################
 springdoc:

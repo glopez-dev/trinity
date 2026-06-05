@@ -132,6 +132,19 @@ class PaypalInvoiceServiceTest {
     }
 
     @Test
+    void getAllInvoices_NullInvoiceList_returnsEmpty() {
+        // PayPal's Invoices.getInvoices() can be null when there are none.
+        Invoices mockInvoices = mock(Invoices.class);
+        when(mockInvoices.getInvoices()).thenReturn(null);
+        invoiceMockedStatic.when(() -> Invoice.getAll(any(APIContext.class))).thenReturn(mockInvoices);
+
+        List<InvoiceDTO> result = paypalInvoiceService.getAllInvoices();
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
     void updateInvoice_Success() throws PayPalRESTException {
         // Arrange
         when(invoiceAdapter.mapToInvoice(any(InvoiceDTO.class))).thenReturn(mockInvoice);

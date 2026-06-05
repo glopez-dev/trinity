@@ -1,81 +1,66 @@
 package com.trinity.payment.stripe.controller;
 
-import com.google.gson.JsonObject;
-import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
-import com.trinity.payment.stripe.dto.PaymentRequest;
-import com.trinity.payment.stripe.service.StripePaymentService;
+import com.trinity.common.domain.exception.BusinessRuleViolation;
+import com.trinity.common.domain.vo.Money;
+import com.trinity.payment.domain.Payment;
+import com.trinity.payment.domain.PaymentProvider;
+import com.trinity.payment.dto.ChargeRequest;
+import com.trinity.payment.dto.PaymentResponse;
+import com.trinity.payment.service.PaymentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
-import java.util.Map;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+
+import java.math.BigDecimal;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-
-
 
 @ExtendWith(MockitoExtension.class)
 class PaymentControllerTest {
 
     @Mock
-    private StripePaymentService paymentService;
+    private PaymentService paymentService;
 
     @InjectMocks
     private PaymentController paymentController;
 
     @Test
-    void createPayment_Success() throws StripeException {
-        // Arrange
-        PaymentRequest request = new PaymentRequest();
-        request.setAmount(1000L);
-        request.setCurrency("USD");
-        request.setPaymentMethodId("pm_123");
+    void createPayment_returnsCleanPaymentResponse() {
+        ChargeRequest request = new ChargeRequest(new BigDecimal("10.00"), "USD", "pm_123");
 
-        PaymentIntent mockPaymentIntent = org.mockito.Mockito.mock(PaymentIntent.class); // <-- Mock PaymentIntent
-        
-        JsonObject rawJson = new JsonObject();
-        rawJson.addProperty("id", "pi_123");
-        rawJson.addProperty("status", "succeeded");
+        Payment payment = Payment.initiate(Money.of(new BigDecimal("10.00"), "USD"), PaymentProvider.STRIPE);
+        payment.markAuthorized("pi_123");
+        payment.markSucceeded();
+        when(paymentService.charge(any(Money.class), eq(PaymentProvider.STRIPE), eq("pm_123")))
+                .thenReturn(payment);
 
-        when(paymentService.createPayment(eq(1000L), eq("USD"), eq("pm_123")))
-                .thenReturn(mockPaymentIntent);
-        
-        when(mockPaymentIntent.getRawJsonObject()).thenReturn(rawJson); // <-- Now this works
+        ResponseEntity<PaymentResponse> response = paymentController.createPayment(request);
 
-        // Act
-        ResponseEntity<Map<String, Object>> response = paymentController.createPayment(request);
-
-        // Assert
-        assertEquals(200, response.getStatusCode().value());
-        Map<String, Object> responseBody = response.getBody();
-        assert responseBody != null : "Response body should not be null";
-        assertEquals("pi_123", responseBody.get("id"));
-        assertEquals("succeeded", responseBody.get("status"));
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        PaymentResponse body = response.getBody();
+        assertThat(body).isNotNull();
+        assertThat(body.externalRef()).isEqualTo("pi_123");
+        assertThat(body.status()).isEqualTo("SUCCEEDED");
+        assertThat(body.amount()).isEqualByComparingTo("10.00");
+        assertThat(body.currency()).isEqualTo("USD");
+        // no Stripe raw-JSON keys leak through the typed record
     }
 
-
     @Test
-    void createPayment_Error() throws StripeException {
-        // Arrange
-        PaymentRequest request = new PaymentRequest();
-        request.setAmount(1000L);
-        request.setCurrency("USD");
-        request.setPaymentMethodId("pm_123");
+    void createPayment_propagatesGatewayFailureToHandler() {
+        ChargeRequest request = new ChargeRequest(new BigDecimal("10.00"), "USD", "pm_declined");
+        when(paymentService.charge(any(Money.class), eq(PaymentProvider.STRIPE), eq("pm_declined")))
+                .thenThrow(new BusinessRuleViolation("Stripe charge failed: declined"));
 
-        when(paymentService.createPayment(anyLong(), anyString(), anyString()))
-                .thenThrow(new com.stripe.exception.InvalidRequestException("Payment failed", null, null, null, null, null));
-
-        // Act
-        ResponseEntity<Map<String, Object>> response = paymentController.createPayment(request);
-
-        // Assert
-        assertEquals(400, response.getStatusCodeValue());
-        assertEquals("Payment failed", response.getBody().get("error"));
+        // The controller no longer swallows errors into a Map; it propagates to GlobalExceptionHandler.
+        assertThatThrownBy(() -> paymentController.createPayment(request))
+                .isInstanceOf(BusinessRuleViolation.class);
     }
 }

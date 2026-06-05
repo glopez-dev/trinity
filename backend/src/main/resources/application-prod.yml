@@ -71,3 +71,15 @@ paypal:
     id: ${SPRING_PAYPAL_CLIENT_ID}
     secret: ${SPRING_PAYPAL_SECRET}
   mode: live
+
+# Stripe Configuration
+stripe:
+  api:
+    key: ${SPRING_STRIPE_SECRET_KEY}
+
+# Payment Checkout Configuration
+payment:
+  checkout:
+    success-url: ${PAYMENT_SUCCESS_URL}
+    cancel-url: ${PAYMENT_CANCEL_URL}
+    default-currency: USD

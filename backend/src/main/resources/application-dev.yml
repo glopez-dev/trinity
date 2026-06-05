@@ -120,3 +120,12 @@ paypal:
 stripe:
   api:
     key: ${SPRING_STRIPE_SECRET_KEY}
+
+#####################################
+# Payment Checkout Configuration
+#####################################
+payment:
+  checkout:
+    success-url: ${PAYMENT_SUCCESS_URL:http://localhost:8080/success}
+    cancel-url: ${PAYMENT_CANCEL_URL:http://localhost:8080/cancel}
+    default-currency: USD

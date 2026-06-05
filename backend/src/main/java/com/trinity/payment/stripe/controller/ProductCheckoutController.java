@@ -1,37 +1,47 @@
 package com.trinity.payment.stripe.controller;
 
-import com.trinity.payment.stripe.dto.ProductRequest;
-import com.trinity.payment.stripe.dto.StripeResponse;
-import com.trinity.payment.stripe.service.StripeService;
-
+import com.trinity.common.domain.vo.Money;
+import com.trinity.payment.config.PaymentProperties;
+import com.trinity.payment.domain.PaymentLineItem;
+import com.trinity.payment.domain.PaymentProvider;
+import com.trinity.payment.domain.PaymentResult;
+import com.trinity.payment.dto.CheckoutLineItemRequest;
+import com.trinity.payment.dto.CheckoutRequest;
+import com.trinity.payment.dto.CheckoutResponse;
+import com.trinity.payment.service.PaymentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/stripe")
-@Tag(name = "Stripe ", description = "Operations related to Stripe")
+@RequiredArgsConstructor
+@Tag(name = "Stripe", description = "Operations related to Stripe")
 public class ProductCheckoutController {
 
-    private StripeService stripeService;
-
-    
-    public ProductCheckoutController(StripeService stripeService) {
-        this.stripeService = stripeService;
-    }
+    private final PaymentService paymentService;
+    private final PaymentProperties properties;
 
     @PostMapping("/checkout")
-    public ResponseEntity<StripeResponse> checkoutProducts(@RequestBody List<ProductRequest> productRequest) {
-        StripeResponse stripeResponse = stripeService.checkoutProducts(productRequest);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(stripeResponse);
+    public ResponseEntity<CheckoutResponse> checkoutProducts(@Valid @RequestBody CheckoutRequest request) {
+        List<PaymentLineItem> items = request.items().stream()
+                .map(this::toLineItem)
+                .toList();
+        PaymentResult result = paymentService.createCheckout(
+                PaymentProvider.STRIPE, items, properties.getSuccessUrl(), properties.getCancelUrl());
+        return ResponseEntity.ok(new CheckoutResponse(
+                result.status().name(), result.externalRef(), result.redirectUrl()));
+    }
+
+    private PaymentLineItem toLineItem(CheckoutLineItemRequest item) {
+        return new PaymentLineItem(
+                Money.of(item.unitAmount(), item.currency()), item.quantity(), item.name());
     }
 }

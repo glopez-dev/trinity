@@ -1,6 +1,7 @@
 package com.trinity.common.interfaces.rest;
 
 import com.trinity.common.domain.exception.BusinessRuleViolation;
+import com.trinity.common.domain.exception.DomainException;
 import com.trinity.common.domain.exception.NotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -52,9 +53,20 @@ class GlobalExceptionHandlerTest {
             throw new DataIntegrityViolationException("unique constraint");
         }
 
+        @GetMapping("/boom/domain")
+        String domain() {
+            throw new SampleDomainException("external domain failure");
+        }
+
         @GetMapping("/boom/unexpected")
         String unexpected() {
             throw new RuntimeException("kaboom");
+        }
+    }
+
+    static class SampleDomainException extends DomainException {
+        SampleDomainException(String message) {
+            super(message);
         }
     }
 
@@ -108,6 +120,13 @@ class GlobalExceptionHandlerTest {
         mockMvc.perform(get("/boom/data-integrity"))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value(409));
+    }
+
+    @Test
+    void domainException_mapsTo422() throws Exception {
+        mockMvc.perform(get("/boom/domain"))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.status").value(422));
     }
 
     @Test
