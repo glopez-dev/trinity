@@ -1,10 +1,10 @@
 package com.trinity.cart.infrastructure.persistence.adapter;
 
-import com.trinity.cart.domain.Cart;
+import com.trinity.cart.domain.model.Cart;
 import com.trinity.cart.domain.port.CartRepositoryPort;
-import com.trinity.cart.mapper.CartPersistenceMapper;
-import com.trinity.cart.model.CartEntity;
-import com.trinity.cart.repository.JpaCartRepository;
+import com.trinity.cart.infrastructure.persistence.mapper.CartPersistenceMapper;
+import com.trinity.cart.infrastructure.persistence.entity.CartEntity;
+import com.trinity.cart.infrastructure.persistence.repository.JpaCartRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

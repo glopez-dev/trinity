@@ -1,6 +1,6 @@
 package com.trinity.cart.domain.port;
 
-import com.trinity.cart.domain.Cart;
+import com.trinity.cart.domain.model.Cart;
 
 import java.util.Optional;
 import java.util.UUID;

@@ -1,9 +1,9 @@
 package com.trinity.cart.infrastructure.persistence.adapter;
 
-import com.trinity.cart.domain.Cart;
-import com.trinity.cart.domain.CartItem;
+import com.trinity.cart.domain.model.Cart;
+import com.trinity.cart.domain.model.CartItem;
 import com.trinity.cart.domain.port.CartRepositoryPort;
-import com.trinity.cart.mapper.CartPersistenceMapper;
+import com.trinity.cart.infrastructure.persistence.mapper.CartPersistenceMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
