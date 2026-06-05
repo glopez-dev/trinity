@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.trinity.user.dto.customer.CreateCustomerDTO;
-import com.trinity.user.dto.customer.ReadCustomerDTO;
-import com.trinity.user.dto.customer.UpdateCustomerDTO;
+import com.trinity.user.dto.customer.CreateCustomerRequest;
+import com.trinity.user.dto.customer.CustomerResponse;
+import com.trinity.user.dto.customer.UpdateCustomerRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -45,8 +45,8 @@ class CustomerServiceTest {
 
     private UUID customerId;
     private Customer customer;
-    private CreateCustomerDTO createCustomerDTO;
-    private UpdateCustomerDTO updateCustomerDTO;
+    private CreateCustomerRequest createCustomerDTO;
+    private UpdateCustomerRequest updateCustomerDTO;
 
     @BeforeEach
     void setUp() {
@@ -70,14 +70,14 @@ class CustomerServiceTest {
                 .updatedAt(Instant.now())
                 .build();
 
-        createCustomerDTO = CreateCustomerDTO.builder()
+        createCustomerDTO = CreateCustomerRequest.builder()
                 .firstName("John")
                 .lastName("Doe")
                 .email("john.doe@example.com")
                 .password("password123")
                 .build();
 
-        updateCustomerDTO = UpdateCustomerDTO.builder()
+        updateCustomerDTO = UpdateCustomerRequest.builder()
                 .firstName(Optional.of("John Updated"))
                 .lastName(Optional.of("Doe Updated"))
                 .email(Optional.of("updated.john.doe@example.com"))
@@ -93,7 +93,7 @@ class CustomerServiceTest {
         when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
         // When
-        ReadCustomerDTO result = customerService.createCustomer(createCustomerDTO);
+        CustomerResponse result = customerService.createCustomer(createCustomerDTO);
 
         // Then
         assertNotNull(result);
@@ -129,7 +129,7 @@ class CustomerServiceTest {
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
 
         // When
-        ReadCustomerDTO result = customerService.getCustomerById(customerId);
+        CustomerResponse result = customerService.getCustomerById(customerId);
 
         // Then
         assertNotNull(result);
@@ -174,7 +174,7 @@ class CustomerServiceTest {
         when(customerRepository.save(any(Customer.class))).thenReturn(updatedCustomer);
 
         // When
-        ReadCustomerDTO result = customerService.updateCustomer(customerId, updateCustomerDTO);
+        CustomerResponse result = customerService.updateCustomer(customerId, updateCustomerDTO);
 
         // Then
         assertNotNull(result);
@@ -212,7 +212,7 @@ class CustomerServiceTest {
         when(customerRepository.save(customer)).thenReturn(customer);
 
         // When
-        ReadCustomerDTO result = customerService.activateCustomer(customerId);
+        CustomerResponse result = customerService.activateCustomer(customerId);
 
         // Then
         assertNotNull(result);

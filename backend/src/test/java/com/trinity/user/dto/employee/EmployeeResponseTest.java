@@ -13,7 +13,7 @@ import com.trinity.user.interfaces.rest.mapper.EmployeeApiMapper;
 import com.trinity.user.model.Employee;
 
 
-class ReadEmployeeDTOTest {
+class EmployeeResponseTest {
 
     private final EmployeeApiMapper mapper = Mappers.getMapper(EmployeeApiMapper.class);
 
@@ -39,7 +39,7 @@ class ReadEmployeeDTOTest {
     @Test
     void givenEmployee_whenMappedToResponse_thenFieldsMatch() {
         // When
-        ReadEmployeeDTO dto = mapper.toResponse(mockEmployee);
+        EmployeeResponse dto = mapper.toResponse(mockEmployee);
         // Then
         assertThat(dto.getId()).isEqualTo(mockEmployee.getId());
         assertThat(dto.getEmail()).isEqualTo(mockEmployee.getEmail());
@@ -72,7 +72,7 @@ class ReadEmployeeDTOTest {
         Instant terminationDate = Instant.parse("2023-02-05T10:00:00Z");
 
         // When
-        ReadEmployeeDTO dto = new ReadEmployeeDTO(
+        EmployeeResponse dto = new EmployeeResponse(
             type, status, createdAt, updatedAt, id,
             email, firstName, lastName, role, lastLoginAt, hireDate, terminationDate
         );

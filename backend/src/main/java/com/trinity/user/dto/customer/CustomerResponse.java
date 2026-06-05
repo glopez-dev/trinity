@@ -16,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "DTO for reading customer information")
-public class ReadCustomerDTO {
+public class CustomerResponse {
     @Schema(description = "Unique identifier of the customer")
     private UUID id;
 

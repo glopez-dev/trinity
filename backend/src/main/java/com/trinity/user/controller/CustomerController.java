@@ -3,9 +3,9 @@ package com.trinity.user.controller;
 import java.util.List;
 import java.util.UUID;
 
-import com.trinity.user.dto.customer.CreateCustomerDTO;
-import com.trinity.user.dto.customer.ReadCustomerDTO;
-import com.trinity.user.dto.customer.UpdateCustomerDTO;
+import com.trinity.user.dto.customer.CreateCustomerRequest;
+import com.trinity.user.dto.customer.CustomerResponse;
+import com.trinity.user.dto.customer.UpdateCustomerRequest;
 import com.trinity.user.service.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -41,7 +41,7 @@ public class CustomerController {
         @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     @PostMapping
-    public ResponseEntity<ReadCustomerDTO> createCustomer(@Valid @RequestBody CreateCustomerDTO customerCreateDTO) {
+    public ResponseEntity<CustomerResponse> createCustomer(@Valid @RequestBody CreateCustomerRequest customerCreateDTO) {
         logger.info("Creating customer");
         return new ResponseEntity<>(customerService.createCustomer(customerCreateDTO), HttpStatus.CREATED);
     }
@@ -52,7 +52,7 @@ public class CustomerController {
         @ApiResponse(responseCode = "404", description = "Customer not found")
     })
     @GetMapping("/{customerId}")
-    public ResponseEntity<ReadCustomerDTO> getCustomerById(@PathVariable UUID customerId) {
+    public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable UUID customerId) {
         logger.info("Fetching customer with ID: {}", customerId);
         return ResponseEntity.ok(customerService.getCustomerById(customerId));
     }
@@ -63,7 +63,7 @@ public class CustomerController {
         @ApiResponse(responseCode = "404", description = "Customer not found")
     })
     @GetMapping("/email/{email}")
-    public ResponseEntity<ReadCustomerDTO> getCustomerByEmail(@PathVariable String email) {
+    public ResponseEntity<CustomerResponse> getCustomerByEmail(@PathVariable String email) {
         logger.info("Fetching customer with email: {}", email);
         return ResponseEntity.ok(customerService.getCustomerByEmail(email));
     }
@@ -71,7 +71,7 @@ public class CustomerController {
     @Operation(summary = "Get all customers")
     @ApiResponse(responseCode = "200", description = "List of all customers retrieved")
     @GetMapping
-    public ResponseEntity<List<ReadCustomerDTO>> getAllCustomers() {
+    public ResponseEntity<List<CustomerResponse>> getAllCustomers() {
         logger.info("Fetching all customers");
         return ResponseEntity.ok(customerService.getAllCustomers());
     }
@@ -83,9 +83,9 @@ public class CustomerController {
         @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<ReadCustomerDTO> updateCustomer(
+    public ResponseEntity<CustomerResponse> updateCustomer(
             @PathVariable UUID id,
-            @Valid @RequestBody UpdateCustomerDTO customerUpdateDTO) {
+            @Valid @RequestBody UpdateCustomerRequest customerUpdateDTO) {
         logger.info("Updating customer with ID: {}", id);
         return ResponseEntity.ok(customerService.updateCustomer(id, customerUpdateDTO));
     }
@@ -108,7 +108,7 @@ public class CustomerController {
         @ApiResponse(responseCode = "404", description = "Customer not found")
     })
     @PostMapping("/{id}/activate")
-    public ResponseEntity<ReadCustomerDTO> activateCustomer(@PathVariable UUID id) {
+    public ResponseEntity<CustomerResponse> activateCustomer(@PathVariable UUID id) {
         return ResponseEntity.ok(customerService.activateCustomer(id));
     }
 }

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "DTO for creating a new customer")
-public class CreateCustomerDTO {
+public class CreateCustomerRequest {
 
     @Schema(description = "Customer's first name", example = "Jahn", required = true)
     @NotBlank(message = "First name is required")

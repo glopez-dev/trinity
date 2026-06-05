@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.trinity.common.domain.exception.NotFoundException;
 import com.trinity.user.constant.UserStatus;
-import com.trinity.user.dto.employee.CreateEmployeeDTO;
-import com.trinity.user.dto.employee.ReadEmployeeDTO;
-import com.trinity.user.dto.employee.UpdateEmployeeDTO;
+import com.trinity.user.dto.employee.CreateEmployeeRequest;
+import com.trinity.user.dto.employee.EmployeeResponse;
+import com.trinity.user.dto.employee.UpdateEmployeeRequest;
 import com.trinity.user.interfaces.rest.mapper.EmployeeApiMapper;
 import com.trinity.user.model.Employee;
 import com.trinity.user.repository.EmployeeRepository;
@@ -35,7 +35,7 @@ public class EmployeeService {
     }
 
     @Transactional
-    public ReadEmployeeDTO createEmployee(CreateEmployeeDTO employeeDTO) {
+    public EmployeeResponse createEmployee(CreateEmployeeRequest employeeDTO) {
 
         Employee newEmployee = Employee.builder()
             .email(employeeDTO.getEmail())
@@ -52,7 +52,7 @@ public class EmployeeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReadEmployeeDTO> getAllEmployees() {
+    public List<EmployeeResponse> getAllEmployees() {
         List<Employee> employees = employeeRepository.findAll();
 
         if (employees.isEmpty()) {
@@ -65,13 +65,13 @@ public class EmployeeService {
     }
 
     @Transactional(readOnly = true)
-    public ReadEmployeeDTO getEmployee(UUID employeeId) {
+    public EmployeeResponse getEmployee(UUID employeeId) {
         Employee employee = findById(employeeId);
         return employeeApiMapper.toResponse(employee);
     }
 
     @Transactional
-    public ReadEmployeeDTO updateEmployee(UUID employeeId, UpdateEmployeeDTO request) {
+    public EmployeeResponse updateEmployee(UUID employeeId, UpdateEmployeeRequest request) {
         Employee employee = findById(employeeId);
 
         request.getEmail().ifPresent(employee::setEmail);

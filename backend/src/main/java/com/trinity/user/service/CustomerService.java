@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 
 import com.trinity.user.constant.UserStatus;
 import com.trinity.user.constant.UserType;
-import com.trinity.user.dto.customer.CreateCustomerDTO;
-import com.trinity.user.dto.customer.ReadCustomerDTO;
-import com.trinity.user.dto.customer.UpdateCustomerDTO;
+import com.trinity.user.dto.customer.CreateCustomerRequest;
+import com.trinity.user.dto.customer.CustomerResponse;
+import com.trinity.user.dto.customer.UpdateCustomerRequest;
 import com.trinity.user.interfaces.rest.mapper.CustomerApiMapper;
 import com.trinity.user.model.Customer;
 import com.trinity.user.repository.CustomerRepository;
@@ -27,7 +27,7 @@ public class CustomerService {
     private final CustomerApiMapper customerApiMapper;
 
     @Transactional
-    public ReadCustomerDTO createCustomer(CreateCustomerDTO createCustomerDTO) {
+    public CustomerResponse createCustomer(CreateCustomerRequest createCustomerDTO) {
         if (customerRepository.existsByEmail(createCustomerDTO.getEmail())) {
             throw new IllegalArgumentException("Email already in use");
         }
@@ -47,7 +47,7 @@ public class CustomerService {
     }
 
     @Transactional(readOnly = true)
-    public ReadCustomerDTO getCustomerById(UUID id) {
+    public CustomerResponse getCustomerById(UUID id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Customer not found with id: " + id));
 
@@ -55,7 +55,7 @@ public class CustomerService {
     }
 
     @Transactional(readOnly = true)
-    public ReadCustomerDTO getCustomerByEmail(String email) {
+    public CustomerResponse getCustomerByEmail(String email) {
         Customer customer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Customer not found with email: " + email));
 
@@ -63,14 +63,14 @@ public class CustomerService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReadCustomerDTO> getAllCustomers() {
+    public List<CustomerResponse> getAllCustomers() {
         return customerRepository.findAll().stream()
                 .map(customerApiMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public ReadCustomerDTO updateCustomer(UUID id, UpdateCustomerDTO customerUpdateDTO) {
+    public CustomerResponse updateCustomer(UUID id, UpdateCustomerRequest customerUpdateDTO) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Customer not found with id: " + id));
 
@@ -112,7 +112,7 @@ public class CustomerService {
     }
 
     @Transactional
-    public ReadCustomerDTO activateCustomer(UUID id) {
+    public CustomerResponse activateCustomer(UUID id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Customer not found with id: " + id));
 

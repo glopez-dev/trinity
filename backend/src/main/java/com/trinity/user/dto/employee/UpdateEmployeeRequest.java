@@ -12,7 +12,7 @@ import com.trinity.user.constant.UserStatus;
 @Data
 @AllArgsConstructor
 @Schema(description = "DTO for updating employee information")
-public class UpdateEmployeeDTO {
+public class UpdateEmployeeRequest {
 
     @Schema(description = "Employee email address", example = "employee@company.com")
     private Optional<String> email;

@@ -7,7 +7,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class UpdateEmployeeDTOTest {
+public class UpdateEmployeeRequestTest {
 
     @Test
     void givenAllOptionalValues_whenConstructed_thenGettersReturnValues() {
@@ -19,7 +19,7 @@ public class UpdateEmployeeDTOTest {
         Optional<UserStatus> status = Optional.of(UserStatus.ACTIVE);
 
         // When
-        UpdateEmployeeDTO dto = new UpdateEmployeeDTO(email, firstName, lastName, role, status);
+        UpdateEmployeeRequest dto = new UpdateEmployeeRequest(email, firstName, lastName, role, status);
 
         // Then
         assertThat(dto.getEmail()).isEqualTo(email);
@@ -39,7 +39,7 @@ public class UpdateEmployeeDTOTest {
         Optional<UserStatus> status = Optional.empty();
 
         // When
-        UpdateEmployeeDTO dto = new UpdateEmployeeDTO(email, firstName, lastName, role, status);
+        UpdateEmployeeRequest dto = new UpdateEmployeeRequest(email, firstName, lastName, role, status);
 
         // Then
         assertThat(dto.getEmail()).isEmpty();
@@ -59,7 +59,7 @@ public class UpdateEmployeeDTOTest {
         Optional<UserStatus> status = Optional.empty();
 
         // When
-        UpdateEmployeeDTO dto = new UpdateEmployeeDTO(email, firstName, lastName, role, status);
+        UpdateEmployeeRequest dto = new UpdateEmployeeRequest(email, firstName, lastName, role, status);
 
         // Then
         assertThat(dto.getEmail()).isEmpty();

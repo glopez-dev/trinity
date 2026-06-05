@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Employee Data Transfer Object for reading employee information")
-public class ReadEmployeeDTO {
+public class EmployeeResponse {
 
     @Schema(description = "Type of user")
     private UserType type;

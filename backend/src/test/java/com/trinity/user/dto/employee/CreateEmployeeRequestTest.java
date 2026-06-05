@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import com.trinity.user.constant.EmployeeRole;
 
 
-class CreateEmployeeDTOTest {
+class CreateEmployeeRequestTest {
 
     private Validator validator;
 
@@ -25,7 +25,7 @@ class CreateEmployeeDTOTest {
     @Test
     void givenValidDTO_whenValidated_thenNoViolations() {
         // Given
-        CreateEmployeeDTO dto = new CreateEmployeeDTO(
+        CreateEmployeeRequest dto = new CreateEmployeeRequest(
                 "test@example.com",
                 "secretPassword",
                 "John",
@@ -35,7 +35,7 @@ class CreateEmployeeDTOTest {
         );
 
         // When
-        Set<ConstraintViolation<CreateEmployeeDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<CreateEmployeeRequest>> violations = validator.validate(dto);
 
         // Then
         assertThat(violations).isEmpty();
@@ -44,7 +44,7 @@ class CreateEmployeeDTOTest {
     @Test
     void givenEmptyEmail_whenValidated_thenViolation() {
         // Given
-        CreateEmployeeDTO dto = new CreateEmployeeDTO(
+        CreateEmployeeRequest dto = new CreateEmployeeRequest(
                 "",
                 "secretPassword",
                 "John",
@@ -54,7 +54,7 @@ class CreateEmployeeDTOTest {
         );
 
         // When
-        Set<ConstraintViolation<CreateEmployeeDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<CreateEmployeeRequest>> violations = validator.validate(dto);
 
         // Then
         assertThat(violations)
@@ -65,7 +65,7 @@ class CreateEmployeeDTOTest {
     @Test
     void givenInvalidEmailFormat_whenValidated_thenViolation() {
         // Given
-        CreateEmployeeDTO dto = new CreateEmployeeDTO(
+        CreateEmployeeRequest dto = new CreateEmployeeRequest(
                 "invalid-email",
                 "secretPassword",
                 "John",
@@ -75,7 +75,7 @@ class CreateEmployeeDTOTest {
         );
 
         // When
-        Set<ConstraintViolation<CreateEmployeeDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<CreateEmployeeRequest>> violations = validator.validate(dto);
 
         // Then
         assertThat(violations)
@@ -86,7 +86,7 @@ class CreateEmployeeDTOTest {
     @Test
     void givenEmptyPassword_whenValidated_thenViolation() {
         // Given
-        CreateEmployeeDTO dto = new CreateEmployeeDTO(
+        CreateEmployeeRequest dto = new CreateEmployeeRequest(
                 "test@example.com",
                 "",
                 "John",
@@ -96,7 +96,7 @@ class CreateEmployeeDTOTest {
         );
 
         // When
-        Set<ConstraintViolation<CreateEmployeeDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<CreateEmployeeRequest>> violations = validator.validate(dto);
 
         // Then
         assertThat(violations)
@@ -107,7 +107,7 @@ class CreateEmployeeDTOTest {
     @Test
     void givenEmptyFirstName_whenValidated_thenViolation() {
         // Given
-        CreateEmployeeDTO dto = new CreateEmployeeDTO(
+        CreateEmployeeRequest dto = new CreateEmployeeRequest(
                 "test@example.com",
                 "secretPassword",
                 "",
@@ -117,7 +117,7 @@ class CreateEmployeeDTOTest {
         );
 
         // When
-        Set<ConstraintViolation<CreateEmployeeDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<CreateEmployeeRequest>> violations = validator.validate(dto);
 
         // Then
         assertThat(violations)
@@ -128,7 +128,7 @@ class CreateEmployeeDTOTest {
     @Test
     void givenEmptyLastName_whenValidated_thenViolation() {
         // Given
-        CreateEmployeeDTO dto = new CreateEmployeeDTO(
+        CreateEmployeeRequest dto = new CreateEmployeeRequest(
                 "test@example.com",
                 "secretPassword",
                 "John",
@@ -138,7 +138,7 @@ class CreateEmployeeDTOTest {
         );
 
         // When
-        Set<ConstraintViolation<CreateEmployeeDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<CreateEmployeeRequest>> violations = validator.validate(dto);
 
         // Then
         assertThat(violations)

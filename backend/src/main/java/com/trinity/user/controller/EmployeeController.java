@@ -6,9 +6,9 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.trinity.user.dto.employee.CreateEmployeeDTO;
-import com.trinity.user.dto.employee.ReadEmployeeDTO;
-import com.trinity.user.dto.employee.UpdateEmployeeDTO;
+import com.trinity.user.dto.employee.CreateEmployeeRequest;
+import com.trinity.user.dto.employee.EmployeeResponse;
+import com.trinity.user.dto.employee.UpdateEmployeeRequest;
 import com.trinity.user.service.EmployeeService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,18 +36,18 @@ public class EmployeeController {
         @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     @PostMapping()
-    public ResponseEntity<ReadEmployeeDTO> createEmployee(@Valid @RequestBody CreateEmployeeDTO request) {
+    public ResponseEntity<EmployeeResponse> createEmployee(@Valid @RequestBody CreateEmployeeRequest request) {
         logger.info("Creating employee");
-        ReadEmployeeDTO body = employeeService.createEmployee(request);
+        EmployeeResponse body = employeeService.createEmployee(request);
         return ResponseEntity.ok(body);
     }
 
     @Operation(summary = "Get all employees")
     @ApiResponse(responseCode = "200", description = "List of all employees retrieved")
     @GetMapping()
-    public ResponseEntity<List<ReadEmployeeDTO>> getAllEmployees() {
+    public ResponseEntity<List<EmployeeResponse>> getAllEmployees() {
         logger.info("Fetching all employees");
-        List<ReadEmployeeDTO> body = employeeService.getAllEmployees();
+        List<EmployeeResponse> body = employeeService.getAllEmployees();
         return ResponseEntity.ok(body);
     }
 
@@ -57,9 +57,9 @@ public class EmployeeController {
         @ApiResponse(responseCode = "404", description = "Employee not found")
     })
     @GetMapping("/{employeeId}")
-    public ResponseEntity<ReadEmployeeDTO> getEmployee(@PathVariable UUID employeeId) {
+    public ResponseEntity<EmployeeResponse> getEmployee(@PathVariable UUID employeeId) {
         logger.info("Fetching employee with ID: {}", employeeId);
-        ReadEmployeeDTO body = employeeService.getEmployee(employeeId);
+        EmployeeResponse body = employeeService.getEmployee(employeeId);
         return ResponseEntity.ok(body);
     }
 
@@ -70,12 +70,12 @@ public class EmployeeController {
         @ApiResponse(responseCode = "400", description = "Invalid input")
     })
     @PutMapping("/{employeeId}")
-    public ResponseEntity<ReadEmployeeDTO> updateEmployee(
+    public ResponseEntity<EmployeeResponse> updateEmployee(
         @PathVariable UUID employeeId,
-        @Valid @RequestBody UpdateEmployeeDTO request
+        @Valid @RequestBody UpdateEmployeeRequest request
     ) {
         logger.info("Updating employee with ID: {}", employeeId);
-        ReadEmployeeDTO body = employeeService.updateEmployee(employeeId, request);
+        EmployeeResponse body = employeeService.updateEmployee(employeeId, request);
         return ResponseEntity.ok(body);
     }
 

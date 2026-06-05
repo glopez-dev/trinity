@@ -1,6 +1,6 @@
 package com.trinity.user.interfaces.rest.mapper;
 
-import com.trinity.user.dto.customer.ReadCustomerDTO;
+import com.trinity.user.dto.customer.CustomerResponse;
 import com.trinity.user.model.Customer;
 import org.mapstruct.Mapper;
 
@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface CustomerApiMapper {
 
-    ReadCustomerDTO toResponse(Customer customer);
+    CustomerResponse toResponse(Customer customer);
 
-    List<ReadCustomerDTO> toResponseList(List<Customer> customers);
+    List<CustomerResponse> toResponseList(List<Customer> customers);
 }

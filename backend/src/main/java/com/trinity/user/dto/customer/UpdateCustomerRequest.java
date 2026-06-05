@@ -13,7 +13,7 @@ import java.util.Optional;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateCustomerDTO {
+public class UpdateCustomerRequest {
 
     @Schema(description = "Customer's first name", example = "John")
     private Optional<String> firstName;

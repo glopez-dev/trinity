@@ -14,7 +14,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Schema(description = "DTO for creating a new employee")
-public class CreateEmployeeDTO {
+public class CreateEmployeeRequest {
 
     @Schema(description = "Employee's email address", example = "john.doe@company.com", required = true)
     @NotEmpty(message = "Email cannot be empty")
