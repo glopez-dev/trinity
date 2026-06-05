@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.UUID;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CartTest {
@@ -31,7 +32,7 @@ class CartTest {
         cart.addItem(item);
         assertEquals(1, cart.getItems().size());
         assertEquals(CartStatus.EDITED, cart.getStatus());
-        assertEquals(new BigDecimal("20.00"), cart.getTotalAmount().getAmount());
+        assertThat(cart.getTotalAmount().amount()).isEqualByComparingTo("20.00");
     }
 
     @Test
@@ -41,7 +42,7 @@ class CartTest {
         assertEquals(1, cart.getItems().size());
         assertEquals(4, cart.getItems().iterator().next().getQuantity());
         assertEquals(CartStatus.EDITED, cart.getStatus());
-        assertEquals(new BigDecimal("40.00"), cart.getTotalAmount().getAmount());
+        assertThat(cart.getTotalAmount().amount()).isEqualByComparingTo("40.00");
     }
 
     @Test
@@ -50,7 +51,7 @@ class CartTest {
         cart.removeItem(item);
         assertEquals(0, cart.getItems().size());
         assertEquals(CartStatus.EDITED, cart.getStatus());
-        assertEquals(BigDecimal.ZERO, cart.getTotalAmount().getAmount());
+        assertThat(cart.getTotalAmount().amount()).isEqualByComparingTo("0.00");
     }
 
     @Test
@@ -61,7 +62,7 @@ class CartTest {
         assertEquals(1, cart.getItems().size());
         assertEquals(1, cart.getItems().iterator().next().getQuantity());
         assertEquals(CartStatus.EDITED, cart.getStatus());
-        assertEquals(new BigDecimal("10.00"), cart.getTotalAmount().getAmount());
+        assertThat(cart.getTotalAmount().amount()).isEqualByComparingTo("10.00");
     }
 
     @Test
@@ -103,6 +104,6 @@ class CartTest {
         cart.cancel();
         assertEquals(0, cart.getItems().size());
         assertEquals(CartStatus.CANCELLED, cart.getStatus());
-        assertEquals(BigDecimal.ZERO, cart.getTotalAmount().getAmount());
+        assertThat(cart.getTotalAmount().amount()).isEqualByComparingTo("0.00");
     }
 }

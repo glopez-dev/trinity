@@ -1,6 +1,7 @@
 package com.trinity.cart.domain;
 
 import com.trinity.cart.constant.CartStatus;
+import com.trinity.common.domain.vo.Money;
 
 import lombok.Builder;
 import lombok.Data;
@@ -27,13 +28,13 @@ public class Cart {
     private CartStatus status = CartStatus.CREATED;
 
     @Builder.Default
-    private Money totalAmount = new Money(BigDecimal.ZERO, "USD");
+    private Money totalAmount = Money.zero("USD");
 
     public Cart(UUID customerId, Set<CartItem> items, CartStatus status, Money totalAmount) {
         this.customerId = customerId;
         this.items = items != null ? items : new HashSet<>();
         this.status = status != null ? status : CartStatus.CREATED;
-        this.totalAmount = totalAmount != null ? totalAmount : new Money(BigDecimal.ZERO, "USD");
+        this.totalAmount = totalAmount != null ? totalAmount : Money.zero("USD");
     }
 
     public void addItem(CartItem item) {
@@ -85,11 +86,9 @@ public class Cart {
     }
 
     private void calculateTotal() {
-        this.totalAmount = new Money(
-                items.stream()
-                        .map(CartItem::getTotalPrice)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add),
-                totalAmount.getCurrency()
-        );
+        BigDecimal sum = items.stream()
+                .map(CartItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        this.totalAmount = Money.of(sum, totalAmount.currency());
     }
 }

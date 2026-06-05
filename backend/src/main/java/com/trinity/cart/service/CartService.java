@@ -2,7 +2,7 @@ package com.trinity.cart.service;
 
 import com.trinity.cart.domain.Cart;
 import com.trinity.cart.domain.CartItem;
-import com.trinity.cart.domain.Money;
+import com.trinity.common.domain.vo.Money;
 import com.trinity.cart.dto.CartItemRequest;
 import com.trinity.cart.dto.CartRequest;
 
@@ -33,8 +33,8 @@ public class CartService {
         return CartRequest.builder()
                 .customerId(cart.getCustomerId())
                 .items(setCartItemToSetCartItemRequest(cart.getItems()))
-                .totalAmount(cart.getTotalAmount().getAmount())
-                .currency(cart.getTotalAmount().getCurrency())
+                .totalAmount(cart.getTotalAmount().amount())
+                .currency(cart.getTotalAmount().currency())
                 .build();
     }
 
