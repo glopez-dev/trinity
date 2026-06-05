@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.trinity.product.adapter.OpenFoodFactsAdapter;
-import com.trinity.product.dto.api.ReadProductDTO;
+import com.trinity.product.dto.api.ProductResponse;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactSearchResponse;
 import com.trinity.product.exception.ApiException;
 import com.trinity.product.interfaces.rest.mapper.ProductApiMapper;
@@ -48,7 +48,7 @@ public class OpenFoodFactsService {
             .block();
     }
 
-    public List<ReadProductDTO> searchProducts(String searchTerm) {
+    public List<ProductResponse> searchProducts(String searchTerm) {
         URI uri = this.buildUri(searchTerm);
 
         OpenFoodFactSearchResponse externalResponse = this.getSearchResponseJson(uri);
@@ -59,7 +59,7 @@ public class OpenFoodFactsService {
             .map(productMapper::toDTO)
             .toList();
     }
-    public ReadProductDTO getProductByBarcode(String barcode) {
+    public ProductResponse getProductByBarcode(String barcode) {
         URI uri = UriComponentsBuilder.fromHttpUrl("https://world.openfoodfacts.org/api/v0/product/" + barcode + ".json")
                 .build()
                 .toUri();

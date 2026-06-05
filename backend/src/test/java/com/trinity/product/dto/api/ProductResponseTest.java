@@ -12,23 +12,23 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 
 
-class ReadProductDTOTest {
+class ProductResponseTest {
 
     private Validator validator;
-    private ReadProductDTO readProductDTO;
+    private ProductResponse readProductDTO;
 
     @BeforeEach
     void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-        readProductDTO = new ReadProductDTO();
+        readProductDTO = new ProductResponse();
     }
 
     private void setRequiredValidFields() {
         readProductDTO.setId(UUID.randomUUID());
         readProductDTO.setBarcode("123456789");
         readProductDTO.setPrice(new BigDecimal("9.99"));
-        ReadProductDTO.StockDto stockDto = new ReadProductDTO.StockDto();
+        ProductResponse.StockDto stockDto = new ProductResponse.StockDto();
         stockDto.setQuantity(10);
         readProductDTO.setStock(stockDto);
     }
@@ -40,7 +40,7 @@ class ReadProductDTOTest {
         readProductDTO.setNutriscoreGrade("a");
 
         // When
-        Set<ConstraintViolation<ReadProductDTO>> violations = validator.validate(readProductDTO);
+        Set<ConstraintViolation<ProductResponse>> violations = validator.validate(readProductDTO);
 
         // Then
         assertThat(violations).isEmpty();
@@ -53,7 +53,7 @@ class ReadProductDTOTest {
         readProductDTO.setId(null);
 
         // When
-        Set<ConstraintViolation<ReadProductDTO>> violations = validator.validate(readProductDTO);
+        Set<ConstraintViolation<ProductResponse>> violations = validator.validate(readProductDTO);
 
         // Then
         assertThat(violations).hasSize(1);
@@ -67,7 +67,7 @@ class ReadProductDTOTest {
         readProductDTO.setBarcode(null);
 
         // When
-        Set<ConstraintViolation<ReadProductDTO>> violations = validator.validate(readProductDTO);
+        Set<ConstraintViolation<ProductResponse>> violations = validator.validate(readProductDTO);
 
         // Then
         assertThat(violations).hasSize(1);
@@ -81,7 +81,7 @@ class ReadProductDTOTest {
         readProductDTO.setPrice(null);
 
         // When
-        Set<ConstraintViolation<ReadProductDTO>> violations = validator.validate(readProductDTO);
+        Set<ConstraintViolation<ProductResponse>> violations = validator.validate(readProductDTO);
 
         // Then
         assertThat(violations).hasSize(1);
@@ -95,7 +95,7 @@ class ReadProductDTOTest {
         readProductDTO.setPrice(new BigDecimal("-10"));
 
         // When
-        Set<ConstraintViolation<ReadProductDTO>> violations = validator.validate(readProductDTO);
+        Set<ConstraintViolation<ProductResponse>> violations = validator.validate(readProductDTO);
 
         // Then
         assertThat(violations).hasSize(1);
@@ -109,7 +109,7 @@ class ReadProductDTOTest {
         readProductDTO.setStock(null);
 
         // When
-        Set<ConstraintViolation<ReadProductDTO>> violations = validator.validate(readProductDTO);
+        Set<ConstraintViolation<ProductResponse>> violations = validator.validate(readProductDTO);
 
         // Then
         assertThat(violations).hasSize(1);
@@ -123,7 +123,7 @@ class ReadProductDTOTest {
         readProductDTO.setNutriscoreGrade("z");
 
         // When
-        Set<ConstraintViolation<ReadProductDTO>> violations = validator.validate(readProductDTO);
+        Set<ConstraintViolation<ProductResponse>> violations = validator.validate(readProductDTO);
 
         // Then
         assertThat(violations).hasSize(1);
@@ -136,7 +136,7 @@ class ReadProductDTOTest {
         // Given
         setRequiredValidFields();
         readProductDTO.setNutriscoreGrade("a");
-        ReadProductDTO dtoCopy = new ReadProductDTO();
+        ProductResponse dtoCopy = new ProductResponse();
         dtoCopy.setId(readProductDTO.getId());
         dtoCopy.setBarcode(readProductDTO.getBarcode());
         dtoCopy.setPrice(readProductDTO.getPrice());
@@ -156,7 +156,7 @@ class ReadProductDTOTest {
         // Given
         setRequiredValidFields();
         readProductDTO.setNutriscoreGrade("a");
-        ReadProductDTO dtoCopy = new ReadProductDTO();
+        ProductResponse dtoCopy = new ProductResponse();
         dtoCopy.setId(readProductDTO.getId());
         dtoCopy.setBarcode(readProductDTO.getBarcode());
         dtoCopy.setPrice(readProductDTO.getPrice());

@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
-public class ReadProductDTO {
+public class ProductResponse {
 
     @NotNull(message = "Id cannot be null")
     private UUID id;

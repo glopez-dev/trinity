@@ -16,8 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.trinity.product.dto.api.CreateProductDTO;
-import com.trinity.product.dto.api.ReadProductDTO;
+import com.trinity.product.dto.api.CreateProductRequest;
+import com.trinity.product.dto.api.ProductResponse;
 import com.trinity.product.exception.ProductNotFoundException;
 import com.trinity.product.interfaces.rest.mapper.ProductApiMapper;
 import com.trinity.product.model.Product;
@@ -41,7 +41,7 @@ class ProductServiceScanTest {
     private String barcode;
     private UUID productId;
     private Product product;
-    private ReadProductDTO readProductDTO;
+    private ProductResponse readProductDTO;
 
     @BeforeEach
     void setUp() {
@@ -63,12 +63,12 @@ class ProductServiceScanTest {
                 .stock(stock)
                 .build();
 
-        ReadProductDTO.StockDto stockDto = new ReadProductDTO.StockDto();
+        ProductResponse.StockDto stockDto = new ProductResponse.StockDto();
         stockDto.setQuantity(10);
         stockDto.setMinThreshold(5);
         stockDto.setMaxThreshold(100);
 
-        readProductDTO = new ReadProductDTO();
+        readProductDTO = new ProductResponse();
         readProductDTO.setId(productId);
         readProductDTO.setBarcode(barcode);
         readProductDTO.setName("Test Product");
@@ -84,7 +84,7 @@ class ProductServiceScanTest {
         when(productMapper.toDTO(product)).thenReturn(readProductDTO);
 
         // WHEN
-        ReadProductDTO result = productService.scanProduct(barcode);
+        ProductResponse result = productService.scanProduct(barcode);
 
         // THEN
         verify(productRepository).findByBarcode(barcode);
@@ -101,12 +101,12 @@ class ProductServiceScanTest {
         // GIVEN
         when(productRepository.findByBarcode(barcode)).thenReturn(Optional.empty());
         when(openFoodFactsService.getProductByBarcode(barcode)).thenReturn(readProductDTO);
-        when(productMapper.toEntity(any(CreateProductDTO.class))).thenReturn(product);
+        when(productMapper.toEntity(any(CreateProductRequest.class))).thenReturn(product);
         when(productRepository.save(product)).thenReturn(product);
         when(productMapper.toDTO(product)).thenReturn(readProductDTO);
 
         // WHEN
-        ReadProductDTO result = productService.scanProduct(barcode);
+        ProductResponse result = productService.scanProduct(barcode);
 
         // THEN
         verify(productRepository).findByBarcode(barcode);
@@ -137,7 +137,7 @@ class ProductServiceScanTest {
     @Test
     void scanProduct_WhenProductFromOpenFoodFactsHasNullPrice_ShouldSetDefaultPrice() {
         // GIVEN
-        ReadProductDTO openFoodFactsDTO = new ReadProductDTO();
+        ProductResponse openFoodFactsDTO = new ProductResponse();
         openFoodFactsDTO.setBarcode(barcode);
         openFoodFactsDTO.setName("OpenFoodFacts Product");
         openFoodFactsDTO.setBrand("OpenFoodFacts Brand");
@@ -151,7 +151,7 @@ class ProductServiceScanTest {
                 .price(new BigDecimal("0.00"))
                 .build();
 
-        ReadProductDTO resultDTO = new ReadProductDTO();
+        ProductResponse resultDTO = new ProductResponse();
         resultDTO.setId(productId);
         resultDTO.setBarcode(barcode);
         resultDTO.setName("OpenFoodFacts Product");
@@ -160,12 +160,12 @@ class ProductServiceScanTest {
 
         when(productRepository.findByBarcode(barcode)).thenReturn(Optional.empty());
         when(openFoodFactsService.getProductByBarcode(barcode)).thenReturn(openFoodFactsDTO);
-        when(productMapper.toEntity(any(CreateProductDTO.class))).thenReturn(productWithDefaultPrice);
+        when(productMapper.toEntity(any(CreateProductRequest.class))).thenReturn(productWithDefaultPrice);
         when(productRepository.save(productWithDefaultPrice)).thenReturn(productWithDefaultPrice);
         when(productMapper.toDTO(productWithDefaultPrice)).thenReturn(resultDTO);
 
         // WHEN
-        ReadProductDTO result = productService.scanProduct(barcode);
+        ProductResponse result = productService.scanProduct(barcode);
 
         // THEN
         verify(productRepository).findByBarcode(barcode);
@@ -179,7 +179,7 @@ class ProductServiceScanTest {
     @Test
     void scanProduct_WhenProductFromOpenFoodFactsHasNullStock_ShouldSetDefaultStock() {
         // GIVEN
-        ReadProductDTO openFoodFactsDTO = new ReadProductDTO();
+        ProductResponse openFoodFactsDTO = new ProductResponse();
         openFoodFactsDTO.setBarcode(barcode);
         openFoodFactsDTO.setName("OpenFoodFacts Product");
         openFoodFactsDTO.setBrand("OpenFoodFacts Brand");
@@ -201,14 +201,14 @@ class ProductServiceScanTest {
                 .stock(defaultStock)
                 .build();
 
-        ReadProductDTO resultDTO = new ReadProductDTO();
+        ProductResponse resultDTO = new ProductResponse();
         resultDTO.setId(productId);
         resultDTO.setBarcode(barcode);
         resultDTO.setName("OpenFoodFacts Product");
         resultDTO.setBrand("OpenFoodFacts Brand");
         resultDTO.setPrice(new BigDecimal("5.99"));
 
-        ReadProductDTO.StockDto defaultStockDto = new ReadProductDTO.StockDto();
+        ProductResponse.StockDto defaultStockDto = new ProductResponse.StockDto();
         defaultStockDto.setQuantity(0);
         defaultStockDto.setMinThreshold(5);
         defaultStockDto.setMaxThreshold(100);
@@ -216,12 +216,12 @@ class ProductServiceScanTest {
 
         when(productRepository.findByBarcode(barcode)).thenReturn(Optional.empty());
         when(openFoodFactsService.getProductByBarcode(barcode)).thenReturn(openFoodFactsDTO);
-        when(productMapper.toEntity(any(CreateProductDTO.class))).thenReturn(productWithDefaultStock);
+        when(productMapper.toEntity(any(CreateProductRequest.class))).thenReturn(productWithDefaultStock);
         when(productRepository.save(productWithDefaultStock)).thenReturn(productWithDefaultStock);
         when(productMapper.toDTO(productWithDefaultStock)).thenReturn(resultDTO);
 
         // WHEN
-        ReadProductDTO result = productService.scanProduct(barcode);
+        ProductResponse result = productService.scanProduct(barcode);
 
         // THEN
         verify(productRepository).findByBarcode(barcode);

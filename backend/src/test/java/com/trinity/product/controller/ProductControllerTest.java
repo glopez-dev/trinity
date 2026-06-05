@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import com.trinity.product.dto.api.ReadProductDTO;
+import com.trinity.product.dto.api.ProductResponse;
 import com.trinity.product.exception.ProductNotFoundException;
 import com.trinity.product.service.ProductService;
 
@@ -29,7 +29,7 @@ class ProductControllerTest {
 
     private String barcode;
     private UUID productId;
-    private ReadProductDTO readProductDTO;
+    private ProductResponse readProductDTO;
 
     @BeforeEach
     void setUp() {
@@ -38,12 +38,12 @@ class ProductControllerTest {
         barcode = "1234567890123";
         productId = UUID.randomUUID();
 
-        ReadProductDTO.StockDto stockDto = new ReadProductDTO.StockDto();
+        ProductResponse.StockDto stockDto = new ProductResponse.StockDto();
         stockDto.setQuantity(10);
         stockDto.setMinThreshold(5);
         stockDto.setMaxThreshold(100);
 
-        readProductDTO = new ReadProductDTO();
+        readProductDTO = new ProductResponse();
         readProductDTO.setId(productId);
         readProductDTO.setBarcode(barcode);
         readProductDTO.setName("Test Product");
@@ -58,7 +58,7 @@ class ProductControllerTest {
         when(productService.scanProduct(barcode)).thenReturn(readProductDTO);
 
         // When
-        ResponseEntity<ReadProductDTO> response = productController.scanProduct(barcode);
+        ResponseEntity<ProductResponse> response = productController.scanProduct(barcode);
 
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());

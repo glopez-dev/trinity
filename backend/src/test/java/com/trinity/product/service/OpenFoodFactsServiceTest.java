@@ -17,7 +17,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.trinity.product.adapter.OpenFoodFactsAdapter;
-import com.trinity.product.dto.api.ReadProductDTO;
+import com.trinity.product.dto.api.ProductResponse;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactSearchResponse;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactsProduct;
 import com.trinity.product.interfaces.rest.mapper.ProductApiMapper;
@@ -50,7 +50,7 @@ class OpenFoodFactsServiceBarcodeTest {
     private String barcode;
     private OpenFoodFactSearchResponse openFoodFactsResponse;
     private Product product;
-    private ReadProductDTO readProductDTO;
+    private ProductResponse readProductDTO;
 
     @BeforeEach
     void setUp() {
@@ -75,8 +75,8 @@ class OpenFoodFactsServiceBarcodeTest {
                 .name("Nutella")
                 .build();
 
-        // Set up the ReadProductDTO
-        readProductDTO = new ReadProductDTO();
+        // Set up the ProductResponse
+        readProductDTO = new ProductResponse();
         readProductDTO.setBarcode(barcode);
         readProductDTO.setBrand("Ferrero");
         readProductDTO.setName("Nutella");
@@ -99,7 +99,7 @@ class OpenFoodFactsServiceBarcodeTest {
             when(productMapper.toDTO(product)).thenReturn(readProductDTO);
 
             // When
-            ReadProductDTO result = openFoodFactsService.getProductByBarcode(barcode);
+            ProductResponse result = openFoodFactsService.getProductByBarcode(barcode);
 
             // Then
             assertNotNull(result);
@@ -130,7 +130,7 @@ class OpenFoodFactsServiceBarcodeTest {
         when(responseSpec.bodyToMono(OpenFoodFactSearchResponse.class)).thenReturn(Mono.just(emptyResponse));
 
         // When
-        ReadProductDTO result = openFoodFactsService.getProductByBarcode(barcode);
+        ProductResponse result = openFoodFactsService.getProductByBarcode(barcode);
 
         // Then
         assertNull(result);
@@ -147,7 +147,7 @@ class OpenFoodFactsServiceBarcodeTest {
                 .thenReturn(Mono.error(new RuntimeException("API Error")));
 
         // When
-        ReadProductDTO result = openFoodFactsService.getProductByBarcode(barcode);
+        ProductResponse result = openFoodFactsService.getProductByBarcode(barcode);
 
         // Then
         assertNull(result);
@@ -163,7 +163,7 @@ class OpenFoodFactsServiceBarcodeTest {
         when(responseSpec.bodyToMono(OpenFoodFactSearchResponse.class)).thenReturn(Mono.empty());
 
         // When
-        ReadProductDTO result = openFoodFactsService.getProductByBarcode(barcode);
+        ProductResponse result = openFoodFactsService.getProductByBarcode(barcode);
 
         // Then
         assertNull(result);

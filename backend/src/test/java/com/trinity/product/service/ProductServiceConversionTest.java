@@ -15,8 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.trinity.product.dto.api.CreateProductDTO;
-import com.trinity.product.dto.api.ReadProductDTO;
+import com.trinity.product.dto.api.CreateProductRequest;
+import com.trinity.product.dto.api.ProductResponse;
 import com.trinity.product.interfaces.rest.mapper.ProductApiMapper;
 import com.trinity.product.repository.ProductRepository;
 
@@ -36,14 +36,14 @@ class ProductServiceConversionTest {
     private ProductService productService;
 
     private String barcode;
-    private ReadProductDTO readProductDTO;
+    private ProductResponse readProductDTO;
 
     @BeforeEach
     void setUp() {
         barcode = "1234567890123";
 
-        // Set up ReadProductDTO
-        readProductDTO = new ReadProductDTO();
+        // Set up ProductResponse
+        readProductDTO = new ProductResponse();
         readProductDTO.setBarcode(barcode);
         readProductDTO.setName("Test Product");
         readProductDTO.setBrand("Test Brand");
@@ -51,13 +51,13 @@ class ProductServiceConversionTest {
     }
 
     @Test
-    void testConvertToCreateProductDTO() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    void testConvertToCreateProductRequest() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         // Access the private method using reflection
-        Method convertToCreateProductDTOMethod = ProductService.class.getDeclaredMethod("convertToCreateProductDTO", ReadProductDTO.class);
-        convertToCreateProductDTOMethod.setAccessible(true);
+        Method convertToCreateProductRequestMethod = ProductService.class.getDeclaredMethod("convertToCreateProductRequest", ProductResponse.class);
+        convertToCreateProductRequestMethod.setAccessible(true);
 
         // Call the method
-        CreateProductDTO result = (CreateProductDTO) convertToCreateProductDTOMethod.invoke(productService, readProductDTO);
+        CreateProductRequest result = (CreateProductRequest) convertToCreateProductRequestMethod.invoke(productService, readProductDTO);
 
         // Verify the conversion
         assertThat(result).isNotNull();
@@ -70,14 +70,14 @@ class ProductServiceConversionTest {
     @Test
     void testSetDefaultValues_NullPrice() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         // Create DTO with null price
-        CreateProductDTO createDTO = new CreateProductDTO();
+        CreateProductRequest createDTO = new CreateProductRequest();
         createDTO.setBarcode(barcode);
         createDTO.setName("Test Product");
         createDTO.setBrand("Test Brand");
         createDTO.setPrice(null);
 
         // Access private method using reflection
-        Method setDefaultValuesMethod = ProductService.class.getDeclaredMethod("setDefaultValues", CreateProductDTO.class);
+        Method setDefaultValuesMethod = ProductService.class.getDeclaredMethod("setDefaultValues", CreateProductRequest.class);
         setDefaultValuesMethod.setAccessible(true);
 
         // Call the method
@@ -90,7 +90,7 @@ class ProductServiceConversionTest {
     @Test
     void testSetDefaultValues_NullStock() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         // Create DTO with null stock
-        CreateProductDTO createDTO = new CreateProductDTO();
+        CreateProductRequest createDTO = new CreateProductRequest();
         createDTO.setBarcode(barcode);
         createDTO.setName("Test Product");
         createDTO.setBrand("Test Brand");
@@ -98,7 +98,7 @@ class ProductServiceConversionTest {
         createDTO.setStock(null);
 
         // Access private method using reflection
-        Method setDefaultValuesMethod = ProductService.class.getDeclaredMethod("setDefaultValues", CreateProductDTO.class);
+        Method setDefaultValuesMethod = ProductService.class.getDeclaredMethod("setDefaultValues", CreateProductRequest.class);
         setDefaultValuesMethod.setAccessible(true);
 
         // Call the method
@@ -114,20 +114,20 @@ class ProductServiceConversionTest {
     @Test
     void testSetDefaultValues_NoChangesNeeded() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         // Create DTO with all values set
-        CreateProductDTO createDTO = new CreateProductDTO();
+        CreateProductRequest createDTO = new CreateProductRequest();
         createDTO.setBarcode(barcode);
         createDTO.setName("Test Product");
         createDTO.setBrand("Test Brand");
         createDTO.setPrice(new BigDecimal("9.99"));
 
-        CreateProductDTO.StockDto stockDto = new CreateProductDTO.StockDto();
+        CreateProductRequest.StockDto stockDto = new CreateProductRequest.StockDto();
         stockDto.setQuantity(20);
         stockDto.setMinThreshold(10);
         stockDto.setMaxThreshold(200);
         createDTO.setStock(stockDto);
 
         // Access private method using reflection
-        Method setDefaultValuesMethod = ProductService.class.getDeclaredMethod("setDefaultValues", CreateProductDTO.class);
+        Method setDefaultValuesMethod = ProductService.class.getDeclaredMethod("setDefaultValues", CreateProductRequest.class);
         setDefaultValuesMethod.setAccessible(true);
 
         // Call the method
@@ -141,9 +141,9 @@ class ProductServiceConversionTest {
     }
 
     @Test
-    void testConvertToCreateProductDTOWithNullFields() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        // Create ReadProductDTO with some null fields
-        ReadProductDTO dto = new ReadProductDTO();
+    void testConvertToCreateProductRequestWithNullFields() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        // Create ProductResponse with some null fields
+        ProductResponse dto = new ProductResponse();
         dto.setBarcode(barcode);
         dto.setName("Test Product");
         dto.setBrand(null); // null brand
@@ -152,11 +152,11 @@ class ProductServiceConversionTest {
         dto.setNutrientLevels(null); // null nutrient levels
 
         // Access the private method using reflection
-        Method convertToCreateProductDTOMethod = ProductService.class.getDeclaredMethod("convertToCreateProductDTO", ReadProductDTO.class);
-        convertToCreateProductDTOMethod.setAccessible(true);
+        Method convertToCreateProductRequestMethod = ProductService.class.getDeclaredMethod("convertToCreateProductRequest", ProductResponse.class);
+        convertToCreateProductRequestMethod.setAccessible(true);
 
         // Call the method
-        CreateProductDTO result = (CreateProductDTO) convertToCreateProductDTOMethod.invoke(productService, dto);
+        CreateProductRequest result = (CreateProductRequest) convertToCreateProductRequestMethod.invoke(productService, dto);
 
         // Verify the conversion handles null fields
         assertThat(result).isNotNull();

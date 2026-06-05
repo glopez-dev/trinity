@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Schema(description = "DTO for updating product information. Only filled fields will be updated.")
 @Data
-public class UpdateProductDTO {
+public class UpdateProductRequest {
  
     @Schema(description = "Product name", example = "Organic Coffee Beans")
     private String name; 

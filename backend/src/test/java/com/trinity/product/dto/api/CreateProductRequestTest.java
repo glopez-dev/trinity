@@ -10,16 +10,16 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 
-class CreateProductDTOTest {
+class CreateProductRequestTest {
 
     private Validator validator;
-    private CreateProductDTO createProductDTO;
+    private CreateProductRequest createProductDTO;
 
     @BeforeEach
     void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-        createProductDTO = new CreateProductDTO();
+        createProductDTO = new CreateProductRequest();
     }
 
     private void setRequiredValidFields() {
@@ -27,7 +27,7 @@ class CreateProductDTOTest {
         createProductDTO.setBrand("Test Brand");
         createProductDTO.setName("Test Product");
         createProductDTO.setPrice(new BigDecimal("9.99"));
-        CreateProductDTO.StockDto stockDto = new CreateProductDTO.StockDto();
+        CreateProductRequest.StockDto stockDto = new CreateProductRequest.StockDto();
         stockDto.setQuantity(10);
         createProductDTO.setStock(stockDto);
     }
@@ -39,7 +39,7 @@ class CreateProductDTOTest {
         createProductDTO.setNutriscoreGrade("a");
 
         // When
-        Set<ConstraintViolation<CreateProductDTO>> violations = validator.validate(createProductDTO);
+        Set<ConstraintViolation<CreateProductRequest>> violations = validator.validate(createProductDTO);
 
         // Then
         assertThat(violations).isEmpty();
@@ -52,7 +52,7 @@ class CreateProductDTOTest {
         createProductDTO.setBarcode(null);
 
         // When
-        Set<ConstraintViolation<CreateProductDTO>> violations = validator.validate(createProductDTO);
+        Set<ConstraintViolation<CreateProductRequest>> violations = validator.validate(createProductDTO);
 
         // Then
         assertThat(violations).hasSize(1);
@@ -66,7 +66,7 @@ class CreateProductDTOTest {
         createProductDTO.setBrand("");
 
         // When
-        Set<ConstraintViolation<CreateProductDTO>> violations = validator.validate(createProductDTO);
+        Set<ConstraintViolation<CreateProductRequest>> violations = validator.validate(createProductDTO);
 
         // Then
         assertThat(violations).hasSize(1);
@@ -80,7 +80,7 @@ class CreateProductDTOTest {
         createProductDTO.setPrice(new BigDecimal("-9.99"));
 
         // When
-        Set<ConstraintViolation<CreateProductDTO>> violations = validator.validate(createProductDTO);
+        Set<ConstraintViolation<CreateProductRequest>> violations = validator.validate(createProductDTO);
 
         // Then
         assertThat(violations).hasSize(1);
@@ -94,7 +94,7 @@ class CreateProductDTOTest {
         createProductDTO.setNutriscoreGrade("f");
 
         // When
-        Set<ConstraintViolation<CreateProductDTO>> violations = validator.validate(createProductDTO);
+        Set<ConstraintViolation<CreateProductRequest>> violations = validator.validate(createProductDTO);
 
         // Then
         assertThat(violations).hasSize(1);

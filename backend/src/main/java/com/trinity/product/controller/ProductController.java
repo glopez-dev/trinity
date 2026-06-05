@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.trinity.product.dto.api.CreateProductDTO;
-import com.trinity.product.dto.api.ReadProductDTO;
-import com.trinity.product.dto.api.SearchProductDTO;
-import com.trinity.product.dto.api.UpdateProductDTO;
+import com.trinity.product.dto.api.CreateProductRequest;
+import com.trinity.product.dto.api.ProductResponse;
+import com.trinity.product.dto.api.SearchProductRequest;
+import com.trinity.product.dto.api.UpdateProductRequest;
 import com.trinity.product.service.OpenFoodFactsService;
 import com.trinity.product.service.ProductService;
 
@@ -38,37 +38,37 @@ public class ProductController {
 
     @PostMapping("/search")
     @Operation(summary = "Search products", description = "Search for products using a search term")
-    public ResponseEntity<List<ReadProductDTO>> searchProducts(@Valid @RequestBody SearchProductDTO request) {
+    public ResponseEntity<List<ProductResponse>> searchProducts(@Valid @RequestBody SearchProductRequest request) {
         String searchTerm = request.getSearchTerm();
-        List<ReadProductDTO> products = openFoodFactsService.searchProducts(searchTerm);
+        List<ProductResponse> products = openFoodFactsService.searchProducts(searchTerm);
         return ResponseEntity.ok(products);
     }
 
     @PostMapping()
     @Operation(summary = "Create a product", description = "Create a new product")
-    public ResponseEntity<ReadProductDTO> createProduct(@Valid @RequestBody CreateProductDTO request) {
-        ReadProductDTO product = productService.createProduct(request);
+    public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody CreateProductRequest request) {
+        ProductResponse product = productService.createProduct(request);
         return ResponseEntity.ok(product);
     }
 
     @GetMapping()
     @Operation(summary = "Get all products", description = "Retrieve all products")
-    public ResponseEntity<List<ReadProductDTO>> getAllProducts() {
-        List<ReadProductDTO> products = productService.getAllProducts();
+    public ResponseEntity<List<ProductResponse>> getAllProducts() {
+        List<ProductResponse> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{productId}")
     @Operation(summary = "Get a product", description = "Retrieve a product by its ID")
-    public ResponseEntity<ReadProductDTO> getProduct(@PathVariable UUID productId) {
-        ReadProductDTO product = productService.getProduct(productId);
+    public ResponseEntity<ProductResponse> getProduct(@PathVariable UUID productId) {
+        ProductResponse product = productService.getProduct(productId);
         return ResponseEntity.ok(product);
     }
 
     @PutMapping("/{productId}")
     @Operation(summary = "Update a product", description = "Update an existing product by its ID")
-    public ResponseEntity<ReadProductDTO> updateProduct(@PathVariable UUID productId, @Valid @RequestBody UpdateProductDTO request) {
-        ReadProductDTO product = productService.updateProduct(productId, request);
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable UUID productId, @Valid @RequestBody UpdateProductRequest request) {
+        ProductResponse product = productService.updateProduct(productId, request);
         return ResponseEntity.ok(product);
     }
 
@@ -81,11 +81,11 @@ public class ProductController {
 
     @GetMapping("/scan/{barcode}")
     @Operation(summary = "Scan a product", description = "Scan a product by its barcode, retrieve from database or OpenFoodFacts")
-    public ResponseEntity<ReadProductDTO> scanProduct(@PathVariable String barcode) {
+    public ResponseEntity<ProductResponse> scanProduct(@PathVariable String barcode) {
         if (barcode == null || !barcode.matches("^[0-9]{8,13}$")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid barcode format");
         }
-        ReadProductDTO product = productService.scanProduct(barcode);
+        ProductResponse product = productService.scanProduct(barcode);
         return ResponseEntity.ok(product);
     }
 

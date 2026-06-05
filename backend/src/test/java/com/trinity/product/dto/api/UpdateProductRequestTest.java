@@ -7,13 +7,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-class UpdateProductDTOTest {
+class UpdateProductRequestTest {
 
-    private UpdateProductDTO dto;
+    private UpdateProductRequest dto;
 
     @BeforeEach
     void setUp() {
-        dto = new UpdateProductDTO();
+        dto = new UpdateProductRequest();
     }
 
     @Test

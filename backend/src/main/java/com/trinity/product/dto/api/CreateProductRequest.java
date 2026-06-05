@@ -11,7 +11,7 @@ import lombok.Data;
 
 @Data
 @Schema(description = "DTO for creating a new product")
-public class CreateProductDTO {
+public class CreateProductRequest {
 
     @Schema(description = "Product barcode", example = "3017620422003")
     @NotNull(message = "Barcode cannot be null")

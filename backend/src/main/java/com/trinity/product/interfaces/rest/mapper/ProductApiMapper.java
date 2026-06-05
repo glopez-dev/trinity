@@ -1,7 +1,7 @@
 package com.trinity.product.interfaces.rest.mapper;
 
-import com.trinity.product.dto.api.CreateProductDTO;
-import com.trinity.product.dto.api.ReadProductDTO;
+import com.trinity.product.dto.api.CreateProductRequest;
+import com.trinity.product.dto.api.ProductResponse;
 import com.trinity.product.model.Product;
 import com.trinity.product.model.ProductImageUrl;
 import org.mapstruct.Mapper;
@@ -20,13 +20,13 @@ public interface ProductApiMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "lastUpdate", ignore = true)
-    Product toEntity(CreateProductDTO dto);
+    Product toEntity(CreateProductRequest dto);
 
-    ReadProductDTO toDTO(Product product);
+    ProductResponse toDTO(Product product);
 
     // --- nested image VO <-> DTO ---
 
-    ProductImageUrl toImageUrl(CreateProductDTO.SelectedImagesDto.DisplayImagesDto dto);
+    ProductImageUrl toImageUrl(CreateProductRequest.SelectedImagesDto.DisplayImagesDto dto);
 
-    ReadProductDTO.SelectedImagesDto.DisplayImagesDto toDisplayImagesDto(ProductImageUrl imageUrl);
+    ProductResponse.SelectedImagesDto.DisplayImagesDto toDisplayImagesDto(ProductImageUrl imageUrl);
 }

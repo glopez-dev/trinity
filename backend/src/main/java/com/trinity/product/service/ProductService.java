@@ -29,7 +29,7 @@ public class ProductService {
     private final OpenFoodFactsService openFoodFactsService;
 
     @Transactional
-    public ReadProductDTO createProduct(CreateProductDTO productDTO) {
+    public ProductResponse createProduct(CreateProductRequest productDTO) {
         validateProductData(productDTO);
         Product mappedProduct = productMapper.toEntity(productDTO);
         Product savedProduct = productRepository.save(mappedProduct);
@@ -38,7 +38,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReadProductDTO> getAllProducts() {
+    public List<ProductResponse> getAllProducts() {
         List<Product> products = productRepository.findAll();
         logger.debug("Retrieved {} products", products.size());
         return products.isEmpty() ?
@@ -47,13 +47,13 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ReadProductDTO getProduct(UUID productId) {
+    public ProductResponse getProduct(UUID productId) {
         Product product = findProductById(productId);
         return productMapper.toDTO(product);
     }
 
     @Transactional
-    public ReadProductDTO updateProduct(UUID productId, UpdateProductDTO request) {
+    public ProductResponse updateProduct(UUID productId, UpdateProductRequest request) {
         Product product = findProductById(productId);
 
         request.getName().ifPresent(product::setName);
@@ -78,7 +78,7 @@ public class ProductService {
                 String.format("Product not found with ID: %s", productId)));
     }
 
-    private void validateProductData(CreateProductDTO productDTO) {
+    private void validateProductData(CreateProductRequest productDTO) {
         if (productDTO.getPrice().compareTo(BigDecimal.ZERO) < 0) {
             throw new InvalidProductDataException("Price cannot be negative");
         }
@@ -88,7 +88,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ReadProductDTO scanProduct(String barcode) {
+    public ProductResponse scanProduct(String barcode) {
         Optional<Product> existingProduct = productRepository.findByBarcode(barcode);
 
         if (existingProduct.isPresent()) {
@@ -97,10 +97,10 @@ public class ProductService {
         }
 
         logger.info("Product with barcode {} not found in database, checking OpenFoodFacts", barcode);
-        ReadProductDTO openFoodFactsProduct = openFoodFactsService.getProductByBarcode(barcode);
+        ProductResponse openFoodFactsProduct = openFoodFactsService.getProductByBarcode(barcode);
 
         if (openFoodFactsProduct != null) {
-            CreateProductDTO createProductDTO = convertToCreateProductDTO(openFoodFactsProduct);
+            CreateProductRequest createProductDTO = convertToCreateProductRequest(openFoodFactsProduct);
             setDefaultValues(createProductDTO);
             return createProduct(createProductDTO);
         }
@@ -108,8 +108,8 @@ public class ProductService {
         throw new ProductNotFoundException(String.format("Product with barcode %s not found", barcode));
     }
 
-    private CreateProductDTO convertToCreateProductDTO(ReadProductDTO readProductDTO) {
-        CreateProductDTO createDTO = new CreateProductDTO();
+    private CreateProductRequest convertToCreateProductRequest(ProductResponse readProductDTO) {
+        CreateProductRequest createDTO = new CreateProductRequest();
         createDTO.setBarcode(readProductDTO.getBarcode());
         createDTO.setCategory(readProductDTO.getCategory());
         createDTO.setBrand(readProductDTO.getBrand());
@@ -118,7 +118,7 @@ public class ProductService {
         createDTO.setPrice(readProductDTO.getPrice());
 
         if (readProductDTO.getNutrientLevels() != null) {
-            CreateProductDTO.NutrientLevelsDto nutrientLevels = new CreateProductDTO.NutrientLevelsDto();
+            CreateProductRequest.NutrientLevelsDto nutrientLevels = new CreateProductRequest.NutrientLevelsDto();
             nutrientLevels.setFat(readProductDTO.getNutrientLevels().getFat());
             nutrientLevels.setSaturatedFat(readProductDTO.getNutrientLevels().getSaturatedFat());
             nutrientLevels.setSugars(readProductDTO.getNutrientLevels().getSugars());
@@ -127,7 +127,7 @@ public class ProductService {
         }
 
         if (readProductDTO.getNutriments() != null) {
-            CreateProductDTO.NutrimentsDto nutriments = new CreateProductDTO.NutrimentsDto();
+            CreateProductRequest.NutrimentsDto nutriments = new CreateProductRequest.NutrimentsDto();
             nutriments.setEnergyKcal100g(readProductDTO.getNutriments().getEnergyKcal100g());
             nutriments.setProteins100g(readProductDTO.getNutriments().getProteins100g());
             nutriments.setCarbohydrates100g(readProductDTO.getNutriments().getCarbohydrates100g());
@@ -141,7 +141,7 @@ public class ProductService {
         createDTO.setNutriscoreGrade(readProductDTO.getNutriscoreGrade());
 
         if (readProductDTO.getSelectedImages() != null) {
-            CreateProductDTO.SelectedImagesDto selectedImages = getSelectedImagesDto(readProductDTO);
+            CreateProductRequest.SelectedImagesDto selectedImages = getSelectedImagesDto(readProductDTO);
 
             createDTO.setSelectedImages(selectedImages);
         }
@@ -149,28 +149,28 @@ public class ProductService {
         return createDTO;
     }
 
-    private static CreateProductDTO.SelectedImagesDto getSelectedImagesDto(ReadProductDTO readProductDTO) {
-        CreateProductDTO.SelectedImagesDto selectedImages = new CreateProductDTO.SelectedImagesDto();
+    private static CreateProductRequest.SelectedImagesDto getSelectedImagesDto(ProductResponse readProductDTO) {
+        CreateProductRequest.SelectedImagesDto selectedImages = new CreateProductRequest.SelectedImagesDto();
 
         if (readProductDTO.getSelectedImages().getDisplay() != null) {
-            CreateProductDTO.SelectedImagesDto.DisplayImagesDto display =
-                    new CreateProductDTO.SelectedImagesDto.DisplayImagesDto();
+            CreateProductRequest.SelectedImagesDto.DisplayImagesDto display =
+                    new CreateProductRequest.SelectedImagesDto.DisplayImagesDto();
             display.setEn(readProductDTO.getSelectedImages().getDisplay().getEn());
             display.setFr(readProductDTO.getSelectedImages().getDisplay().getFr());
             selectedImages.setDisplay(display);
         }
 
         if (readProductDTO.getSelectedImages().getSmall() != null) {
-            CreateProductDTO.SelectedImagesDto.DisplayImagesDto small =
-                    new CreateProductDTO.SelectedImagesDto.DisplayImagesDto();
+            CreateProductRequest.SelectedImagesDto.DisplayImagesDto small =
+                    new CreateProductRequest.SelectedImagesDto.DisplayImagesDto();
             small.setEn(readProductDTO.getSelectedImages().getSmall().getEn());
             small.setFr(readProductDTO.getSelectedImages().getSmall().getFr());
             selectedImages.setSmall(small);
         }
 
         if (readProductDTO.getSelectedImages().getThumb() != null) {
-            CreateProductDTO.SelectedImagesDto.DisplayImagesDto thumb =
-                    new CreateProductDTO.SelectedImagesDto.DisplayImagesDto();
+            CreateProductRequest.SelectedImagesDto.DisplayImagesDto thumb =
+                    new CreateProductRequest.SelectedImagesDto.DisplayImagesDto();
             thumb.setEn(readProductDTO.getSelectedImages().getThumb().getEn());
             thumb.setFr(readProductDTO.getSelectedImages().getThumb().getFr());
             selectedImages.setThumb(thumb);
@@ -178,13 +178,13 @@ public class ProductService {
         return selectedImages;
     }
 
-    private void setDefaultValues(CreateProductDTO productDTO) {
+    private void setDefaultValues(CreateProductRequest productDTO) {
         if (productDTO.getPrice() == null) {
             productDTO.setPrice(new BigDecimal("0.00"));
         }
 
         if (productDTO.getStock() == null) {
-            CreateProductDTO.StockDto stockDto = new CreateProductDTO.StockDto();
+            CreateProductRequest.StockDto stockDto = new CreateProductRequest.StockDto();
             stockDto.setQuantity(0);
             stockDto.setMinThreshold(5);
             stockDto.setMaxThreshold(100);

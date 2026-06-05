@@ -5,13 +5,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-import com.trinity.product.dto.api.CreateProductDTO;
-import com.trinity.product.dto.api.ReadProductDTO;
-import com.trinity.product.dto.api.CreateProductDTO.NutrientLevelsDto;
-import com.trinity.product.dto.api.CreateProductDTO.NutrimentsDto;
-import com.trinity.product.dto.api.CreateProductDTO.SelectedImagesDto;
-import com.trinity.product.dto.api.CreateProductDTO.StockDto;
-import com.trinity.product.dto.api.CreateProductDTO.SelectedImagesDto.DisplayImagesDto;
+import com.trinity.product.dto.api.CreateProductRequest;
+import com.trinity.product.dto.api.ProductResponse;
+import com.trinity.product.dto.api.CreateProductRequest.NutrientLevelsDto;
+import com.trinity.product.dto.api.CreateProductRequest.NutrimentsDto;
+import com.trinity.product.dto.api.CreateProductRequest.SelectedImagesDto;
+import com.trinity.product.dto.api.CreateProductRequest.StockDto;
+import com.trinity.product.dto.api.CreateProductRequest.SelectedImagesDto.DisplayImagesDto;
 import com.trinity.product.model.ProductImageUrl;
 import com.trinity.product.model.Product;
 import java.math.BigDecimal;
@@ -29,7 +29,7 @@ class ProductApiMapperTest {
     @Test
     void testToEntity_AllFields() {
         // GIVEN
-        CreateProductDTO dto = new CreateProductDTO();
+        CreateProductRequest dto = new CreateProductRequest();
         dto.setBarcode("123456");
         dto.setCategory("Beverages");
         dto.setBrand("Test Brand");
@@ -113,7 +113,7 @@ class ProductApiMapperTest {
     @Test
     void testToEntity_NullSubObjects() {
         // GIVEN
-        CreateProductDTO dto = new CreateProductDTO();
+        CreateProductRequest dto = new CreateProductRequest();
         dto.setBarcode("654321");
         dto.setPrice(BigDecimal.TEN);
 
@@ -176,7 +176,7 @@ class ProductApiMapperTest {
         product.setStock(stock);
 
         // WHEN
-        ReadProductDTO dto = productMapper.toDTO(product);
+        ProductResponse dto = productMapper.toDTO(product);
 
         // THEN
         assertNotNull(dto);
@@ -216,7 +216,7 @@ class ProductApiMapperTest {
         Product product = null;
 
         // WHEN
-        ReadProductDTO dto = productMapper.toDTO(product);
+        ProductResponse dto = productMapper.toDTO(product);
 
         // THEN
         assertNull(dto);
