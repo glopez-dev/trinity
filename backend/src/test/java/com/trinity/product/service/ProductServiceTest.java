@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.trinity.product.dto.api.CreateProductDTO;
 import com.trinity.product.dto.api.ReadProductDTO;
 import com.trinity.product.exception.ProductNotFoundException;
-import com.trinity.product.mapper.ProductMapper;
+import com.trinity.product.interfaces.rest.mapper.ProductApiMapper;
 import com.trinity.product.model.Product;
 import com.trinity.product.repository.ProductRepository;
 
@@ -30,7 +30,7 @@ class ProductServiceScanTest {
     private ProductRepository productRepository;
 
     @Mock
-    private ProductMapper productMapper;
+    private ProductApiMapper productMapper;
 
     @Mock
     private OpenFoodFactsService openFoodFactsService;

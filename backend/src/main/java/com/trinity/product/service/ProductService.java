@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.trinity.product.exception.ProductNotFoundException;
 import com.trinity.product.exception.InvalidProductDataException;
 import com.trinity.product.dto.api.*;
-import com.trinity.product.mapper.ProductMapper;
+import com.trinity.product.interfaces.rest.mapper.ProductApiMapper;
 import com.trinity.product.model.Product;
 import com.trinity.product.repository.ProductRepository;
 
@@ -25,7 +25,7 @@ import lombok.AllArgsConstructor;
 public class ProductService {
     private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
     private final ProductRepository productRepository;
-    private final ProductMapper productMapper;
+    private final ProductApiMapper productMapper;
     private final OpenFoodFactsService openFoodFactsService;
 
     @Transactional

@@ -14,7 +14,7 @@ import com.trinity.product.adapter.OpenFoodFactsAdapter;
 import com.trinity.product.dto.api.ReadProductDTO;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactSearchResponse;
 import com.trinity.product.exception.ApiException;
-import com.trinity.product.mapper.ProductMapper;
+import com.trinity.product.interfaces.rest.mapper.ProductApiMapper;
 import com.trinity.product.model.Product;
 
 import lombok.AllArgsConstructor;
@@ -25,7 +25,7 @@ public class OpenFoodFactsService {
 
     static final String FIELDS_TO_GET = "products,allergens_imported,allergens,code,brands,brand_imported,compared_to_category,grade,ingredients_text_fr,nutrient_levels,nutriments,product_name_fr_imported,quantity_imported,selected_images,nutriscore_grade,generic_name_fr,generic_name_en,ingredients_text_en"; 
     private final WebClient webClient;
-    private final ProductMapper productMapper;
+    private final ProductApiMapper productMapper;
     private static final Logger logger = LoggerFactory.getLogger(OpenFoodFactsService.class);
     
     public URI buildUri(String searchTerm) {

@@ -17,7 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.trinity.product.dto.api.CreateProductDTO;
 import com.trinity.product.dto.api.ReadProductDTO;
-import com.trinity.product.mapper.ProductMapper;
+import com.trinity.product.interfaces.rest.mapper.ProductApiMapper;
 import com.trinity.product.repository.ProductRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,7 +27,7 @@ class ProductServiceConversionTest {
     private ProductRepository productRepository;
 
     @Mock
-    private ProductMapper productMapper;
+    private ProductApiMapper productMapper;
 
     @Mock
     private OpenFoodFactsService openFoodFactsService;

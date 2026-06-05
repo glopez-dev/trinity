@@ -20,7 +20,7 @@ import com.trinity.product.adapter.OpenFoodFactsAdapter;
 import com.trinity.product.dto.api.ReadProductDTO;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactSearchResponse;
 import com.trinity.product.dto.open_food_facts.OpenFoodFactsProduct;
-import com.trinity.product.mapper.ProductMapper;
+import com.trinity.product.interfaces.rest.mapper.ProductApiMapper;
 import com.trinity.product.model.Product;
 
 import reactor.core.publisher.Mono;
@@ -31,7 +31,7 @@ class OpenFoodFactsServiceBarcodeTest {
     private WebClient webClient;
 
     @Mock
-    private ProductMapper productMapper;
+    private ProductApiMapper productMapper;
 
     @SuppressWarnings("rawtypes")
     @Mock

@@ -1,8 +1,9 @@
-package com.trinity.product.mapper;
+package com.trinity.product.interfaces.rest.mapper;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import com.trinity.product.dto.api.CreateProductDTO;
 import com.trinity.product.dto.api.ReadProductDTO;
@@ -16,13 +17,13 @@ import com.trinity.product.model.Product;
 import java.math.BigDecimal;
 
 
-class ProductMapperTest {
+class ProductApiMapperTest {
 
-    private ProductMapper productMapper;
+    private ProductApiMapper productMapper;
 
     @BeforeEach
     void setUp() {
-        productMapper = new ProductMapper();
+        productMapper = Mappers.getMapper(ProductApiMapper.class);
     }
 
     @Test
