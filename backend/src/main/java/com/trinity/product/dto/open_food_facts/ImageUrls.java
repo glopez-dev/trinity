@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * Pure OpenFoodFacts JSON DTO for image URLs. Translated into the domain
- * {@link com.trinity.product.model.ProductImageUrl} value object by the adapter.
+ * {@link com.trinity.product.domain.model.ProductImageUrl} value object by the adapter.
  */
 @Data
 @AllArgsConstructor

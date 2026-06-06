@@ -2,8 +2,8 @@ package com.trinity.product.interfaces.rest.mapper;
 
 import com.trinity.product.dto.api.CreateProductRequest;
 import com.trinity.product.dto.api.ProductResponse;
-import com.trinity.product.model.Product;
-import com.trinity.product.model.ProductImageUrl;
+import com.trinity.product.domain.model.Product;
+import com.trinity.product.domain.model.ProductImageUrl;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

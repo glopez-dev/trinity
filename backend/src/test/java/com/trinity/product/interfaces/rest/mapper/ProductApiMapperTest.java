@@ -12,8 +12,8 @@ import com.trinity.product.dto.api.CreateProductRequest.NutrimentsDto;
 import com.trinity.product.dto.api.CreateProductRequest.SelectedImagesDto;
 import com.trinity.product.dto.api.CreateProductRequest.StockDto;
 import com.trinity.product.dto.api.CreateProductRequest.SelectedImagesDto.DisplayImagesDto;
-import com.trinity.product.model.ProductImageUrl;
-import com.trinity.product.model.Product;
+import com.trinity.product.domain.model.ProductImageUrl;
+import com.trinity.product.domain.model.Product;
 import java.math.BigDecimal;
 
 

@@ -24,7 +24,7 @@ class ArchitectureTest {
             .importPackages("com.trinity");
 
     /** Bounded contexts whose domain package is enforced as framework-free. */
-    private static final String[] PURE_DOMAIN_CONTEXTS = {"cart", "payment"};
+    private static final String[] PURE_DOMAIN_CONTEXTS = {"cart", "payment", "product"};
 
     @Test
     void domainPackagesAreFreeOfFrameworks() {
