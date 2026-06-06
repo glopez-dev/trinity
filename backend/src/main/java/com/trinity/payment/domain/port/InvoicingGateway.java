@@ -1,6 +1,6 @@
 package com.trinity.payment.domain.port;
 
-import com.trinity.payment.paypal.dto.InvoiceDTO;
+import com.trinity.payment.interfaces.rest.dto.InvoiceDTO;
 
 import java.util.List;
 
