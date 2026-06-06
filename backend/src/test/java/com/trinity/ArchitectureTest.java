@@ -24,7 +24,7 @@ class ArchitectureTest {
             .importPackages("com.trinity");
 
     /** Bounded contexts whose domain package is enforced as framework-free. */
-    private static final String[] PURE_DOMAIN_CONTEXTS = {"cart", "payment", "product"};
+    private static final String[] PURE_DOMAIN_CONTEXTS = {"cart", "payment", "product", "user"};
 
     @Test
     void domainPackagesAreFreeOfFrameworks() {
@@ -34,6 +34,7 @@ class ArchitectureTest {
                     .should().dependOnClassesThat()
                     .resideInAnyPackage(
                             "jakarta.persistence..",
+                            "org.hibernate..",
                             "org.springframework..",
                             "com.stripe..",
                             "com.paypal..")

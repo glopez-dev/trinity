@@ -1,8 +1,8 @@
 package com.trinity.user.infrastructure.security;
 
-import com.trinity.user.constant.UserStatus;
-import com.trinity.user.constant.UserType;
-import com.trinity.user.model.AbstractUser;
+import com.trinity.user.domain.model.UserStatus;
+import com.trinity.user.domain.model.UserType;
+import com.trinity.user.domain.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AppUserDetailsTest {
 
-    private static class ConcreteUser extends AbstractUser {
+    private static class ConcreteUser extends User {
         @Override
         public UserType getType() {
             return UserType.EMPLOYEE;

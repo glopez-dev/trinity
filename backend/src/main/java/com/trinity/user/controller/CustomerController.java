@@ -6,7 +6,7 @@ import java.util.UUID;
 import com.trinity.user.dto.customer.CreateCustomerRequest;
 import com.trinity.user.dto.customer.CustomerResponse;
 import com.trinity.user.dto.customer.UpdateCustomerRequest;
-import com.trinity.user.service.CustomerService;
+import com.trinity.user.application.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

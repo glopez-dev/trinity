@@ -1,6 +1,6 @@
 package com.trinity.user.infrastructure.security;
 
-import com.trinity.user.model.AbstractUser;
+import com.trinity.user.domain.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,20 +9,20 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Spring Security adapter wrapping a domain {@link AbstractUser}. Keeps the
- * security concern out of the domain model: the entity stays a pure aggregate
- * while this class projects it onto the {@link UserDetails} contract.
+ * Spring Security adapter wrapping a domain {@link User}. Keeps the security
+ * concern out of the domain model: the aggregate stays pure while this class
+ * projects it onto the {@link UserDetails} contract.
  */
 public class AppUserDetails implements UserDetails {
 
-    private final AbstractUser user;
+    private final User user;
 
-    public AppUserDetails(AbstractUser user) {
+    public AppUserDetails(User user) {
         this.user = user;
     }
 
     /** Exposes the wrapped domain user (e.g. for token claim generation). */
-    public AbstractUser getDomainUser() {
+    public User getDomainUser() {
         return user;
     }
 

@@ -2,8 +2,8 @@ package com.trinity.authentication.service;
 
 import com.trinity.authentication.dto.CustomerRegisterRequest;
 import com.trinity.user.infrastructure.security.AppUserDetails;
-import com.trinity.user.model.Customer;
-import com.trinity.user.repository.CustomerRepository;
+import com.trinity.user.domain.model.Customer;
+import com.trinity.user.domain.port.CustomerRepositoryPort;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 import com.trinity.authentication.dto.AuthenticationResponse;
 import com.trinity.authentication.dto.LoginRequest;
 import com.trinity.authentication.dto.RegisterRequest;
-import com.trinity.user.model.Employee;
-import com.trinity.user.repository.EmployeeRepository;
+import com.trinity.user.domain.model.Employee;
+import com.trinity.user.domain.port.EmployeeRepositoryPort;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,8 +25,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final EmployeeRepository employeeRepository;
-    private final CustomerRepository customerRepository;
+    private final EmployeeRepositoryPort employeeRepository;
+    private final CustomerRepositoryPort customerRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;

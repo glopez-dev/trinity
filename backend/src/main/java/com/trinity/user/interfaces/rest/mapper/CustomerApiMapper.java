@@ -1,7 +1,7 @@
 package com.trinity.user.interfaces.rest.mapper;
 
 import com.trinity.user.dto.customer.CustomerResponse;
-import com.trinity.user.model.Customer;
+import com.trinity.user.domain.model.Customer;
 import org.mapstruct.Mapper;
 
 import java.util.List;

@@ -6,11 +6,11 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-import com.trinity.user.constant.EmployeeRole;
-import com.trinity.user.constant.UserStatus;
-import com.trinity.user.constant.UserType;
+import com.trinity.user.domain.model.EmployeeRole;
+import com.trinity.user.domain.model.UserStatus;
+import com.trinity.user.domain.model.UserType;
 import com.trinity.user.interfaces.rest.mapper.EmployeeApiMapper;
-import com.trinity.user.model.Employee;
+import com.trinity.user.domain.model.Employee;
 
 
 class EmployeeResponseTest {

@@ -1,7 +1,7 @@
 package com.trinity.user.dto.employee;
 
-import com.trinity.user.constant.EmployeeRole;
-import com.trinity.user.constant.UserStatus;
+import com.trinity.user.domain.model.EmployeeRole;
+import com.trinity.user.domain.model.UserStatus;
 import org.junit.jupiter.api.Test;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;

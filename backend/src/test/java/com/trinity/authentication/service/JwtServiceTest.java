@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,6 +13,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import com.trinity.user.domain.model.Employee;
+import com.trinity.user.domain.model.UserType;
+import com.trinity.user.infrastructure.security.AppUserDetails;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -112,5 +117,31 @@ class JwtServiceTest {
 
         // Then
         assertEquals(expectedSubject, actualSubject);
+    }
+
+    @Test
+    void generateToken_withAppUserDetails_embedsRoleIdFromDomainUser() {
+        // Given a real AppUserDetails wrapping a domain user with a populated id —
+        // this exercises the single-arg overload that dereferences getDomainUser().getId(),
+        // the path the persistence adapter's id-on-save contract feeds into.
+        UUID userId = UUID.randomUUID();
+        Employee employee = Employee.builder()
+                .id(userId)
+                .email("employee@example.com")
+                .hashedPassword("hash")
+                .build();
+        AppUserDetails appUserDetails = new AppUserDetails(employee);
+
+        UUID expectedRoleId = UUID.nameUUIDFromBytes(
+                (UserType.EMPLOYEE.name() + ":" + userId).getBytes());
+
+        // When
+        String token = jwtService.generateToken(appUserDetails);
+
+        // Then — no NPE on getId(), subject is the email, and the roleId claim is derived.
+        assertNotNull(token);
+        assertEquals("employee@example.com", jwtService.extractUsername(token));
+        String roleId = jwtService.extractClaim(token, claims -> claims.get("roleId", String.class));
+        assertEquals(expectedRoleId.toString(), roleId);
     }
 }

@@ -6,8 +6,8 @@ import lombok.Data;
 
 import java.util.Optional;
 
-import com.trinity.user.constant.EmployeeRole;
-import com.trinity.user.constant.UserStatus;
+import com.trinity.user.domain.model.EmployeeRole;
+import com.trinity.user.domain.model.UserStatus;
 
 @Data
 @AllArgsConstructor

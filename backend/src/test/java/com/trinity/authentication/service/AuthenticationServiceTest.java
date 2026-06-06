@@ -15,12 +15,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.trinity.authentication.dto.AuthenticationResponse;
 import com.trinity.authentication.dto.RegisterRequest;
 import com.trinity.authentication.dto.LoginRequest;
-import com.trinity.user.constant.EmployeeRole;
-import com.trinity.user.constant.UserType;
+import com.trinity.user.domain.model.EmployeeRole;
+import com.trinity.user.domain.model.UserType;
 import com.trinity.user.infrastructure.security.AppUserDetails;
-import com.trinity.user.model.Employee;
-import com.trinity.user.repository.CustomerRepository;
-import com.trinity.user.repository.EmployeeRepository;
+import com.trinity.user.domain.model.Employee;
+import com.trinity.user.domain.port.CustomerRepositoryPort;
+import com.trinity.user.domain.port.EmployeeRepositoryPort;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -31,10 +31,10 @@ class AuthenticationServiceTest {
     private AuthenticationService authenticationService;
 
     @Mock
-    private EmployeeRepository employeeRepository;
+    private EmployeeRepositoryPort employeeRepository;
 
     @Mock
-    private CustomerRepository customerRepository;
+    private CustomerRepositoryPort customerRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;

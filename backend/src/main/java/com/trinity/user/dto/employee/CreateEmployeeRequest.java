@@ -2,7 +2,7 @@ package com.trinity.user.dto.employee;
 
 import java.time.Instant;
 
-import com.trinity.user.constant.EmployeeRole;
+import com.trinity.user.domain.model.EmployeeRole;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;

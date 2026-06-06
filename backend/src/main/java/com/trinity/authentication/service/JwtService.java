@@ -8,7 +8,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import com.trinity.user.infrastructure.security.AppUserDetails;
-import com.trinity.user.model.AbstractUser;
+import com.trinity.user.domain.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -42,7 +42,7 @@ public class JwtService {
 
         // JWT crypté pour éviter d'avoir role : 'ADMIN' en clair
         if (userDetails instanceof AppUserDetails appUserDetails) {
-            AbstractUser user = appUserDetails.getDomainUser();
+            User user = appUserDetails.getDomainUser();
 
             // Génère un UUID basé sur le type d'utilisateur et son ID
             UUID roleUuid = UUID.nameUUIDFromBytes(

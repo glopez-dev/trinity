@@ -1,6 +1,6 @@
 package com.trinity.authentication.dto;
 
-import com.trinity.user.constant.UserType;
+import com.trinity.user.domain.model.UserType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;

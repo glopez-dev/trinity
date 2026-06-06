@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import com.trinity.user.dto.employee.CreateEmployeeRequest;
 import com.trinity.user.dto.employee.EmployeeResponse;
 import com.trinity.user.dto.employee.UpdateEmployeeRequest;
-import com.trinity.user.service.EmployeeService;
+import com.trinity.user.application.EmployeeService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

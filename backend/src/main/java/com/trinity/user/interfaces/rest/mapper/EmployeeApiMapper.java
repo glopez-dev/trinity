@@ -1,7 +1,7 @@
 package com.trinity.user.interfaces.rest.mapper;
 
 import com.trinity.user.dto.employee.EmployeeResponse;
-import com.trinity.user.model.Employee;
+import com.trinity.user.domain.model.Employee;
 import org.mapstruct.Mapper;
 
 import java.util.List;

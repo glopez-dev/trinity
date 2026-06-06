@@ -1,7 +1,7 @@
 package com.trinity.user.dto.customer;
 
-import com.trinity.user.constant.UserStatus;
-import com.trinity.user.constant.UserType;
+import com.trinity.user.domain.model.UserStatus;
+import com.trinity.user.domain.model.UserType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

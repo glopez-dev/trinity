@@ -1,6 +1,6 @@
 package com.trinity.authentication.dto;
 
-import com.trinity.user.constant.EmployeeRole;
+import com.trinity.user.domain.model.EmployeeRole;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;

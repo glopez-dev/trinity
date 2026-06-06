@@ -3,9 +3,9 @@ package com.trinity.user.dto.employee;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.trinity.user.constant.EmployeeRole;
-import com.trinity.user.constant.UserStatus;
-import com.trinity.user.constant.UserType;
+import com.trinity.user.domain.model.EmployeeRole;
+import com.trinity.user.domain.model.UserStatus;
+import com.trinity.user.domain.model.UserType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

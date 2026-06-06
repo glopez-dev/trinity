@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.trinity.user.constant.EmployeeRole;
+import com.trinity.user.domain.model.EmployeeRole;
 
 
 class RegisterRequestTest {
