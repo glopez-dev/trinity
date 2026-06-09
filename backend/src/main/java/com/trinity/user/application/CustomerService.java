@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 
 import com.trinity.user.domain.model.UserStatus;
 import com.trinity.user.domain.model.UserType;
-import com.trinity.user.dto.customer.CreateCustomerRequest;
-import com.trinity.user.dto.customer.CustomerResponse;
-import com.trinity.user.dto.customer.UpdateCustomerRequest;
+import com.trinity.user.interfaces.rest.dto.CreateCustomerRequest;
+import com.trinity.user.interfaces.rest.dto.CustomerResponse;
+import com.trinity.user.interfaces.rest.dto.UpdateCustomerRequest;
 import com.trinity.user.interfaces.rest.mapper.CustomerApiMapper;
 import com.trinity.user.domain.model.Customer;
 import com.trinity.user.domain.port.CustomerRepositoryPort;

@@ -1,6 +1,6 @@
 package com.trinity.user.interfaces.rest.mapper;
 
-import com.trinity.user.dto.employee.EmployeeResponse;
+import com.trinity.user.interfaces.rest.dto.EmployeeResponse;
 import com.trinity.user.domain.model.Employee;
 import org.mapstruct.Mapper;
 

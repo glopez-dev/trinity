@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.trinity.common.domain.exception.NotFoundException;
 import com.trinity.user.domain.model.UserStatus;
-import com.trinity.user.dto.employee.CreateEmployeeRequest;
-import com.trinity.user.dto.employee.EmployeeResponse;
-import com.trinity.user.dto.employee.UpdateEmployeeRequest;
+import com.trinity.user.interfaces.rest.dto.CreateEmployeeRequest;
+import com.trinity.user.interfaces.rest.dto.EmployeeResponse;
+import com.trinity.user.interfaces.rest.dto.UpdateEmployeeRequest;
 import com.trinity.user.interfaces.rest.mapper.EmployeeApiMapper;
 import com.trinity.user.domain.model.Employee;
 import com.trinity.user.domain.port.EmployeeRepositoryPort;

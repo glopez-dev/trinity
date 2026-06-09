@@ -19,8 +19,8 @@ import org.mockito.quality.Strictness;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.trinity.product.domain.model.Product;
-import com.trinity.product.dto.open_food_facts.OpenFoodFactSearchResponse;
-import com.trinity.product.dto.open_food_facts.OpenFoodFactsProduct;
+import com.trinity.product.infrastructure.external.openfoodfacts.dto.OpenFoodFactSearchResponse;
+import com.trinity.product.infrastructure.external.openfoodfacts.dto.OpenFoodFactsProduct;
 
 import reactor.core.publisher.Mono;
 

@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.trinity.product.application.ProductService;
-import com.trinity.product.dto.api.CreateProductRequest;
-import com.trinity.product.dto.api.ProductResponse;
-import com.trinity.product.dto.api.SearchProductRequest;
-import com.trinity.product.dto.api.UpdateProductRequest;
+import com.trinity.product.interfaces.rest.dto.CreateProductRequest;
+import com.trinity.product.interfaces.rest.dto.ProductResponse;
+import com.trinity.product.interfaces.rest.dto.SearchProductRequest;
+import com.trinity.product.interfaces.rest.dto.UpdateProductRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

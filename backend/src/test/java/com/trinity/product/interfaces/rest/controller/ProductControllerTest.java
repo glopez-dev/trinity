@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import com.trinity.product.dto.api.ProductResponse;
+import com.trinity.product.interfaces.rest.dto.ProductResponse;
 import com.trinity.product.exception.ProductNotFoundException;
 import com.trinity.product.application.ProductService;
 

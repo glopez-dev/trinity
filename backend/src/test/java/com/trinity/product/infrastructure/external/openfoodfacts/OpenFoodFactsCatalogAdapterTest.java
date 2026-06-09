@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.trinity.product.domain.model.Product;
-import com.trinity.product.dto.open_food_facts.Front;
-import com.trinity.product.dto.open_food_facts.ImageUrls;
-import com.trinity.product.dto.open_food_facts.OpenFoodFactSearchResponse;
-import com.trinity.product.dto.open_food_facts.OpenFoodFactsNutrientLevels;
-import com.trinity.product.dto.open_food_facts.OpenFoodFactsNutriments;
-import com.trinity.product.dto.open_food_facts.OpenFoodFactsProduct;
-import com.trinity.product.dto.open_food_facts.OpenFoodFactsSelectedImages;
+import com.trinity.product.infrastructure.external.openfoodfacts.dto.Front;
+import com.trinity.product.infrastructure.external.openfoodfacts.dto.ImageUrls;
+import com.trinity.product.infrastructure.external.openfoodfacts.dto.OpenFoodFactSearchResponse;
+import com.trinity.product.infrastructure.external.openfoodfacts.dto.OpenFoodFactsNutrientLevels;
+import com.trinity.product.infrastructure.external.openfoodfacts.dto.OpenFoodFactsNutriments;
+import com.trinity.product.infrastructure.external.openfoodfacts.dto.OpenFoodFactsProduct;
+import com.trinity.product.infrastructure.external.openfoodfacts.dto.OpenFoodFactsSelectedImages;
 
 
 class OpenFoodFactsCatalogAdapterTest {

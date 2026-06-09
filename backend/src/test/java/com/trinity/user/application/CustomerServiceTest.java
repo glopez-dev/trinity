@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.trinity.user.dto.customer.CreateCustomerRequest;
-import com.trinity.user.dto.customer.CustomerResponse;
-import com.trinity.user.dto.customer.UpdateCustomerRequest;
+import com.trinity.user.interfaces.rest.dto.CreateCustomerRequest;
+import com.trinity.user.interfaces.rest.dto.CustomerResponse;
+import com.trinity.user.interfaces.rest.dto.UpdateCustomerRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
