@@ -7,7 +7,6 @@ import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import com.trinity.common.domain.exception.DomainException;
 import com.trinity.payment.infrastructure.config.PaypalConfig;
-import com.trinity.payment.interfaces.rest.dto.InvoiceDTO;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,9 +26,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
- * Tests the PayPal anti-corruption adapter: SDK calls (via mockStatic on Invoice)
- * and PayPalRESTException -> DomainException translation. This is where the SDK
- * interaction is exercised; the application service test only checks delegation.
+ * Tests the PayPal anti-corruption gateway adapter: SDK calls (via mockStatic on
+ * Invoice) and PayPalRESTException -> DomainException translation. The gateway
+ * now speaks the domain {@link com.trinity.payment.domain.model.Invoice}; the
+ * SDK mapping is delegated to the mocked {@link PaypalInvoiceAdapter}. The
+ * domain<->SDK quirks are exercised by PaypalInvoiceAdapterTest.
  */
 @ExtendWith(MockitoExtension.class)
 class PaypalInvoiceGatewayAdapterTest {
@@ -47,7 +48,7 @@ class PaypalInvoiceGatewayAdapterTest {
     private PaypalInvoiceGatewayAdapter adapter;
 
     private Invoice mockInvoice;
-    private InvoiceDTO mockInvoiceDTO;
+    private com.trinity.payment.domain.model.Invoice mockDomainInvoice;
     private static final String INVOICE_ID = "INV2-QXWN-W3VH-Q8H7-XH8J";
     private static MockedStatic<Invoice> invoiceMockedStatic;
 
@@ -64,31 +65,34 @@ class PaypalInvoiceGatewayAdapterTest {
     @BeforeEach
     void setUp() {
         mockInvoice = mock(Invoice.class);
-        mockInvoiceDTO = new InvoiceDTO();
+        mockDomainInvoice = com.trinity.payment.domain.model.Invoice.builder().build();
         when(paypalConfig.getAPIContext()).thenReturn(apiContext);
         invoiceMockedStatic.when(() -> Invoice.get(any(APIContext.class), eq(INVOICE_ID))).thenReturn(mockInvoice);
     }
 
     @Test
     void create_success() throws PayPalRESTException {
-        when(invoiceAdapter.mapToInvoice(any(InvoiceDTO.class))).thenReturn(mockInvoice);
-        when(invoiceAdapter.mapToInvoiceDTO(any(Invoice.class))).thenReturn(mockInvoiceDTO);
+        when(invoiceAdapter.mapToSdkInvoice(any(com.trinity.payment.domain.model.Invoice.class)))
+                .thenReturn(mockInvoice);
+        when(invoiceAdapter.mapToInvoice(any(Invoice.class))).thenReturn(mockDomainInvoice);
         when(mockInvoice.create(any(APIContext.class))).thenReturn(mockInvoice);
 
-        InvoiceDTO result = adapter.create(new InvoiceDTO());
+        com.trinity.payment.domain.model.Invoice result =
+                adapter.create(com.trinity.payment.domain.model.Invoice.builder().build());
 
         assertNotNull(result);
         verify(mockInvoice).create(apiContext);
-        verify(invoiceAdapter).mapToInvoiceDTO(mockInvoice);
+        verify(invoiceAdapter).mapToInvoice(mockInvoice);
     }
 
     @Test
     void create_translatesSdkExceptionToDomainException() throws PayPalRESTException {
-        when(invoiceAdapter.mapToInvoice(any(InvoiceDTO.class))).thenReturn(mockInvoice);
+        when(invoiceAdapter.mapToSdkInvoice(any(com.trinity.payment.domain.model.Invoice.class)))
+                .thenReturn(mockInvoice);
         doThrow(new PayPalRESTException("Error")).when(mockInvoice).create(any(APIContext.class));
 
         DomainException exception = assertThrows(DomainException.class,
-                () -> adapter.create(new InvoiceDTO()));
+                () -> adapter.create(com.trinity.payment.domain.model.Invoice.builder().build()));
         assertEquals("Error creating invoice", exception.getMessage());
     }
 
@@ -100,12 +104,12 @@ class PaypalInvoiceGatewayAdapterTest {
 
     @Test
     void get_success() {
-        when(invoiceAdapter.mapToInvoiceDTO(any(Invoice.class))).thenReturn(mockInvoiceDTO);
+        when(invoiceAdapter.mapToInvoice(any(Invoice.class))).thenReturn(mockDomainInvoice);
 
-        InvoiceDTO result = adapter.get(INVOICE_ID);
+        com.trinity.payment.domain.model.Invoice result = adapter.get(INVOICE_ID);
 
         assertNotNull(result);
-        verify(invoiceAdapter).mapToInvoiceDTO(mockInvoice);
+        verify(invoiceAdapter).mapToInvoice(mockInvoice);
     }
 
     @Test
@@ -114,9 +118,9 @@ class PaypalInvoiceGatewayAdapterTest {
         List<Invoice> invoiceList = Arrays.asList(mockInvoice);
         when(mockInvoices.getInvoices()).thenReturn(invoiceList);
         invoiceMockedStatic.when(() -> Invoice.getAll(any(APIContext.class))).thenReturn(mockInvoices);
-        when(invoiceAdapter.mapToInvoiceDTO(any(Invoice.class))).thenReturn(mockInvoiceDTO);
+        when(invoiceAdapter.mapToInvoice(any(Invoice.class))).thenReturn(mockDomainInvoice);
 
-        List<InvoiceDTO> result = adapter.getAll();
+        List<com.trinity.payment.domain.model.Invoice> result = adapter.getAll();
 
         assertNotNull(result);
         assertEquals(1, result.size());
@@ -128,7 +132,7 @@ class PaypalInvoiceGatewayAdapterTest {
         when(mockInvoices.getInvoices()).thenReturn(null);
         invoiceMockedStatic.when(() -> Invoice.getAll(any(APIContext.class))).thenReturn(mockInvoices);
 
-        List<InvoiceDTO> result = adapter.getAll();
+        List<com.trinity.payment.domain.model.Invoice> result = adapter.getAll();
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
@@ -136,11 +140,13 @@ class PaypalInvoiceGatewayAdapterTest {
 
     @Test
     void update_success() throws PayPalRESTException {
-        when(invoiceAdapter.mapToInvoice(any(InvoiceDTO.class))).thenReturn(mockInvoice);
+        when(invoiceAdapter.mapToSdkInvoice(any(com.trinity.payment.domain.model.Invoice.class)))
+                .thenReturn(mockInvoice);
         when(mockInvoice.update(apiContext)).thenReturn(mockInvoice);
-        doReturn(mockInvoiceDTO).when(invoiceAdapter).mapToInvoiceDTO(any(Invoice.class));
+        doReturn(mockDomainInvoice).when(invoiceAdapter).mapToInvoice(any(Invoice.class));
 
-        InvoiceDTO result = adapter.update(new InvoiceDTO());
+        com.trinity.payment.domain.model.Invoice result =
+                adapter.update(com.trinity.payment.domain.model.Invoice.builder().build());
 
         assertNotNull(result);
         verify(mockInvoice).update(apiContext);

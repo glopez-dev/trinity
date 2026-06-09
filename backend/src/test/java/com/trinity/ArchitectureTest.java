@@ -44,15 +44,43 @@ class ArchitectureTest {
     }
 
     @Test
+    void domainPackagesDoNotDependOnRestDtos() {
+        // The domain must not know the presentation layer: REST DTOs are converted
+        // to/from the domain by the API mappers at the application boundary. This is
+        // the regression guard for the InvoicingGateway leak (it imported InvoiceDTO).
+        for (String context : PURE_DOMAIN_CONTEXTS) {
+            ArchRule rule = noClasses()
+                    .that().resideInAPackage("..%s.domain..".formatted(context))
+                    .should().dependOnClassesThat()
+                    .resideInAPackage("..%s.interfaces.rest.dto..".formatted(context))
+                    .because("the %s domain must not depend on REST DTOs".formatted(context))
+                    .allowEmptyShould(true);
+            rule.check(CLASSES);
+        }
+    }
+
+    @Test
+    void externalAclDtosAreConfinedToTheirAdapter() {
+        // External-API DTOs (e.g. OpenFoodFacts response shapes) are an
+        // anti-corruption concern: only the infrastructure.external adapter that
+        // owns the integration may know them. They must not leak into the domain,
+        // the application layer, the REST layer or persistence.
+        ArchRule rule = noClasses()
+                .that().resideOutsideOfPackage("..infrastructure.external..")
+                .should().dependOnClassesThat()
+                .resideInAPackage("..infrastructure.external..dto..")
+                .because("external ACL DTOs belong to their adapter only")
+                .allowEmptyShould(true);
+        rule.check(CLASSES);
+    }
+
+    @Test
     void apiMappersDoNotDependOnPersistenceEntities() {
-        // allowEmptyShould: these layered packages appear as contexts are migrated;
-        // the rule still guards the boundary once they exist.
         ArchRule rule = noClasses()
                 .that().resideInAPackage("..interfaces.rest.mapper..")
                 .should().dependOnClassesThat()
                 .resideInAPackage("..infrastructure.persistence.entity..")
-                .because("API mappers map DTOs to/from the domain, never JPA entities")
-                .allowEmptyShould(true);
+                .because("API mappers map DTOs to/from the domain, never JPA entities");
         rule.check(CLASSES);
     }
 
@@ -62,8 +90,7 @@ class ArchitectureTest {
                 .that().resideInAPackage("..infrastructure.persistence.mapper..")
                 .should().dependOnClassesThat()
                 .resideInAPackage("..interfaces.rest.dto..")
-                .because("persistence mappers map the domain to/from JPA entities, never DTOs")
-                .allowEmptyShould(true);
+                .because("persistence mappers map the domain to/from JPA entities, never DTOs");
         rule.check(CLASSES);
     }
 }

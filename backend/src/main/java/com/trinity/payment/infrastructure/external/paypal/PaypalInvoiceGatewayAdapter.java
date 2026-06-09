@@ -7,7 +7,6 @@ import com.paypal.base.rest.PayPalRESTException;
 import com.trinity.common.domain.exception.DomainException;
 import com.trinity.payment.domain.port.InvoicingGateway;
 import com.trinity.payment.infrastructure.config.PaypalConfig;
-import com.trinity.payment.interfaces.rest.dto.InvoiceDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,8 +16,12 @@ import java.util.List;
 
 /**
  * PayPal anti-corruption adapter for invoicing — the ONLY place com.paypal.* is
- * allowed to live. Translates between InvoiceDTO and the PayPal SDK, and maps
- * PayPalRESTException to a domain exception.
+ * allowed to live. Translates between the domain {@link com.trinity.payment.domain.model.Invoice}
+ * and the PayPal SDK (via {@link PaypalInvoiceAdapter}), and maps
+ * {@link PayPalRESTException} to a domain exception.
+ *
+ * <p>The SDK invoice type ({@link Invoice}) is imported; the domain invoice type
+ * is fully qualified to disambiguate the two.
  */
 @Slf4j
 @Component
@@ -29,11 +32,11 @@ public class PaypalInvoiceGatewayAdapter implements InvoicingGateway {
     private final PaypalInvoiceAdapter invoiceAdapter;
 
     @Override
-    public InvoiceDTO create(InvoiceDTO request) {
+    public com.trinity.payment.domain.model.Invoice create(com.trinity.payment.domain.model.Invoice request) {
         try {
-            Invoice invoice = invoiceAdapter.mapToInvoice(request);
+            Invoice invoice = invoiceAdapter.mapToSdkInvoice(request);
             invoice = invoice.create(paypalConfig.getAPIContext());
-            return invoiceAdapter.mapToInvoiceDTO(invoice);
+            return invoiceAdapter.mapToInvoice(invoice);
         } catch (PayPalRESTException e) {
             log.error("Failed to create PayPal invoice", e);
             throw new PayPalInvoiceException("Error creating invoice", e);
@@ -51,19 +54,19 @@ public class PaypalInvoiceGatewayAdapter implements InvoicingGateway {
     }
 
     @Override
-    public InvoiceDTO get(String invoiceId) {
-        return invoiceAdapter.mapToInvoiceDTO(retrieve(invoiceId));
+    public com.trinity.payment.domain.model.Invoice get(String invoiceId) {
+        return invoiceAdapter.mapToInvoice(retrieve(invoiceId));
     }
 
     @Override
-    public List<InvoiceDTO> getAll() {
+    public List<com.trinity.payment.domain.model.Invoice> getAll() {
         try {
             Invoices invoices = Invoice.getAll(paypalConfig.getAPIContext());
             if (invoices == null || invoices.getInvoices() == null) {
                 return Collections.emptyList();
             }
             return invoices.getInvoices().stream()
-                    .map(invoiceAdapter::mapToInvoiceDTO)
+                    .map(invoiceAdapter::mapToInvoice)
                     .toList();
         } catch (PayPalRESTException e) {
             log.error("Failed to get all invoices", e);
@@ -72,11 +75,11 @@ public class PaypalInvoiceGatewayAdapter implements InvoicingGateway {
     }
 
     @Override
-    public InvoiceDTO update(InvoiceDTO request) {
+    public com.trinity.payment.domain.model.Invoice update(com.trinity.payment.domain.model.Invoice request) {
         try {
-            Invoice invoice = invoiceAdapter.mapToInvoice(request);
+            Invoice invoice = invoiceAdapter.mapToSdkInvoice(request);
             invoice = invoice.update(paypalConfig.getAPIContext());
-            return invoiceAdapter.mapToInvoiceDTO(invoice);
+            return invoiceAdapter.mapToInvoice(invoice);
         } catch (PayPalRESTException e) {
             log.error("Failed to update invoice: {}", request.getId(), e);
             throw new PayPalInvoiceException("Error updating invoice", e);
