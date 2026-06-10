@@ -8,6 +8,7 @@ import com.trinity.payment.domain.model.PaymentProvider;
 import com.trinity.payment.domain.model.PaymentResult;
 import com.trinity.payment.domain.model.PaymentStatus;
 import com.trinity.payment.domain.port.PaymentGateway;
+import com.trinity.payment.domain.port.PaymentRepositoryPort;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumMap;
@@ -18,30 +19,56 @@ import java.util.Map;
  * Application service orchestrating payments through provider gateways. It only
  * knows the {@link PaymentGateway} port — never an SDK type. The right gateway
  * is resolved by provider from the injected list of adapters.
+ *
+ * <p>No method-level @Transactional: the gateway call is an external HTTP
+ * request that must never hold a DB connection. Each repository save is its own
+ * short transaction inside the adapter.
  */
 @Service
 public class PaymentService {
 
     private final Map<PaymentProvider, PaymentGateway> gateways = new EnumMap<>(PaymentProvider.class);
+    private final PaymentRepositoryPort paymentRepository;
 
-    public PaymentService(List<PaymentGateway> gatewayList) {
+    public PaymentService(List<PaymentGateway> gatewayList, PaymentRepositoryPort paymentRepository) {
         gatewayList.forEach(g -> gateways.put(g.provider(), g));
+        this.paymentRepository = paymentRepository;
     }
 
-    // No @Transactional here: these methods perform no DB writes today, and the
-    // gateway call is an external HTTP request that must never hold a DB
-    // connection. When persistence lands, keep the saves in short transactions
-    // around the gateway call — never spanning it.
     public Payment charge(Money amount, PaymentProvider provider, String paymentMethodToken) {
         Payment payment = Payment.initiate(amount, provider);
-        PaymentResult result = gatewayFor(provider).charge(payment, paymentMethodToken);
+        paymentRepository.save(payment);              // TX1: trace PENDING before the network call
+        PaymentResult result;
+        try {
+            result = gatewayFor(provider).charge(payment, paymentMethodToken);   // HTTP, outside any TX
+        } catch (RuntimeException e) {
+            payment.markFailed(e.getMessage());
+            paymentRepository.save(payment);          // TX2: the failure is persisted
+            throw e;
+        }
         applyResult(payment, result);
+        paymentRepository.save(payment);              // TX2: the outcome is persisted
         return payment;
+        // A crash between TX1 and the gateway leaves a PENDING row: accepted —
+        // reconciliation/webhooks are out of scope for now.
     }
 
     public PaymentResult createCheckout(PaymentProvider provider, List<PaymentLineItem> items,
                                         String successUrl, String cancelUrl) {
-        return gatewayFor(provider).createCheckout(items, successUrl, cancelUrl);
+        PaymentResult result = gatewayFor(provider).createCheckout(items, successUrl, cancelUrl);
+        Payment payment = Payment.initiate(totalOf(items), provider);
+        if (result.externalRef() != null) {
+            payment.assignExternalRef(result.externalRef());
+        }
+        paymentRepository.save(payment);              // single TX, after the HTTP call
+        return result;
+    }
+
+    private Money totalOf(List<PaymentLineItem> items) {
+        return items.stream()
+                .map(item -> item.unitAmount().multiply(item.quantity()))
+                .reduce(Money::add)
+                .orElseThrow(() -> new BusinessRuleViolation("A checkout requires at least one line item"));
     }
 
     private void applyResult(Payment payment, PaymentResult result) {

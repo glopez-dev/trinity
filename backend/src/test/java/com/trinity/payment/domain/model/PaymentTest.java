@@ -89,4 +89,49 @@ class PaymentTest {
 
         assertThrows(BusinessRuleViolation.class, payment::cancel);
     }
+
+    @Test
+    void rehydrate_restoresPersistedStateVerbatim() {
+        java.util.UUID id = java.util.UUID.randomUUID();
+        java.time.Instant createdAt = java.time.Instant.parse("2026-01-01T00:00:00Z");
+
+        Payment payment = Payment.rehydrate(id, Money.of(new java.math.BigDecimal("12.00"), "USD"),
+                PaymentProvider.STRIPE, createdAt, PaymentStatus.FAILED, "pi_x", "declined");
+
+        org.assertj.core.api.Assertions.assertThat(payment.getId()).isEqualTo(id);
+        org.assertj.core.api.Assertions.assertThat(payment.getCreatedAt()).isEqualTo(createdAt);
+        org.assertj.core.api.Assertions.assertThat(payment.getStatus()).isEqualTo(PaymentStatus.FAILED);
+        org.assertj.core.api.Assertions.assertThat(payment.getExternalRef()).isEqualTo("pi_x");
+        org.assertj.core.api.Assertions.assertThat(payment.getFailureReason()).isEqualTo("declined");
+    }
+
+    @Test
+    void assignExternalRef_onPendingPayment_setsTheRef() {
+        Payment payment = Payment.initiate(Money.of(java.math.BigDecimal.TEN, "USD"), PaymentProvider.STRIPE);
+
+        payment.assignExternalRef("cs_123");
+
+        org.assertj.core.api.Assertions.assertThat(payment.getExternalRef()).isEqualTo("cs_123");
+        org.assertj.core.api.Assertions.assertThat(payment.getStatus()).isEqualTo(PaymentStatus.PENDING);
+    }
+
+    @Test
+    void assignExternalRef_rejectsBlankDuplicateOrNonPending() {
+        Payment payment = Payment.initiate(Money.of(java.math.BigDecimal.TEN, "USD"), PaymentProvider.STRIPE);
+
+        org.assertj.core.api.Assertions.assertThatExceptionOfType(
+                com.trinity.common.domain.exception.BusinessRuleViolation.class)
+                .isThrownBy(() -> payment.assignExternalRef(" "));
+
+        payment.assignExternalRef("cs_1");
+        org.assertj.core.api.Assertions.assertThatExceptionOfType(
+                com.trinity.common.domain.exception.BusinessRuleViolation.class)
+                .isThrownBy(() -> payment.assignExternalRef("cs_2"));
+
+        Payment authorized = Payment.initiate(Money.of(java.math.BigDecimal.TEN, "USD"), PaymentProvider.STRIPE);
+        authorized.markAuthorized("pi_1");
+        org.assertj.core.api.Assertions.assertThatExceptionOfType(
+                com.trinity.common.domain.exception.BusinessRuleViolation.class)
+                .isThrownBy(() -> authorized.assignExternalRef("cs_3"));
+    }
 }

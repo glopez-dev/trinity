@@ -44,6 +44,33 @@ public class Payment {
         return new Payment(UUID.randomUUID(), amount, provider, Instant.now());
     }
 
+    /**
+     * Rebuilds a persisted payment. For persistence adapters only: restores the
+     * stored state verbatim, bypassing the transition guards.
+     */
+    public static Payment rehydrate(UUID id, Money amount, PaymentProvider provider, Instant createdAt,
+                                    PaymentStatus status, String externalRef, String failureReason) {
+        Payment payment = new Payment(id, amount, provider, createdAt);
+        payment.status = status;
+        payment.externalRef = externalRef;
+        payment.failureReason = failureReason;
+        return payment;
+    }
+
+    /** Attaches the provider session reference to a still-PENDING payment (hosted checkout). */
+    public void assignExternalRef(String externalRef) {
+        if (externalRef == null || externalRef.isBlank()) {
+            throw new BusinessRuleViolation("A provider reference must not be blank");
+        }
+        if (this.externalRef != null) {
+            throw new BusinessRuleViolation("The provider reference is already assigned");
+        }
+        if (this.status != PaymentStatus.PENDING) {
+            throw new BusinessRuleViolation("Only a pending payment can receive its provider reference");
+        }
+        this.externalRef = externalRef;
+    }
+
     public void markAuthorized(String externalRef) {
         if (externalRef == null || externalRef.isBlank()) {
             throw new BusinessRuleViolation("An authorized payment must carry a provider reference");

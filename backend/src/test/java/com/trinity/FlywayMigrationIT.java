@@ -27,7 +27,7 @@ class FlywayMigrationIT {
                 "select count(*) from flyway_schema_history where success = true", Integer.class);
         assertThat(applied).isGreaterThanOrEqualTo(1);
 
-        for (String table : new String[]{"employee", "customer", "products", "carts", "cart_items"}) {
+        for (String table : new String[]{"employee", "customer", "products", "carts", "cart_items", "payments"}) {
             Integer count = jdbcTemplate.queryForObject(
                     "select count(*) from " + table, Integer.class);
             assertThat(count).isNotNull();
