@@ -151,4 +151,110 @@ class StripePaymentAdapterTest {
                     .isInstanceOf(BusinessRuleViolation.class);
         }
     }
+
+    @Test
+    void charge_requiresCapture_mapsToAuthorized() throws Exception {
+        PaymentIntent intent = mock(PaymentIntent.class);
+        when(intent.getId()).thenReturn("pi_auth");
+        when(intent.getStatus()).thenReturn("requires_capture");
+
+        Payment payment = Payment.initiate(Money.of(new BigDecimal("20.00"), "USD"), PaymentProvider.STRIPE);
+
+        try (MockedStatic<PaymentIntent> mocked = mockStatic(PaymentIntent.class)) {
+            mocked.when(() -> PaymentIntent.create(any(PaymentIntentCreateParams.class))).thenReturn(intent);
+
+            PaymentResult result = adapter.charge(payment, "pm_card");
+
+            assertThat(result.status()).isEqualTo(PaymentStatus.AUTHORIZED);
+        }
+    }
+
+    @Test
+    void charge_canceledIntent_mapsToCancelled() throws Exception {
+        PaymentIntent intent = mock(PaymentIntent.class);
+        when(intent.getId()).thenReturn("pi_cancel");
+        when(intent.getStatus()).thenReturn("canceled");
+
+        Payment payment = Payment.initiate(Money.of(new BigDecimal("20.00"), "USD"), PaymentProvider.STRIPE);
+
+        try (MockedStatic<PaymentIntent> mocked = mockStatic(PaymentIntent.class)) {
+            mocked.when(() -> PaymentIntent.create(any(PaymentIntentCreateParams.class))).thenReturn(intent);
+
+            PaymentResult result = adapter.charge(payment, "pm_card");
+
+            assertThat(result.status()).isEqualTo(PaymentStatus.CANCELLED);
+        }
+    }
+
+    @Test
+    void charge_nullStatus_mapsToPending() throws Exception {
+        PaymentIntent intent = mock(PaymentIntent.class);
+        when(intent.getId()).thenReturn("pi_null");
+        when(intent.getStatus()).thenReturn(null);
+
+        Payment payment = Payment.initiate(Money.of(new BigDecimal("20.00"), "USD"), PaymentProvider.STRIPE);
+
+        try (MockedStatic<PaymentIntent> mocked = mockStatic(PaymentIntent.class)) {
+            mocked.when(() -> PaymentIntent.create(any(PaymentIntentCreateParams.class))).thenReturn(intent);
+
+            PaymentResult result = adapter.charge(payment, "pm_card");
+
+            assertThat(result.status()).isEqualTo(PaymentStatus.PENDING);
+        }
+    }
+
+    @Test
+    void charge_unknownStatus_mapsToPending() throws Exception {
+        PaymentIntent intent = mock(PaymentIntent.class);
+        when(intent.getId()).thenReturn("pi_unknown");
+        when(intent.getStatus()).thenReturn("some_unexpected_status");
+
+        Payment payment = Payment.initiate(Money.of(new BigDecimal("20.00"), "USD"), PaymentProvider.STRIPE);
+
+        try (MockedStatic<PaymentIntent> mocked = mockStatic(PaymentIntent.class)) {
+            mocked.when(() -> PaymentIntent.create(any(PaymentIntentCreateParams.class))).thenReturn(intent);
+
+            PaymentResult result = adapter.charge(payment, "pm_card");
+
+            assertThat(result.status()).isEqualTo(PaymentStatus.PENDING);
+        }
+    }
+
+    @Test
+    void createCheckout_nullUrls_fallsBackToConfiguredUrls() throws Exception {
+        properties.setSuccessUrl("https://default-ok");
+        properties.setCancelUrl("https://default-cancel");
+        Session session = mock(Session.class);
+        when(session.getId()).thenReturn("cs_default");
+        when(session.getUrl()).thenReturn("https://checkout.stripe.com/cs_default");
+
+        try (MockedStatic<Session> mocked = mockStatic(Session.class)) {
+            mocked.when(() -> Session.create(any(SessionCreateParams.class))).thenAnswer(inv -> {
+                SessionCreateParams params = inv.getArgument(0);
+                assertThat(params.getSuccessUrl()).isEqualTo("https://default-ok");
+                assertThat(params.getCancelUrl()).isEqualTo("https://default-cancel");
+                return session;
+            });
+
+            PaymentResult result = adapter.createCheckout(
+                    List.of(new PaymentLineItem(Money.of(new BigDecimal("10.00"), "USD"), 1, "Coffee")),
+                    null, null);
+
+            assertThat(result.status()).isEqualTo(PaymentStatus.PENDING);
+            assertThat(result.externalRef()).isEqualTo("cs_default");
+        }
+    }
+
+    @Test
+    void createCheckout_translatesStripeExceptionToBusinessRuleViolation() {
+        try (MockedStatic<Session> mocked = mockStatic(Session.class)) {
+            mocked.when(() -> Session.create(any(SessionCreateParams.class)))
+                    .thenThrow(new ApiException("checkout failed", null, null, 400, null));
+
+            assertThatThrownBy(() -> adapter.createCheckout(
+                    List.of(new PaymentLineItem(Money.of(new BigDecimal("10.00"), "USD"), 1, "Coffee")),
+                    "https://ok", "https://cancel"))
+                    .isInstanceOf(BusinessRuleViolation.class);
+        }
+    }
 }

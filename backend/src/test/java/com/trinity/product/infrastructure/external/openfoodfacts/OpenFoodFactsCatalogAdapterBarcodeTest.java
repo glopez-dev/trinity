@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +20,10 @@ import org.mockito.quality.Strictness;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.trinity.product.domain.model.Product;
+import com.trinity.product.infrastructure.external.openfoodfacts.dto.Front;
 import com.trinity.product.infrastructure.external.openfoodfacts.dto.OpenFoodFactSearchResponse;
 import com.trinity.product.infrastructure.external.openfoodfacts.dto.OpenFoodFactsProduct;
+import com.trinity.product.infrastructure.external.openfoodfacts.dto.OpenFoodFactsSelectedImages;
 
 import reactor.core.publisher.Mono;
 
@@ -160,5 +163,88 @@ class OpenFoodFactsCatalogAdapterBarcodeTest {
 
         // Then
         assertTrue(result.isEmpty());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void search_ValidTerm_ReturnsAdaptedProducts() {
+        when(webClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(any(URI.class))).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(OpenFoodFactSearchResponse.class))
+                .thenReturn(Mono.just(openFoodFactsResponse));
+
+        // When
+        List<Product> result = adapter.search("nutella");
+
+        // Then
+        assertEquals(1, result.size());
+        assertEquals(barcode, result.get(0).getBarcode());
+        assertEquals("Ferrero", result.get(0).getBrand());
+
+        // The search URI must target the cgi/search endpoint and carry the term.
+        ArgumentCaptor<URI> uriCaptor = ArgumentCaptor.forClass(URI.class);
+        verify(requestHeadersUriSpec).uri(uriCaptor.capture());
+        String capturedUri = uriCaptor.getValue().toString();
+        assertTrue(capturedUri.contains("world.openfoodfacts.org/cgi/search.pl"));
+        assertTrue(capturedUri.contains("search_terms=nutella"));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void search_NullResponse_ReturnsEmptyList() {
+        when(webClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(any(URI.class))).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(OpenFoodFactSearchResponse.class)).thenReturn(Mono.empty());
+
+        // When
+        List<Product> result = adapter.search("nutella");
+
+        // Then
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void buildUri_ContainsAllQueryParams() {
+        URI uri = adapter.buildUri("coca");
+        String s = uri.toString();
+
+        assertTrue(s.contains("world.openfoodfacts.org/cgi/search.pl"));
+        assertTrue(s.contains("search_terms=coca"));
+        assertTrue(s.contains("page_size=10"));
+        assertTrue(s.contains("json=1"));
+        assertTrue(s.contains("sort_by=unique_scans_n"));
+        assertTrue(s.contains("fields="));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void findByBarcode_ProductWithNullImageUrls_MapsNullImages() {
+        // A product carrying a SelectedImages.front whose display/small/thumb are all null:
+        // adaptImageUrl(null) must yield null rather than throwing.
+        OpenFoodFactsProduct productWithImages = new OpenFoodFactsProduct();
+        productWithImages.setCode(barcode);
+        productWithImages.setBrands("Ferrero");
+        productWithImages.setGenericNameFr("Nutella");
+        OpenFoodFactsSelectedImages selectedImages = new OpenFoodFactsSelectedImages();
+        selectedImages.setFront(new Front());
+        productWithImages.setSelectedImages(selectedImages);
+
+        OpenFoodFactSearchResponse response = new OpenFoodFactSearchResponse();
+        response.setProducts(Collections.singletonList(productWithImages));
+
+        when(webClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(any(URI.class))).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(OpenFoodFactSearchResponse.class)).thenReturn(Mono.just(response));
+
+        // When
+        Optional<Product> result = adapter.findByBarcode(barcode);
+
+        // Then
+        assertTrue(result.isPresent());
+        assertNotNull(result.get().getSelectedImages());
+        assertNull(result.get().getSelectedImages().getDisplay());
     }
 }

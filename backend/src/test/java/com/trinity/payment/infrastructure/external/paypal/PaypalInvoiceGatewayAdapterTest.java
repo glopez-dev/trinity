@@ -158,4 +158,63 @@ class PaypalInvoiceGatewayAdapterTest {
         adapter.cancel(INVOICE_ID, "Test cancellation");
         verify(mockInvoice).cancel(eq(apiContext), any(CancelNotification.class));
     }
+
+    @Test
+    void send_translatesSdkExceptionToDomainException() throws PayPalRESTException {
+        doThrow(new PayPalRESTException("Error")).when(mockInvoice).send(any(APIContext.class));
+
+        DomainException exception = assertThrows(DomainException.class,
+                () -> adapter.send(INVOICE_ID));
+        assertEquals("Error sending invoice", exception.getMessage());
+    }
+
+    @Test
+    void getAll_translatesSdkExceptionToDomainException() {
+        invoiceMockedStatic.when(() -> Invoice.getAll(any(APIContext.class)))
+                .thenThrow(new PayPalRESTException("Error"));
+
+        DomainException exception = assertThrows(DomainException.class,
+                () -> adapter.getAll());
+        assertEquals("Error getting all invoices", exception.getMessage());
+    }
+
+    @Test
+    void update_translatesSdkExceptionToDomainException() throws PayPalRESTException {
+        when(invoiceAdapter.mapToSdkInvoice(any(com.trinity.payment.domain.model.Invoice.class)))
+                .thenReturn(mockInvoice);
+        doThrow(new PayPalRESTException("Error")).when(mockInvoice).update(any(APIContext.class));
+
+        DomainException exception = assertThrows(DomainException.class,
+                () -> adapter.update(com.trinity.payment.domain.model.Invoice.builder().build()));
+        assertEquals("Error updating invoice", exception.getMessage());
+    }
+
+    @Test
+    void delete_translatesSdkExceptionToDomainException() throws PayPalRESTException {
+        doThrow(new PayPalRESTException("Error")).when(mockInvoice).delete(any(APIContext.class));
+
+        DomainException exception = assertThrows(DomainException.class,
+                () -> adapter.delete(INVOICE_ID));
+        assertEquals("Error deleting invoice", exception.getMessage());
+    }
+
+    @Test
+    void cancel_translatesSdkExceptionToDomainException() throws PayPalRESTException {
+        doThrow(new PayPalRESTException("Error")).when(mockInvoice)
+                .cancel(any(APIContext.class), any(CancelNotification.class));
+
+        DomainException exception = assertThrows(DomainException.class,
+                () -> adapter.cancel(INVOICE_ID, "reason"));
+        assertEquals("Error cancelling invoice", exception.getMessage());
+    }
+
+    @Test
+    void retrieve_translatesSdkExceptionToDomainException() {
+        invoiceMockedStatic.when(() -> Invoice.get(any(APIContext.class), eq(INVOICE_ID)))
+                .thenThrow(new PayPalRESTException("Error"));
+
+        DomainException exception = assertThrows(DomainException.class,
+                () -> adapter.get(INVOICE_ID));
+        assertEquals("Error retrieving invoice", exception.getMessage());
+    }
 }
