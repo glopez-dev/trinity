@@ -9,7 +9,7 @@ import com.trinity.product.infrastructure.external.openfoodfacts.dto.OpenFoodFac
 import com.trinity.product.infrastructure.external.openfoodfacts.dto.OpenFoodFactsNutriments;
 import com.trinity.product.infrastructure.external.openfoodfacts.dto.OpenFoodFactsProduct;
 import com.trinity.product.infrastructure.external.openfoodfacts.dto.OpenFoodFactsSelectedImages;
-import com.trinity.product.exception.ApiException;
+import com.trinity.product.domain.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

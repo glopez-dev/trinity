@@ -1,7 +1,10 @@
-package com.trinity.product.exception;
+package com.trinity.product.domain.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
+
+import com.trinity.common.domain.exception.ExternalServiceException;
 
 
 class ApiExceptionTest {
@@ -18,6 +21,7 @@ class ApiExceptionTest {
         // Then
         assertThat(exception.getMessage()).isEqualTo(message);
         assertThat(exception.getCause()).isEqualTo(cause);
+        assertThat(exception).isInstanceOf(ExternalServiceException.class);
     }
 
     @Test

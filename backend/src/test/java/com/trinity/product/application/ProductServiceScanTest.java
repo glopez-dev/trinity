@@ -21,7 +21,7 @@ import com.trinity.product.domain.port.ProductCatalogGateway;
 import com.trinity.product.domain.port.ProductRepositoryPort;
 import com.trinity.product.interfaces.rest.dto.CreateProductRequest;
 import com.trinity.product.interfaces.rest.dto.ProductResponse;
-import com.trinity.product.exception.ProductNotFoundException;
+import com.trinity.product.domain.exception.ProductNotFoundException;
 import com.trinity.product.interfaces.rest.mapper.ProductApiMapper;
 
 @ExtendWith(MockitoExtension.class)

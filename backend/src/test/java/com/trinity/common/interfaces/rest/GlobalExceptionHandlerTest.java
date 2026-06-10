@@ -2,7 +2,9 @@ package com.trinity.common.interfaces.rest;
 
 import com.trinity.common.domain.exception.BusinessRuleViolation;
 import com.trinity.common.domain.exception.DomainException;
+import com.trinity.common.domain.exception.ExternalServiceException;
 import com.trinity.common.domain.exception.NotFoundException;
+import com.trinity.product.domain.exception.ProductNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +27,16 @@ class GlobalExceptionHandlerTest {
         @GetMapping("/boom/not-found")
         String notFound() {
             throw new NotFoundException("resource missing");
+        }
+
+        @GetMapping("/boom/product-not-found")
+        String productNotFound() {
+            throw new ProductNotFoundException("product missing");
+        }
+
+        @GetMapping("/boom/external-service")
+        String externalService() {
+            throw new ExternalServiceException("upstream down");
         }
 
         @GetMapping("/boom/business-rule")
@@ -78,6 +90,22 @@ class GlobalExceptionHandlerTest {
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").value("resource missing"))
                 .andExpect(jsonPath("$.path").value("/boom/not-found"));
+    }
+
+    @Test
+    void productNotFound_mapsTo404_notDomain422() throws Exception {
+        mockMvc.perform(get("/boom/product-not-found"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.message").value("product missing"));
+    }
+
+    @Test
+    void externalServiceException_mapsTo502() throws Exception {
+        mockMvc.perform(get("/boom/external-service"))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.status").value(502))
+                .andExpect(jsonPath("$.message").value("upstream down"));
     }
 
     @Test

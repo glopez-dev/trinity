@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import com.trinity.product.interfaces.rest.dto.ProductResponse;
-import com.trinity.product.exception.ProductNotFoundException;
+import com.trinity.product.domain.exception.ProductNotFoundException;
 import com.trinity.product.application.ProductService;
 
 import org.junit.jupiter.api.BeforeEach;

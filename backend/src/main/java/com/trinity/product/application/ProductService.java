@@ -15,8 +15,8 @@ import com.trinity.product.domain.model.Product;
 import com.trinity.product.domain.port.ProductCatalogGateway;
 import com.trinity.product.domain.port.ProductRepositoryPort;
 import com.trinity.product.interfaces.rest.dto.*;
-import com.trinity.product.exception.ProductNotFoundException;
-import com.trinity.product.exception.InvalidProductDataException;
+import com.trinity.product.domain.exception.ProductNotFoundException;
+import com.trinity.product.domain.exception.InvalidProductDataException;
 import com.trinity.product.interfaces.rest.mapper.ProductApiMapper;
 
 import lombok.AllArgsConstructor;
