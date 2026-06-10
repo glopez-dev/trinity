@@ -3,16 +3,21 @@ package com.trinity.authentication.filter;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+
+import io.jsonwebtoken.MalformedJwtException;
 
 import com.trinity.authentication.service.JwtService;
 
@@ -45,6 +50,11 @@ class JwtAuthenticationFilterTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -116,6 +126,57 @@ class JwtAuthenticationFilterTest {
     void testDoFilterInternal_AuthHeaderWithoutBearer() throws ServletException, IOException {
         // Given
         when(request.getHeader("Authorization")).thenReturn("Basic someToken");
+
+        // When
+        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+        // Then
+        verify(filterChain).doFilter(request, response);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    @Test
+    void testDoFilterInternal_ExpiredOrMalformedToken_Returns401AndStopsChain() throws ServletException, IOException {
+        // Given
+        MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+        when(request.getHeader("Authorization")).thenReturn("Bearer brokenToken");
+        when(request.getRequestURI()).thenReturn("/api/v1/product");
+        when(jwtService.extractUsername("brokenToken")).thenThrow(new MalformedJwtException("broken"));
+
+        // When
+        jwtAuthenticationFilter.doFilterInternal(request, mockResponse, filterChain);
+
+        // Then
+        verify(filterChain, never()).doFilter(any(), any());
+        assertEquals(401, mockResponse.getStatus());
+        assertTrue(mockResponse.getContentAsString().contains("\"status\":401"));
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    @Test
+    void testDoFilterInternal_UnknownUser_Returns401AndStopsChain() throws ServletException, IOException {
+        // Given
+        MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+        when(request.getHeader("Authorization")).thenReturn("Bearer validToken");
+        when(request.getRequestURI()).thenReturn("/api/v1/product");
+        when(jwtService.extractUsername("validToken")).thenReturn("ghost@example.com");
+        when(userDetailsService.loadUserByUsername("ghost@example.com"))
+                .thenThrow(new UsernameNotFoundException("ghost"));
+
+        // When
+        jwtAuthenticationFilter.doFilterInternal(request, mockResponse, filterChain);
+
+        // Then
+        verify(filterChain, never()).doFilter(any(), any());
+        assertEquals(401, mockResponse.getStatus());
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    @Test
+    void testDoFilterInternal_NullUsername_ContinuesChain() throws ServletException, IOException {
+        // Given
+        when(request.getHeader("Authorization")).thenReturn("Bearer anonToken");
+        when(jwtService.extractUsername("anonToken")).thenReturn(null);
 
         // When
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
