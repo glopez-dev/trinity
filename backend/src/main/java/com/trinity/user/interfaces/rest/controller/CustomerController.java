@@ -69,7 +69,8 @@ public class CustomerController {
     })
     @GetMapping("/email/{email}")
     public ResponseEntity<CustomerResponse> getCustomerByEmail(@PathVariable String email) {
-        logger.info("Fetching customer with email: {}", email);
+        // Do not log the user-controlled email verbatim (log injection, CWE-117).
+        logger.info("Fetching customer by email");
         return ResponseEntity.ok(customerApiMapper.toResponse(customerService.getCustomerByEmail(email)));
     }
 
