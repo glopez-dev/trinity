@@ -27,7 +27,7 @@ import com.trinity.user.interfaces.rest.mapper.CustomerApiMapper;
 import com.trinity.user.domain.model.Customer;
 import com.trinity.user.domain.port.CustomerRepositoryPort;
 
-import jakarta.persistence.EntityNotFoundException;
+import com.trinity.common.domain.exception.NotFoundException;
 
 class CustomerServiceTest {
 
@@ -145,7 +145,7 @@ class CustomerServiceTest {
         when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
 
         // When & Then
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             customerService.getCustomerById(customerId);
         });
 

@@ -3,7 +3,6 @@ package com.trinity.common.interfaces.rest;
 import com.trinity.common.domain.exception.BusinessRuleViolation;
 import com.trinity.common.domain.exception.DomainException;
 import com.trinity.common.domain.exception.NotFoundException;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,11 +25,6 @@ class GlobalExceptionHandlerTest {
         @GetMapping("/boom/not-found")
         String notFound() {
             throw new NotFoundException("resource missing");
-        }
-
-        @GetMapping("/boom/entity-not-found")
-        String entityNotFound() {
-            throw new EntityNotFoundException("entity missing");
         }
 
         @GetMapping("/boom/business-rule")
@@ -84,13 +78,6 @@ class GlobalExceptionHandlerTest {
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").value("resource missing"))
                 .andExpect(jsonPath("$.path").value("/boom/not-found"));
-    }
-
-    @Test
-    void entityNotFound_mapsTo404() throws Exception {
-        mockMvc.perform(get("/boom/entity-not-found"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.status").value(404));
     }
 
     @Test

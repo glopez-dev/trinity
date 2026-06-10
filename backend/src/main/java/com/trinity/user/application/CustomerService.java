@@ -12,7 +12,7 @@ import com.trinity.user.interfaces.rest.dto.UpdateCustomerRequest;
 import com.trinity.user.interfaces.rest.mapper.CustomerApiMapper;
 import com.trinity.user.domain.model.Customer;
 import com.trinity.user.domain.port.CustomerRepositoryPort;
-import jakarta.persistence.EntityNotFoundException;
+import com.trinity.common.domain.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public CustomerResponse getCustomerById(UUID id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Customer not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("Customer not found with id: " + id));
 
         return customerApiMapper.toResponse(customer);
     }
@@ -57,7 +57,7 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public CustomerResponse getCustomerByEmail(String email) {
         Customer customer = customerRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Customer not found with email: " + email));
+                .orElseThrow(() -> new NotFoundException("Customer not found with email: " + email));
 
         return customerApiMapper.toResponse(customer);
     }
@@ -72,7 +72,7 @@ public class CustomerService {
     @Transactional
     public CustomerResponse updateCustomer(UUID id, UpdateCustomerRequest customerUpdateDTO) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Customer not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("Customer not found with id: " + id));
 
         if (customerUpdateDTO.getEmail() != null && customerUpdateDTO.getEmail().isPresent()) {
             String newEmail = customerUpdateDTO.getEmail().get();
@@ -105,7 +105,7 @@ public class CustomerService {
     @Transactional
     public void deleteCustomer(UUID id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Customer not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("Customer not found with id: " + id));
 
         customer.deactivate();
         customerRepository.save(customer);
@@ -114,7 +114,7 @@ public class CustomerService {
     @Transactional
     public CustomerResponse activateCustomer(UUID id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Customer not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("Customer not found with id: " + id));
 
         customer.activate();
         Customer activatedCustomer = customerRepository.save(customer);
