@@ -1,4 +1,4 @@
-package com.trinity.user.infrastructure.security;
+package com.trinity.authentication.infrastructure.security;
 
 import com.trinity.user.domain.model.User;
 import org.springframework.security.core.GrantedAuthority;

@@ -1,4 +1,4 @@
-package com.trinity.authentication.dto;
+package com.trinity.authentication.interfaces.rest.dto;
 
 import com.trinity.user.domain.model.UserType;
 import io.swagger.v3.oas.annotations.media.Schema;

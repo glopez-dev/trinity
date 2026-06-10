@@ -1,4 +1,4 @@
-package com.trinity.authentication.service;
+package com.trinity.authentication.application;
 
 import java.security.Key;
 import java.util.Date;
@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
-import com.trinity.user.infrastructure.security.AppUserDetails;
+import com.trinity.authentication.infrastructure.security.AppUserDetails;
 import com.trinity.user.domain.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;

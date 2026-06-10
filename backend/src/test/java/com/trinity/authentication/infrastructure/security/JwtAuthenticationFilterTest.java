@@ -1,4 +1,4 @@
-package com.trinity.authentication.filter;
+package com.trinity.authentication.infrastructure.security;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 
 import io.jsonwebtoken.MalformedJwtException;
 
-import com.trinity.authentication.service.JwtService;
+import com.trinity.authentication.application.JwtService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

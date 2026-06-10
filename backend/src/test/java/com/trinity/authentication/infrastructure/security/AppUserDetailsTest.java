@@ -1,4 +1,4 @@
-package com.trinity.user.infrastructure.security;
+package com.trinity.authentication.infrastructure.security;
 
 import com.trinity.user.domain.model.UserStatus;
 import com.trinity.user.domain.model.UserType;

@@ -1,4 +1,4 @@
-package com.trinity.authentication.service;
+package com.trinity.authentication.application;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -16,7 +16,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.trinity.user.domain.model.Employee;
 import com.trinity.user.domain.model.UserType;
-import com.trinity.user.infrastructure.security.AppUserDetails;
+import com.trinity.authentication.infrastructure.security.AppUserDetails;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

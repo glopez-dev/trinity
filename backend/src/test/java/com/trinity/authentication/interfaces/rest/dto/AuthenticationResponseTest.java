@@ -1,4 +1,4 @@
-package com.trinity.authentication.dto;
+package com.trinity.authentication.interfaces.rest.dto;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package com.trinity.authentication.config;
+package com.trinity.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.trinity.authentication.config;
+package com.trinity.authentication.infrastructure.security;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.trinity.authentication.filter.JwtAuthenticationFilter;
+import com.trinity.authentication.infrastructure.security.JwtAuthenticationFilter;
 
 import java.util.Arrays;
 

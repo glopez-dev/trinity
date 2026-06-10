@@ -1,4 +1,4 @@
-package com.trinity.authentication.dto;
+package com.trinity.authentication.interfaces.rest.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

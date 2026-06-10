@@ -1,4 +1,4 @@
-package com.trinity.authentication.filter;
+package com.trinity.authentication.infrastructure.security;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.trinity.authentication.service.JwtService;
+import com.trinity.authentication.application.JwtService;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;

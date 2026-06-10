@@ -1,6 +1,6 @@
-package com.trinity.authentication.service;
+package com.trinity.authentication.application;
 
-import com.trinity.user.infrastructure.security.AppUserDetails;
+import com.trinity.authentication.infrastructure.security.AppUserDetails;
 import com.trinity.user.domain.model.User;
 import com.trinity.user.domain.port.CustomerRepositoryPort;
 import org.springframework.security.core.userdetails.UserDetails;

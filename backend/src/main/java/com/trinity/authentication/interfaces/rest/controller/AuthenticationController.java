@@ -1,6 +1,6 @@
-package com.trinity.authentication.controller;
+package com.trinity.authentication.interfaces.rest.controller;
 
-import com.trinity.authentication.dto.CustomerRegisterRequest;
+import com.trinity.authentication.interfaces.rest.dto.CustomerRegisterRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.trinity.authentication.dto.AuthenticationResponse;
-import com.trinity.authentication.dto.LoginRequest;
-import com.trinity.authentication.dto.RegisterRequest;
-import com.trinity.authentication.service.AuthenticationService;
+import com.trinity.authentication.interfaces.rest.dto.AuthenticationResponse;
+import com.trinity.authentication.interfaces.rest.dto.LoginRequest;
+import com.trinity.authentication.interfaces.rest.dto.RegisterRequest;
+import com.trinity.authentication.application.AuthenticationService;
 
 import jakarta.validation.Valid;
 

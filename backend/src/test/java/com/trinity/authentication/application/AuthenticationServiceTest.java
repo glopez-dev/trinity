@@ -1,4 +1,4 @@
-package com.trinity.authentication.service;
+package com.trinity.authentication.application;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -12,12 +12,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.trinity.authentication.dto.AuthenticationResponse;
-import com.trinity.authentication.dto.RegisterRequest;
-import com.trinity.authentication.dto.LoginRequest;
+import com.trinity.authentication.interfaces.rest.dto.AuthenticationResponse;
+import com.trinity.authentication.interfaces.rest.dto.RegisterRequest;
+import com.trinity.authentication.interfaces.rest.dto.LoginRequest;
 import com.trinity.user.domain.model.EmployeeRole;
 import com.trinity.user.domain.model.UserType;
-import com.trinity.user.infrastructure.security.AppUserDetails;
+import com.trinity.authentication.infrastructure.security.AppUserDetails;
 import com.trinity.user.domain.model.Employee;
 import com.trinity.user.domain.port.CustomerRepositoryPort;
 import com.trinity.user.domain.port.EmployeeRepositoryPort;

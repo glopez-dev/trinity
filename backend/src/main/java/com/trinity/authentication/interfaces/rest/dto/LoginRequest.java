@@ -1,4 +1,4 @@
-package com.trinity.authentication.dto;
+package com.trinity.authentication.interfaces.rest.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
