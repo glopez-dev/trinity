@@ -6,6 +6,11 @@ import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.ArchRule;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.Map;
+
+import static com.tngtech.archunit.base.DescribedPredicate.not;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 /**
@@ -25,6 +30,23 @@ class ArchitectureTest {
 
     /** Bounded contexts whose domain package is enforced as framework-free. */
     private static final String[] PURE_DOMAIN_CONTEXTS = {"cart", "payment", "product", "user"};
+
+    /** Every business module of the modular monolith (common is the shared kernel, free to import). */
+    private static final String[] BUSINESS_MODULES = {"authentication", "cart", "payment", "product", "user"};
+
+    /**
+     * The only cross-module dependencies allowed, by consuming module. Each entry
+     * is a deliberate, named contract — extend it in the same commit as the code
+     * that needs it, never wholesale.
+     */
+    private static final Map<String, String[]> CROSS_MODULE_WHITELIST = Map.of(
+            // authentication owns no users: it registers and loads them through
+            // the user module's domain ports and models (never its infrastructure).
+            "authentication", new String[]{
+                    "com.trinity.user.domain.model..",
+                    "com.trinity.user.domain.port.."
+            }
+    );
 
     @Test
     void domainPackagesAreFreeOfFrameworks() {
@@ -91,6 +113,51 @@ class ArchitectureTest {
                 .should().dependOnClassesThat()
                 .resideInAPackage("..interfaces.rest.dto..")
                 .because("persistence mappers map the domain to/from JPA entities, never DTOs");
+        rule.check(CLASSES);
+    }
+
+    @Test
+    void modulesDoNotReachIntoOtherModules() {
+        // Inter-module boundary: a module may import common freely, but another
+        // business module only through its whitelisted public surface above.
+        for (String module : BUSINESS_MODULES) {
+            String[] others = Arrays.stream(BUSINESS_MODULES)
+                    .filter(m -> !m.equals(module))
+                    .map("com.trinity.%s.."::formatted)
+                    .toArray(String[]::new);
+            String[] allowed = CROSS_MODULE_WHITELIST.getOrDefault(module, new String[0]);
+            ArchRule rule = noClasses()
+                    .that().resideInAPackage("com.trinity.%s..".formatted(module))
+                    .should().dependOnClassesThat(
+                            resideInAnyPackage(others).and(not(resideInAnyPackage(allowed))))
+                    .because("modules communicate via domain events or a whitelisted public surface only")
+                    .allowEmptyShould(true);
+            rule.check(CLASSES);
+        }
+    }
+
+    @Test
+    void commonDependsOnNoBusinessModule() {
+        String[] modulePackages = Arrays.stream(BUSINESS_MODULES)
+                .map("com.trinity.%s.."::formatted)
+                .toArray(String[]::new);
+        ArchRule rule = noClasses()
+                .that().resideInAPackage("com.trinity.common..")
+                .should().dependOnClassesThat()
+                .resideInAnyPackage(modulePackages)
+                .because("the shared kernel must not know any business module")
+                .allowEmptyShould(true);
+        rule.check(CLASSES);
+    }
+
+    @Test
+    void applicationLayerDoesNotDependOnInterfacesLayer() {
+        ArchRule rule = noClasses()
+                .that().resideInAPackage("..application..")
+                .should().dependOnClassesThat()
+                .resideInAPackage("..interfaces..")
+                .because("controllers map DTOs at the boundary; application services speak domain")
+                .allowEmptyShould(true);
         rule.check(CLASSES);
     }
 }
