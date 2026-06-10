@@ -1,7 +1,6 @@
 package com.trinity;
 
 import com.trinity.cart.application.CartService;
-import com.trinity.cart.domain.model.CartItem;
 import com.trinity.common.domain.exception.NotFoundException;
 import com.trinity.product.application.ProductService;
 import com.trinity.product.domain.model.Product;
@@ -48,12 +47,7 @@ class CartValidationStockIT {
         // And a cart holding 2 of it
         UUID customerId = UUID.randomUUID();
         cartService.createCart(customerId);
-        cartService.addItemToCart(customerId, CartItem.builder()
-                .productId(product.getId())
-                .productName(product.getName())
-                .quantity(2)
-                .unitPrice(product.getPrice())
-                .build());
+        cartService.addItemToCart(customerId, product.getId(), 2);
 
         // When the cart is validated
         cartService.validateCart(customerId);

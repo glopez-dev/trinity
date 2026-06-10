@@ -5,6 +5,7 @@ import com.trinity.cart.interfaces.rest.dto.CartResponse;
 import com.trinity.cart.interfaces.rest.mapper.CartApiMapper;
 import com.trinity.cart.application.CartService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,16 +37,16 @@ public class CartController {
     // Add an item to the cart
     @PutMapping("/{customerId}/items")
     public ResponseEntity<Void> addItemToCart(
-        @PathVariable UUID customerId, @RequestBody CartItemRequest cartItem) {
-        cartService.addItemToCart(customerId, cartApiMapper.toDomain(cartItem));
+        @PathVariable UUID customerId, @Valid @RequestBody CartItemRequest cartItem) {
+        cartService.addItemToCart(customerId, cartItem.getProductId(), cartItem.getQuantity());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // Remove an item from the cart
     @DeleteMapping("/{customerId}/items")
     public ResponseEntity<Void> removeItemFromCart(
-            @PathVariable UUID customerId, @RequestBody CartItemRequest cartItem) {
-        cartService.removeItemFromCart(customerId, cartApiMapper.toDomain(cartItem));
+            @PathVariable UUID customerId, @Valid @RequestBody CartItemRequest cartItem) {
+        cartService.removeItemFromCart(customerId, cartItem.getProductId(), cartItem.getQuantity());
         return ResponseEntity.ok().build();
     }
 

@@ -2,7 +2,6 @@ package com.trinity.cart.interfaces.rest.mapper;
 
 import com.trinity.cart.domain.model.Cart;
 import com.trinity.cart.domain.model.CartItem;
-import com.trinity.cart.interfaces.rest.dto.CartItemRequest;
 import com.trinity.cart.interfaces.rest.dto.CartItemResponse;
 import com.trinity.cart.interfaces.rest.dto.CartResponse;
 import org.mapstruct.Mapper;
@@ -21,7 +20,4 @@ public interface CartApiMapper {
     CartResponse toResponse(Cart cart);
 
     CartItemResponse toItemResponse(CartItem item);
-
-    /** Transitional: the domain item is still built from the client payload until prices are resolved server-side. */
-    CartItem toDomain(CartItemRequest request);
 }

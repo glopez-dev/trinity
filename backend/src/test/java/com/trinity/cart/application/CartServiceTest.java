@@ -2,7 +2,7 @@ package com.trinity.cart.application;
 
 import com.trinity.cart.domain.event.CartValidatedEvent;
 import com.trinity.cart.domain.model.Cart;
-import com.trinity.cart.domain.model.CartItem;
+import com.trinity.cart.domain.port.ProductInfoPort;
 import com.trinity.common.domain.exception.BusinessRuleViolation;
 import com.trinity.common.domain.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,20 +37,17 @@ class CartServiceTest {
 
     private CartService cartService;
     private RecordingEventPublisher eventPublisher;
+    private InMemoryProductInfoPort productInfoPort;
     private UUID customerId;
-    private CartItem cartItem;
+    private ProductInfoPort.ProductInfo knownProduct;
 
     @BeforeEach
     void setUp() {
         eventPublisher = new RecordingEventPublisher();
-        cartService = new CartService(new InMemoryCartRepositoryPort(), eventPublisher);
+        productInfoPort = new InMemoryProductInfoPort();
+        cartService = new CartService(new InMemoryCartRepositoryPort(), productInfoPort, eventPublisher);
         customerId = UUID.randomUUID();
-        cartItem = CartItem.builder()
-                .productId(UUID.randomUUID())
-                .productName("Test Product")
-                .quantity(1)
-                .unitPrice(BigDecimal.valueOf(100))
-                .build();
+        knownProduct = productInfoPort.register("Test Product", BigDecimal.valueOf(100));
     }
 
     @Test
@@ -64,16 +61,34 @@ class CartServiceTest {
     @Test
     void testAddItemToCart() {
         cartService.createCart(customerId);
-        cartService.addItemToCart(customerId, cartItem);
+        cartService.addItemToCart(customerId, knownProduct.productId(), 1);
         Cart cart = cartService.getCart(customerId);
         assertEquals(1, cart.getItems().size());
     }
 
     @Test
+    void testAddItemToCart_priceAndNameComeFromTheProductModule() {
+        cartService.createCart(customerId);
+        cartService.addItemToCart(customerId, knownProduct.productId(), 2);
+        Cart cart = cartService.getCart(customerId);
+        var item = cart.getItems().iterator().next();
+        assertEquals("Test Product", item.getProductName());
+        assertEquals(0, item.getUnitPrice().compareTo(BigDecimal.valueOf(100)));
+        assertEquals(0, cart.getTotalAmount().amount().compareTo(BigDecimal.valueOf(200)));
+    }
+
+    @Test
+    void testAddItemToCart_unknownProduct_throwsNotFound() {
+        cartService.createCart(customerId);
+        assertThrows(NotFoundException.class,
+                () -> cartService.addItemToCart(customerId, UUID.randomUUID(), 1));
+    }
+
+    @Test
     void testRemoveItemFromCart() {
         cartService.createCart(customerId);
-        cartService.addItemToCart(customerId, cartItem);
-        cartService.removeItemFromCart(customerId, cartItem);
+        cartService.addItemToCart(customerId, knownProduct.productId(), 1);
+        cartService.removeItemFromCart(customerId, knownProduct.productId(), 1);
         Cart cart = cartService.getCart(customerId);
         assertEquals(0, cart.getItems().size());
     }
@@ -81,7 +96,7 @@ class CartServiceTest {
     @Test
     void testValidateCart() {
         cartService.createCart(customerId);
-        cartService.addItemToCart(customerId, cartItem);
+        cartService.addItemToCart(customerId, knownProduct.productId(), 1);
         cartService.validateCart(customerId);
         assertThrows(NotFoundException.class, () -> cartService.getCart(customerId));
     }
@@ -89,7 +104,7 @@ class CartServiceTest {
     @Test
     void testValidateCart_publishesCartValidatedEvent() {
         cartService.createCart(customerId);
-        cartService.addItemToCart(customerId, cartItem);
+        cartService.addItemToCart(customerId, knownProduct.productId(), 1);
 
         cartService.validateCart(customerId);
 
@@ -97,7 +112,7 @@ class CartServiceTest {
         CartValidatedEvent event = (CartValidatedEvent) eventPublisher.published.get(0);
         assertEquals(customerId, event.customerId());
         assertEquals(1, event.lines().size());
-        assertEquals(cartItem.getProductId(), event.lines().get(0).productId());
+        assertEquals(knownProduct.productId(), event.lines().get(0).productId());
         assertEquals(0, event.totalAmount().amount().compareTo(new BigDecimal("100.00")));
     }
 

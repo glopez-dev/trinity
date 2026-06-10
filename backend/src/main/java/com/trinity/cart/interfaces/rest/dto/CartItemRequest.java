@@ -3,33 +3,25 @@ package com.trinity.cart.interfaces.rest.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
-
+/**
+ * A cart line as the client may express it: product identity and quantity only.
+ * Name and price are resolved server-side against the product module.
+ */
 @Data
-@RequiredArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class CartItemRequest {
-    @NotEmpty(message = "Product ID cannot be empty")
+    @NotNull(message = "Product ID is required")
     private UUID productId;
 
-    @NotEmpty(message = "Product name cannot be empty")
-    private String productName;
-
-    @NotEmpty(message = "Product description cannot be empty")
-    private BigDecimal unitPrice;
-
-    @NotEmpty(message = "Quantity cannot be empty")
+    @Positive(message = "Quantity must be greater than zero")
     private int quantity;
-
-    private BigDecimal totalPrice;
 }
-
-
-

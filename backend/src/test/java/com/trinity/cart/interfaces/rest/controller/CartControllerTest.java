@@ -1,7 +1,6 @@
 package com.trinity.cart.interfaces.rest.controller;
 
 import com.trinity.cart.domain.model.Cart;
-import com.trinity.cart.domain.model.CartItem;
 import com.trinity.cart.interfaces.rest.dto.CartItemRequest;
 import com.trinity.cart.interfaces.rest.dto.CartResponse;
 import com.trinity.cart.interfaces.rest.mapper.CartApiMapper;
@@ -17,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import java.math.BigDecimal;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -70,33 +68,31 @@ class CartControllerTest {
     @Test
     void testAddItemToCart() {
         UUID customerId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
         CartItemRequest cartItemRequest = CartItemRequest.builder()
-                .productId(UUID.randomUUID())
-                .productName("Apples")
+                .productId(productId)
                 .quantity(2)
-                .unitPrice(new BigDecimal("3.00"))
                 .build();
 
         ResponseEntity<Void> response = cartController.addItemToCart(customerId, cartItemRequest);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        verify(cartService, times(1)).addItemToCart(eq(customerId), any(CartItem.class));
+        verify(cartService, times(1)).addItemToCart(customerId, productId, 2);
     }
 
     @Test
     void testRemoveItemFromCart() {
         UUID customerId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
         CartItemRequest cartItemRequest = CartItemRequest.builder()
-                .productId(UUID.randomUUID())
-                .productName("Apples")
+                .productId(productId)
                 .quantity(2)
-                .unitPrice(new BigDecimal("3.00"))
                 .build();
 
         ResponseEntity<Void> response = cartController.removeItemFromCart(customerId, cartItemRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(cartService, times(1)).removeItemFromCart(eq(customerId), any(CartItem.class));
+        verify(cartService, times(1)).removeItemFromCart(customerId, productId, 2);
     }
 
     @Test

@@ -48,17 +48,22 @@ public class Cart {
     }
 
     public void removeItem(CartItem item) {
-        CartItem existingItem = findItem(item.getProductId());
+        removeItem(item.getProductId(), item.getQuantity());
+    }
+
+    /** Removes a quantity of a product; only the identity matters, never a client-supplied price. */
+    public void removeItem(UUID productId, int quantity) {
+        CartItem existingItem = findItem(productId);
         if (existingItem == null) {
             throw new IllegalStateException("Item not found in the cart.");
         }
-        if (item.getQuantity() > existingItem.getQuantity()) {
+        if (quantity > existingItem.getQuantity()) {
             throw new IllegalStateException("Quantity to remove is greater than the existing quantity.");
         }
-        if (item.getQuantity() == existingItem.getQuantity()) {
+        if (quantity == existingItem.getQuantity()) {
             items.remove(existingItem);
         } else {
-            existingItem.updateQuantity(existingItem.getQuantity() - item.getQuantity());
+            existingItem.updateQuantity(existingItem.getQuantity() - quantity);
         }
         calculateTotal();
         this.status = CartStatus.EDITED;

@@ -4,6 +4,7 @@ import com.trinity.cart.domain.event.CartValidatedEvent;
 import com.trinity.cart.domain.model.Cart;
 import com.trinity.cart.domain.model.CartItem;
 import com.trinity.cart.domain.port.CartRepositoryPort;
+import com.trinity.cart.domain.port.ProductInfoPort;
 import com.trinity.common.domain.exception.BusinessRuleViolation;
 import com.trinity.common.domain.exception.NotFoundException;
 
@@ -21,6 +22,7 @@ import java.util.function.Consumer;
 public class CartService {
 
     private final CartRepositoryPort cartRepository;
+    private final ProductInfoPort productInfoPort;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
@@ -39,13 +41,20 @@ public class CartService {
     }
 
     @Transactional
-    public void addItemToCart(UUID customerId, CartItem item) {
-        mutate(customerId, cart -> cart.addItem(item));
+    public void addItemToCart(UUID customerId, UUID productId, int quantity) {
+        ProductInfoPort.ProductInfo info = productInfoPort.findById(productId)
+                .orElseThrow(() -> new NotFoundException("Product not found: " + productId));
+        mutate(customerId, cart -> cart.addItem(CartItem.builder()
+                .productId(productId)
+                .productName(info.name())
+                .unitPrice(info.unitPrice())
+                .quantity(quantity)
+                .build()));
     }
 
     @Transactional
-    public void removeItemFromCart(UUID customerId, CartItem item) {
-        mutate(customerId, cart -> cart.removeItem(item));
+    public void removeItemFromCart(UUID customerId, UUID productId, int quantity) {
+        mutate(customerId, cart -> cart.removeItem(productId, quantity));
     }
 
     @Transactional

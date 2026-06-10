@@ -50,6 +50,12 @@ class ArchitectureTest {
             // events belong to their producer, consumers import them, never the reverse.
             "product", new String[]{
                     "com.trinity.cart.domain.event.."
+            },
+            // cart resolves product names and prices server-side through the
+            // product module's public surface (application service + domain model).
+            "cart", new String[]{
+                    "com.trinity.product.application..",
+                    "com.trinity.product.domain.model.."
             }
     );
 

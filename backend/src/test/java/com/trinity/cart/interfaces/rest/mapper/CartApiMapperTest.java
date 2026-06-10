@@ -2,7 +2,6 @@ package com.trinity.cart.interfaces.rest.mapper;
 
 import com.trinity.cart.domain.model.Cart;
 import com.trinity.cart.domain.model.CartItem;
-import com.trinity.cart.interfaces.rest.dto.CartItemRequest;
 import com.trinity.cart.interfaces.rest.dto.CartResponse;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -40,21 +39,4 @@ class CartApiMapperTest {
         assertThat(item.totalPrice()).isEqualByComparingTo("7.50");
     }
 
-    @Test
-    void toDomain_buildsValidatedCartItem() {
-        UUID productId = UUID.randomUUID();
-        CartItemRequest request = CartItemRequest.builder()
-                .productId(productId)
-                .productName("Apples")
-                .quantity(2)
-                .unitPrice(new BigDecimal("1.999"))
-                .build();
-
-        CartItem item = mapper.toDomain(request);
-
-        assertThat(item.getProductId()).isEqualTo(productId);
-        // The CartItem constructor normalizes the price scale and derives the total.
-        assertThat(item.getUnitPrice()).isEqualByComparingTo("2.00");
-        assertThat(item.getTotalPrice()).isEqualByComparingTo("4.00");
-    }
 }
