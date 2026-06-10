@@ -10,6 +10,9 @@ import java.util.Objects;
  */
 public record Money(BigDecimal amount, String currency) {
 
+    /** Single place to change the day the shop stops billing in dollars. */
+    public static final String DEFAULT_CURRENCY = "USD";
+
     private static final int SCALE = 2;
 
     public Money {

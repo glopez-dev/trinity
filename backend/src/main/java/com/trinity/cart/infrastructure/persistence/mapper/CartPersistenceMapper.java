@@ -43,7 +43,7 @@ public class CartPersistenceMapper {
         // Hibernate maps an all-null embeddable to a null reference; fall back to
         // zero so a legacy/ddl-update row never breaks the read path.
         if (embeddable == null || embeddable.getAmount() == null || embeddable.getCurrency() == null) {
-            return Money.zero("USD");
+            return Money.zero(Money.DEFAULT_CURRENCY);
         }
         return Money.of(embeddable.getAmount(), embeddable.getCurrency());
     }

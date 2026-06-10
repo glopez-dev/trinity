@@ -27,13 +27,13 @@ public class Cart {
     private CartStatus status = CartStatus.CREATED;
 
     @Builder.Default
-    private Money totalAmount = Money.zero("USD");
+    private Money totalAmount = Money.zero(Money.DEFAULT_CURRENCY);
 
     public Cart(UUID customerId, Set<CartItem> items, CartStatus status, Money totalAmount) {
         this.customerId = customerId;
         this.items = items != null ? items : new HashSet<>();
         this.status = status != null ? status : CartStatus.CREATED;
-        this.totalAmount = totalAmount != null ? totalAmount : Money.zero("USD");
+        this.totalAmount = totalAmount != null ? totalAmount : Money.zero(Money.DEFAULT_CURRENCY);
     }
 
     public void addItem(CartItem item) {

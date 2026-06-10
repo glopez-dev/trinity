@@ -18,5 +18,5 @@ public class PaymentProperties {
 
     private String successUrl = "http://localhost:8080/success";
     private String cancelUrl = "http://localhost:8080/cancel";
-    private String defaultCurrency = "USD";
+    private String defaultCurrency = com.trinity.common.domain.vo.Money.DEFAULT_CURRENCY;
 }
