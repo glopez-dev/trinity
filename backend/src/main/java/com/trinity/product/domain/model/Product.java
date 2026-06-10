@@ -117,6 +117,16 @@ public class Product {
         this.price = newPrice;
     }
 
+    /** Defaults applied when importing a catalogue product (no price/stock on import). */
+    public void applyImportDefaults() {
+        if (this.price == null) {
+            this.price = new BigDecimal("0.00");
+        }
+        if (this.stock == null) {
+            this.stock = Stock.builder().quantity(0).minThreshold(5).maxThreshold(100).build();
+        }
+    }
+
     /** Applies a signed delta to the stock, rejecting a resulting negative quantity. */
     public void adjustStock(int delta) {
         if (this.stock == null) {

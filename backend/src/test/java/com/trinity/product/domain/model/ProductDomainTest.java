@@ -101,4 +101,29 @@ class ProductDomainTest {
 
         assertThrows(BusinessRuleViolation.class, () -> product.adjustStock(-5));
     }
+
+    @Test
+    void product_applyImportDefaults_fillsMissingPriceAndStock() {
+        Product product = Product.builder().build();
+
+        product.applyImportDefaults();
+
+        assertEquals(new BigDecimal("0.00"), product.getPrice());
+        assertEquals(0, product.getStock().getQuantity());
+        assertEquals(5, product.getStock().getMinThreshold());
+        assertEquals(100, product.getStock().getMaxThreshold());
+    }
+
+    @Test
+    void product_applyImportDefaults_preservesExistingValues() {
+        Product product = Product.builder()
+                .price(new BigDecimal("9.99"))
+                .stock(stock(10, 2, 100))
+                .build();
+
+        product.applyImportDefaults();
+
+        assertEquals(new BigDecimal("9.99"), product.getPrice());
+        assertEquals(10, product.getStock().getQuantity());
+    }
 }

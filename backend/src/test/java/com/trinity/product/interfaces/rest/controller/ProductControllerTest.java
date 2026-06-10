@@ -6,15 +6,19 @@ import static org.mockito.Mockito.*;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import com.trinity.product.domain.model.Product;
 import com.trinity.product.interfaces.rest.dto.ProductResponse;
+import com.trinity.product.interfaces.rest.mapper.ProductApiMapper;
 import com.trinity.product.domain.exception.ProductNotFoundException;
 import com.trinity.product.application.ProductService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,12 +28,15 @@ class ProductControllerTest {
     @Mock
     private ProductService productService;
 
+    @Spy
+    private ProductApiMapper productApiMapper = Mappers.getMapper(ProductApiMapper.class);
+
     @InjectMocks
     private ProductController productController;
 
     private String barcode;
     private UUID productId;
-    private ProductResponse readProductDTO;
+    private Product product;
 
     @BeforeEach
     void setUp() {
@@ -38,31 +45,31 @@ class ProductControllerTest {
         barcode = "1234567890123";
         productId = UUID.randomUUID();
 
-        ProductResponse.StockDto stockDto = new ProductResponse.StockDto();
-        stockDto.setQuantity(10);
-        stockDto.setMinThreshold(5);
-        stockDto.setMaxThreshold(100);
-
-        readProductDTO = new ProductResponse();
-        readProductDTO.setId(productId);
-        readProductDTO.setBarcode(barcode);
-        readProductDTO.setName("Test Product");
-        readProductDTO.setBrand("Test Brand");
-        readProductDTO.setPrice(new BigDecimal("9.99"));
-        readProductDTO.setStock(stockDto);
+        product = Product.builder()
+                .id(productId)
+                .barcode(barcode)
+                .name("Test Product")
+                .brand("Test Brand")
+                .price(new BigDecimal("9.99"))
+                .stock(Product.Stock.builder().quantity(10).minThreshold(5).maxThreshold(100).build())
+                .build();
     }
 
     @Test
     void scanProduct_ValidBarcode_ReturnsProduct() {
         // Given
-        when(productService.scanProduct(barcode)).thenReturn(readProductDTO);
+        when(productService.scanProduct(barcode)).thenReturn(product);
 
         // When
         ResponseEntity<ProductResponse> response = productController.scanProduct(barcode);
 
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(readProductDTO, response.getBody());
+        assertNotNull(response.getBody());
+        assertEquals(productId, response.getBody().getId());
+        assertEquals(barcode, response.getBody().getBarcode());
+        assertEquals(new BigDecimal("9.99"), response.getBody().getPrice());
+        assertEquals(10, response.getBody().getStock().getQuantity());
         verify(productService).scanProduct(barcode);
     }
 
