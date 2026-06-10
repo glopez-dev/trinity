@@ -6,7 +6,6 @@ import com.paypal.api.payments.Invoices;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import com.trinity.common.domain.exception.DomainException;
-import com.trinity.payment.infrastructure.config.PaypalConfig;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,9 +35,6 @@ import static org.mockito.Mockito.*;
 class PaypalInvoiceGatewayAdapterTest {
 
     @Mock
-    private PaypalConfig paypalConfig;
-
-    @Mock
     private PaypalInvoiceAdapter invoiceAdapter;
 
     @Mock
@@ -66,7 +62,6 @@ class PaypalInvoiceGatewayAdapterTest {
     void setUp() {
         mockInvoice = mock(Invoice.class);
         mockDomainInvoice = com.trinity.payment.domain.model.Invoice.builder().build();
-        when(paypalConfig.getAPIContext()).thenReturn(apiContext);
         invoiceMockedStatic.when(() -> Invoice.get(any(APIContext.class), eq(INVOICE_ID))).thenReturn(mockInvoice);
     }
 

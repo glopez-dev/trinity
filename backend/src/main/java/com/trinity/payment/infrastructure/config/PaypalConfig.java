@@ -1,18 +1,17 @@
 package com.trinity.payment.infrastructure.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.paypal.base.rest.APIContext;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 
 @Configuration
 @NoArgsConstructor
 @Getter
-@Component
 public class PaypalConfig {
 
     @Value("${paypal.client.id}")
@@ -24,7 +23,13 @@ public class PaypalConfig {
     @Value("${paypal.mode}")
     public String mode;
 
-    public APIContext getAPIContext() {
+    /**
+     * Singleton context shared by all PayPal calls: the SDK caches its OAuth
+     * token inside the APIContext, so re-creating one per call forced a
+     * re-authentication round-trip every time.
+     */
+    @Bean
+    public APIContext apiContext() {
         return new APIContext(clientId, clientSecret, mode);
     }
 }

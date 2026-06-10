@@ -25,8 +25,8 @@ class PaypalConfigTest {
     }
 
     @Test
-    void testGetAPIContext() {
-        APIContext apiContext = paypalConfig.getAPIContext();
+    void apiContextBean_carriesCredentialsAndMode() {
+        APIContext apiContext = paypalConfig.apiContext();
         assertNotNull(apiContext);
         assertEquals("secret", apiContext.getClientID());
         assertEquals("secretmdp", apiContext.getClientSecret());

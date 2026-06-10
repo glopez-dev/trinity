@@ -6,7 +6,7 @@ import com.paypal.api.payments.Invoices;
 import com.paypal.base.rest.PayPalRESTException;
 import com.trinity.common.domain.exception.DomainException;
 import com.trinity.payment.domain.port.InvoicingGateway;
-import com.trinity.payment.infrastructure.config.PaypalConfig;
+import com.paypal.base.rest.APIContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -28,14 +28,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PaypalInvoiceGatewayAdapter implements InvoicingGateway {
 
-    private final PaypalConfig paypalConfig;
+    private final APIContext apiContext;
     private final PaypalInvoiceAdapter invoiceAdapter;
 
     @Override
     public com.trinity.payment.domain.model.Invoice create(com.trinity.payment.domain.model.Invoice request) {
         try {
             Invoice invoice = invoiceAdapter.mapToSdkInvoice(request);
-            invoice = invoice.create(paypalConfig.getAPIContext());
+            invoice = invoice.create(apiContext);
             return invoiceAdapter.mapToInvoice(invoice);
         } catch (PayPalRESTException e) {
             log.error("Failed to create PayPal invoice", e);
@@ -46,7 +46,7 @@ public class PaypalInvoiceGatewayAdapter implements InvoicingGateway {
     @Override
     public void send(String invoiceId) {
         try {
-            retrieve(invoiceId).send(paypalConfig.getAPIContext());
+            retrieve(invoiceId).send(apiContext);
         } catch (PayPalRESTException e) {
             log.error("Failed to send invoice: {}", invoiceId, e);
             throw new PayPalInvoiceException("Error sending invoice", e);
@@ -61,7 +61,7 @@ public class PaypalInvoiceGatewayAdapter implements InvoicingGateway {
     @Override
     public List<com.trinity.payment.domain.model.Invoice> getAll() {
         try {
-            Invoices invoices = Invoice.getAll(paypalConfig.getAPIContext());
+            Invoices invoices = Invoice.getAll(apiContext);
             if (invoices == null || invoices.getInvoices() == null) {
                 return Collections.emptyList();
             }
@@ -78,7 +78,7 @@ public class PaypalInvoiceGatewayAdapter implements InvoicingGateway {
     public com.trinity.payment.domain.model.Invoice update(com.trinity.payment.domain.model.Invoice request) {
         try {
             Invoice invoice = invoiceAdapter.mapToSdkInvoice(request);
-            invoice = invoice.update(paypalConfig.getAPIContext());
+            invoice = invoice.update(apiContext);
             return invoiceAdapter.mapToInvoice(invoice);
         } catch (PayPalRESTException e) {
             log.error("Failed to update invoice: {}", request.getId(), e);
@@ -89,7 +89,7 @@ public class PaypalInvoiceGatewayAdapter implements InvoicingGateway {
     @Override
     public void delete(String invoiceId) {
         try {
-            retrieve(invoiceId).delete(paypalConfig.getAPIContext());
+            retrieve(invoiceId).delete(apiContext);
         } catch (PayPalRESTException e) {
             log.error("Failed to delete invoice: {}", invoiceId, e);
             throw new PayPalInvoiceException("Error deleting invoice", e);
@@ -102,7 +102,7 @@ public class PaypalInvoiceGatewayAdapter implements InvoicingGateway {
             CancelNotification cancelNotification = new CancelNotification()
                     .setSubject("Invoice Cancelled")
                     .setNote(reason);
-            retrieve(invoiceId).cancel(paypalConfig.getAPIContext(), cancelNotification);
+            retrieve(invoiceId).cancel(apiContext, cancelNotification);
         } catch (PayPalRESTException e) {
             log.error("Failed to cancel invoice: {}", invoiceId, e);
             throw new PayPalInvoiceException("Error cancelling invoice", e);
@@ -111,7 +111,7 @@ public class PaypalInvoiceGatewayAdapter implements InvoicingGateway {
 
     private Invoice retrieve(String invoiceId) {
         try {
-            return Invoice.get(paypalConfig.getAPIContext(), invoiceId);
+            return Invoice.get(apiContext, invoiceId);
         } catch (PayPalRESTException e) {
             log.error("Failed to retrieve invoice: {}", invoiceId, e);
             throw new PayPalInvoiceException("Error retrieving invoice", e);
