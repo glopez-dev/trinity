@@ -1,6 +1,7 @@
 package com.trinity.payment.interfaces.rest.controller;
 
 import com.trinity.payment.interfaces.rest.dto.*;
+import com.trinity.payment.interfaces.rest.mapper.InvoiceApiMapper;
 import com.trinity.payment.application.PaypalInvoiceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,20 +18,23 @@ import org.springframework.web.bind.annotation.*;
 public class PaypalInvoiceController {
 
     private final PaypalInvoiceService invoiceService;
+    private final InvoiceApiMapper invoiceMapper;
 
     @Operation(summary = "Create a new invoice", description = "Creates a new Paypal invoice")
     @PostMapping
     public ResponseEntity<InvoiceDTO> createInvoice(
         @Valid @RequestBody InvoiceDTO request
     ) {
-        InvoiceDTO invoice = invoiceService.createInvoice(request);
+        InvoiceDTO invoice = invoiceMapper.toDTO(invoiceService.createInvoice(invoiceMapper.toDomain(request)));
         return ResponseEntity.ok(invoice);
     }
 
     @Operation(summary = "Get all invoices", description = "Retrieves a list of all Paypal invoices")
     @GetMapping
     public ResponseEntity<List<InvoiceDTO>> getAllInvoices() {
-        List<InvoiceDTO> invoices = invoiceService.getAllInvoices();
+        List<InvoiceDTO> invoices = invoiceService.getAllInvoices().stream()
+                .map(invoiceMapper::toDTO)
+                .toList();
         return ResponseEntity.ok(invoices);
     }
 
@@ -39,7 +43,7 @@ public class PaypalInvoiceController {
     public ResponseEntity<InvoiceDTO> getInvoice(
         @PathVariable String invoiceId
     ) {
-        InvoiceDTO invoice = invoiceService.getInvoiceDTO(invoiceId);
+        InvoiceDTO invoice = invoiceMapper.toDTO(invoiceService.getInvoice(invoiceId));
         return ResponseEntity.ok(invoice);
     }
 
@@ -48,7 +52,7 @@ public class PaypalInvoiceController {
     public ResponseEntity<InvoiceDTO> updateInvoice(
         @Valid @RequestBody InvoiceDTO request
     ) {
-        InvoiceDTO invoice = invoiceService.updateInvoice(request);
+        InvoiceDTO invoice = invoiceMapper.toDTO(invoiceService.updateInvoice(invoiceMapper.toDomain(request)));
         return ResponseEntity.ok(invoice);
     }
 

@@ -1,12 +1,16 @@
 package com.trinity.payment.interfaces.rest.controller;
 
+import com.trinity.payment.domain.model.Invoice;
 import com.trinity.payment.interfaces.rest.dto.InvoiceDTO;
+import com.trinity.payment.interfaces.rest.mapper.InvoiceApiMapper;
 import com.trinity.payment.application.PaypalInvoiceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
@@ -23,22 +27,26 @@ class PaypalInvoiceControllerTest {
     @Mock
     private PaypalInvoiceService invoiceService;
 
+    @Spy
+    private InvoiceApiMapper invoiceMapper = Mappers.getMapper(InvoiceApiMapper.class);
+
     @InjectMocks
     private PaypalInvoiceController invoiceController;
 
     private InvoiceDTO sampleInvoiceDTO;
+    private Invoice sampleInvoice;
     private static final String INVOICE_ID = "INV2-QXWN-W3VH-Q8H7-XH8J";
 
     @BeforeEach
     void setUp() {
-        sampleInvoiceDTO = new InvoiceDTO();
-        // Set up your sample DTO with necessary fields
+        sampleInvoiceDTO = InvoiceDTO.builder().id(INVOICE_ID).status("DRAFT").build();
+        sampleInvoice = Invoice.builder().id(INVOICE_ID).status("DRAFT").build();
     }
 
     @Test
     void createInvoice_ShouldReturnCreatedInvoice() {
         // Arrange
-        when(invoiceService.createInvoice(any(InvoiceDTO.class))).thenReturn(sampleInvoiceDTO);
+        when(invoiceService.createInvoice(any(Invoice.class))).thenReturn(sampleInvoice);
 
         // Act
         ResponseEntity<InvoiceDTO> response = invoiceController.createInvoice(sampleInvoiceDTO);
@@ -46,15 +54,15 @@ class PaypalInvoiceControllerTest {
         // Assert
         assertNotNull(response);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(sampleInvoiceDTO, response.getBody());
-        verify(invoiceService, times(1)).createInvoice(any(InvoiceDTO.class));
+        assertEquals(INVOICE_ID, response.getBody().getId());
+        verify(invoiceService, times(1)).createInvoice(any(Invoice.class));
     }
 
     @SuppressWarnings("null")
     @Test
     void getAllInvoices_ShouldReturnListOfInvoices() {
         // Arrange
-        List<InvoiceDTO> invoices = Arrays.asList(sampleInvoiceDTO, sampleInvoiceDTO);
+        List<Invoice> invoices = Arrays.asList(sampleInvoice, sampleInvoice);
         when(invoiceService.getAllInvoices()).thenReturn(invoices);
 
         // Act
@@ -71,7 +79,7 @@ class PaypalInvoiceControllerTest {
     @Test
     void getInvoice_ShouldReturnInvoice() {
         // Arrange
-        when(invoiceService.getInvoiceDTO(INVOICE_ID)).thenReturn(sampleInvoiceDTO);
+        when(invoiceService.getInvoice(INVOICE_ID)).thenReturn(sampleInvoice);
 
         // Act
         ResponseEntity<InvoiceDTO> response = invoiceController.getInvoice(INVOICE_ID);
@@ -79,15 +87,15 @@ class PaypalInvoiceControllerTest {
         // Assert
         assertNotNull(response);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(sampleInvoiceDTO, response.getBody());
-        verify(invoiceService, times(1)).getInvoiceDTO(INVOICE_ID);
+        assertEquals(INVOICE_ID, response.getBody().getId());
+        verify(invoiceService, times(1)).getInvoice(INVOICE_ID);
     }
 
     @Test
     void updateInvoice_ShouldReturnUpdatedInvoice() {
         // Arrange
-        when(invoiceService.updateInvoice(any(InvoiceDTO.class)))
-            .thenReturn(sampleInvoiceDTO);
+        when(invoiceService.updateInvoice(any(Invoice.class)))
+            .thenReturn(sampleInvoice);
 
         // Act
         ResponseEntity<InvoiceDTO> response = invoiceController.updateInvoice(sampleInvoiceDTO);
@@ -95,8 +103,8 @@ class PaypalInvoiceControllerTest {
         // Assert
         assertNotNull(response);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(sampleInvoiceDTO, response.getBody());
-        verify(invoiceService, times(1)).updateInvoice(any(InvoiceDTO.class));
+        assertEquals(INVOICE_ID, response.getBody().getId());
+        verify(invoiceService, times(1)).updateInvoice(any(Invoice.class));
     }
 
     @Test

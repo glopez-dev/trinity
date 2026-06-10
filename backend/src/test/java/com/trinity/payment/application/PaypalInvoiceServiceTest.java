@@ -3,13 +3,8 @@ package com.trinity.payment.application;
 import com.trinity.payment.domain.model.Cost;
 import com.trinity.payment.domain.model.Invoice;
 import com.trinity.payment.domain.port.InvoicingGateway;
-import com.trinity.payment.interfaces.rest.dto.CostDTO;
-import com.trinity.payment.interfaces.rest.dto.InvoiceDTO;
-import com.trinity.payment.interfaces.rest.mapper.InvoiceApiMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -22,17 +17,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * The application service orchestrates the InvoicingGateway port and owns the
- * DTO<->domain boundary. It uses the REAL {@link InvoiceApiMapper} (MapStruct)
- * so the conversion is exercised end to end; only the gateway is mocked. The
- * SDK behaviour is covered by PaypalInvoiceGatewayAdapterTest.
+ * The application service orchestrates the InvoicingGateway port and speaks the
+ * domain Invoice only — the DTO boundary moved to the controller. The SDK
+ * behaviour is covered by PaypalInvoiceGatewayAdapterTest.
  */
 class PaypalInvoiceServiceTest {
 
     @Mock
     private InvoicingGateway invoicingGateway;
-
-    private final InvoiceApiMapper invoiceMapper = Mappers.getMapper(InvoiceApiMapper.class);
 
     private PaypalInvoiceService service;
 
@@ -41,14 +33,14 @@ class PaypalInvoiceServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        service = new PaypalInvoiceService(invoicingGateway, invoiceMapper);
+        service = new PaypalInvoiceService(invoicingGateway);
     }
 
     @Test
-    void createInvoice_convertsDtoToDomain_delegates_andConvertsBack() {
-        InvoiceDTO request = InvoiceDTO.builder()
+    void createInvoice_delegatesToGateway() {
+        Invoice request = Invoice.builder()
                 .id("123").status("DRAFT")
-                .totalAmount(CostDTO.builder().value(new BigDecimal("100.00")).currency("USD").build())
+                .totalAmount(Cost.builder().value(new BigDecimal("100.00")).currency("USD").build())
                 .build();
         Invoice created = Invoice.builder()
                 .id("123").status("CREATED")
@@ -56,19 +48,11 @@ class PaypalInvoiceServiceTest {
                 .build();
         when(invoicingGateway.create(any(Invoice.class))).thenReturn(created);
 
-        InvoiceDTO result = service.createInvoice(request);
+        Invoice result = service.createInvoice(request);
 
-        // the gateway was called with the domain conversion of the request
-        ArgumentCaptor<Invoice> captor = ArgumentCaptor.forClass(Invoice.class);
-        verify(invoicingGateway).create(captor.capture());
-        assertThat(captor.getValue().getId()).isEqualTo("123");
-        assertThat(captor.getValue().getStatus()).isEqualTo("DRAFT");
-        assertThat(captor.getValue().getTotalAmount().getValue()).isEqualTo(new BigDecimal("100.00"));
-        // the gateway result was converted back to a DTO
-        assertThat(result.getId()).isEqualTo("123");
+        verify(invoicingGateway).create(request);
         assertThat(result.getStatus()).isEqualTo("CREATED");
         assertThat(result.getTotalAmount().getValue()).isEqualTo(new BigDecimal("100.00"));
-        assertThat(result.getTotalAmount().getCurrency()).isEqualTo("USD");
     }
 
     @Test
@@ -78,11 +62,11 @@ class PaypalInvoiceServiceTest {
     }
 
     @Test
-    void getInvoiceDTO_delegates_andConvertsToDto() {
+    void getInvoice_delegatesToGateway() {
         Invoice domain = Invoice.builder().id("456").status("PAID").build();
         when(invoicingGateway.get(INVOICE_ID)).thenReturn(domain);
 
-        InvoiceDTO result = service.getInvoiceDTO(INVOICE_ID);
+        Invoice result = service.getInvoice(INVOICE_ID);
 
         assertThat(result.getId()).isEqualTo("456");
         assertThat(result.getStatus()).isEqualTo("PAID");
@@ -90,12 +74,12 @@ class PaypalInvoiceServiceTest {
     }
 
     @Test
-    void getAllInvoices_delegates_andConvertsEach() {
+    void getAllInvoices_delegatesToGateway() {
         Invoice a = Invoice.builder().id("1").status("DRAFT").build();
         Invoice b = Invoice.builder().id("2").status("PAID").build();
         when(invoicingGateway.getAll()).thenReturn(List.of(a, b));
 
-        List<InvoiceDTO> result = service.getAllInvoices();
+        List<Invoice> result = service.getAllInvoices();
 
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getId()).isEqualTo("1");
@@ -103,18 +87,14 @@ class PaypalInvoiceServiceTest {
     }
 
     @Test
-    void updateInvoice_convertsDtoToDomain_delegates_andConvertsBack() {
-        InvoiceDTO request = InvoiceDTO.builder().id("999").status("UPDATED").build();
-        Invoice updated = Invoice.builder().id("999").status("UPDATED").build();
-        when(invoicingGateway.update(any(Invoice.class))).thenReturn(updated);
+    void updateInvoice_delegatesToGateway() {
+        Invoice request = Invoice.builder().id("999").status("UPDATED").build();
+        when(invoicingGateway.update(any(Invoice.class))).thenReturn(request);
 
-        InvoiceDTO result = service.updateInvoice(request);
+        Invoice result = service.updateInvoice(request);
 
-        ArgumentCaptor<Invoice> captor = ArgumentCaptor.forClass(Invoice.class);
-        verify(invoicingGateway).update(captor.capture());
-        assertThat(captor.getValue().getId()).isEqualTo("999");
+        verify(invoicingGateway).update(request);
         assertThat(result.getId()).isEqualTo("999");
-        assertThat(result.getStatus()).isEqualTo("UPDATED");
     }
 
     @Test
