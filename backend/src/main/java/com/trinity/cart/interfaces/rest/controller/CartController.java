@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/V1/carts")
+@RequestMapping("/api/v1/carts")
 @RequiredArgsConstructor
 public class CartController {
 
@@ -53,6 +53,13 @@ public class CartController {
     @PostMapping("/{customerId}/validate")
     public ResponseEntity<Void> validateCart(@PathVariable UUID customerId) {
         cartService.validateCart(customerId);
+        return ResponseEntity.ok().build();
+    }
+
+    // Cancel the cart: empties it without destroying the aggregate
+    @PostMapping("/{customerId}/cancel")
+    public ResponseEntity<Void> cancelCart(@PathVariable UUID customerId) {
+        cartService.cancelCart(customerId);
         return ResponseEntity.ok().build();
     }
 

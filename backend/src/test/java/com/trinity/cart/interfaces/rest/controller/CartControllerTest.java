@@ -111,6 +111,17 @@ class CartControllerTest {
     }
 
     @Test
+    void testCancelCart() {
+        UUID customerId = UUID.randomUUID();
+        doNothing().when(cartService).cancelCart(customerId);
+
+        ResponseEntity<Void> response = cartController.cancelCart(customerId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(cartService, times(1)).cancelCart(customerId);
+    }
+
+    @Test
     void testRemoveCart() {
         UUID customerId = UUID.randomUUID();
         doNothing().when(cartService).removeCart(customerId);

@@ -5,7 +5,6 @@ import com.trinity.cart.domain.model.CartItem;
 import com.trinity.cart.domain.port.CartRepositoryPort;
 import com.trinity.common.domain.exception.BusinessRuleViolation;
 import com.trinity.common.domain.exception.NotFoundException;
-import com.trinity.common.domain.vo.Money;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -62,11 +61,6 @@ public class CartService {
     public void removeCart(UUID customerId) {
         loadCart(customerId);
         cartRepository.deleteByCustomerId(customerId);
-    }
-
-    @Transactional(readOnly = true)
-    public Money getTotalAmount(UUID customerId) {
-        return loadCart(customerId).getTotalAmount();
     }
 
     /** Load the domain aggregate, apply a domain mutation, persist it back. */
