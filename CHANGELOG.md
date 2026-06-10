@@ -31,6 +31,12 @@ d'architecture. Décision actée dans
 
 ### Ajouté
 
+- **CI de publication d'image** : workflow GitHub Actions
+  (`.github/workflows/backend-docker.yml`) qui construit l'image Docker de
+  l'API (cible `prod`) et la publie sur GHCR
+  (`ghcr.io/<owner>/<repo>/backend`) — tags `prod-<sha>`, nom de branche et
+  `latest` sur `main` ; sur les pull requests l'image est construite sans
+  être publiée.
 - **Flux d'achat serveur** : la validation du panier publie l'événement de
   domaine `CartValidatedEvent` ; un écouteur transactionnel dans `product`
   décrémente le stock vendu après commit (`CartValidationStockIT` prouve le
