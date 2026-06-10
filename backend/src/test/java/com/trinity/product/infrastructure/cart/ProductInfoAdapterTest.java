@@ -1,4 +1,4 @@
-package com.trinity.cart.infrastructure.product;
+package com.trinity.product.infrastructure.cart;
 
 import com.trinity.cart.domain.port.ProductInfoPort;
 import com.trinity.product.application.ProductService;

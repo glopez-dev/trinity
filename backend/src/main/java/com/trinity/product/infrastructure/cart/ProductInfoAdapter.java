@@ -1,4 +1,4 @@
-package com.trinity.cart.infrastructure.product;
+package com.trinity.product.infrastructure.cart;
 
 import com.trinity.cart.domain.port.ProductInfoPort;
 import com.trinity.common.domain.exception.NotFoundException;
@@ -11,9 +11,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * In-process adapter from the cart's ProductInfoPort to the product module's
- * application service (its whitelisted public surface). If the product module
- * is ever extracted, only this adapter changes.
+ * The product module implements the cart's ProductInfoPort (consumer-owned
+ * port, provider-side adapter). Hosting the adapter here keeps the module
+ * graph acyclic: product depends on cart (port + domain event), cart depends
+ * on nothing — required by Spring Modulith's cycle-free verification.
  */
 @Component
 @RequiredArgsConstructor

@@ -46,16 +46,12 @@ class ArchitectureTest {
                     "com.trinity.user.domain.model..",
                     "com.trinity.user.domain.port.."
             },
-            // product consumes the cart-validated domain event to deduct stock;
-            // events belong to their producer, consumers import them, never the reverse.
+            // product consumes the cart-validated domain event to deduct stock and
+            // implements the cart's ProductInfoPort (consumer-owned port, provider-side
+            // adapter) — the single direction that keeps the module graph acyclic.
             "product", new String[]{
-                    "com.trinity.cart.domain.event.."
-            },
-            // cart resolves product names and prices server-side through the
-            // product module's public surface (application service + domain model).
-            "cart", new String[]{
-                    "com.trinity.product.application..",
-                    "com.trinity.product.domain.model.."
+                    "com.trinity.cart.domain.event..",
+                    "com.trinity.cart.domain.port.."
             },
             // payment prices checkout lines the same way: identity in, price out.
             "payment", new String[]{
