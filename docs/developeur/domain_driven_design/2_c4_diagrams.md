@@ -51,8 +51,6 @@ graph TB
     
     Database[("Base de données\nContainer: PostgreSQL\nStocke toutes les\ndonnées du système")]
     
-    MessageBroker["Message Broker\nContainer: RabbitMQ\nGère la communication\nasynchrone"]
-    
     PayPal["PayPal API\nSystème externe\nGestion des paiements"]
     OpenFood["Open Food Facts API\nSystème externe\nDonnées produits"]
 
@@ -60,7 +58,6 @@ graph TB
     WebClient -->|"JSON/HTTPS"| API
     
     API -->|"JDBC"| Database
-    API -->|"AMQP"| MessageBroker
     API -->|"JSON/HTTPS"| PayPal
     API -->|"JSON/HTTPS"| OpenFood
 
@@ -68,18 +65,16 @@ graph TB
     classDef api fill:#1168bd,stroke:#0b4884,color:#ffffff
     classDef db fill:#2b4c8c,stroke:#0b4884,color:#ffffff
     classDef external fill:#666666,stroke:#0b4884,color:#ffffff
-    classDef broker fill:#1168bd,stroke:#0b4884,color:#ffffff
 
     class MobileClient,WebClient client
     class API api
     class Database db
     class PayPal,OpenFood external
-    class MessageBroker broker
 ```
  
 Les technologies utilisées sont écrites, les interactions sont également plus précises en terme de protocole et format
 
-Attention : Un conteneur est une unité d'exécution (un processus séparé) notre monolithe modulaire est donc représenté comme un seul conteneur.
+Attention : Un conteneur est une unité d'exécution (un processus séparé) notre monolithe modulaire est donc représenté comme un seul conteneur. La communication inter-modules se fait par événements de domaine in-process (Spring `ApplicationEventPublisher`), donc à l'intérieur de ce conteneur — voir [ADR-0001](../../adr/0001-evenements-de-domaine-in-process.md).
 
 ### Niveau 3 : Composants
 Le 3ème niveau, “composant”, décrit l’architecture locale d’une des briques logicielles. Le _conteneur_ (voir niveau 2) est découpé sous la forme de multiples composants. Chaque composant représente une fonctionnalité du conteneur.
@@ -104,13 +99,12 @@ graph TB
         
         SecurityComponent["Composant Sécurité\n[Composant: Spring Security]\nGère l'authentification\net les autorisations"]
         
-        RabbitConfig["Configuration RabbitMQ\n[Composant: Configuration]\nConfigure les échanges\net les files d'attente"]
+        EventPublisher["Événements de domaine\n[Composant: ApplicationEventPublisher]\nPublie les événements\nin-process (ex: CartValidatedEvent)"]
 
-        EventListeners["Écouteurs d'Événements\n[Composant: Component]\nTraite les événements\nasynchrones"]
+        EventListeners["Écouteurs transactionnels\n[Composant: @TransactionalEventListener]\nRéagissent après commit\n(ex: décrément du stock)"]
     end
 
     subgraph External ["Systèmes Externes"]
-        Queue[("File de Messages\n[Conteneur: RabbitMQ]")]
         DB[("Base de données\n[Conteneur: PostgreSQL]")]
         PayPalAPI["API PayPal\n[Système Externe]"]
         OpenFoodAPI["API Open Food Facts\n[Système Externe]"]
@@ -128,10 +122,9 @@ graph TB
     UserController --> SecurityComponent
     AnalyticsController --> SecurityComponent
 
-    SalesController & ProductController & PaymentController & UserController & AnalyticsController -->|"Publie des événements"| RabbitConfig
+    SalesController -->|"Publie des événements\nde domaine"| EventPublisher
 
-    RabbitConfig -->|"Configure"| Queue
-    Queue -->|"Consomme"| EventListeners
+    EventPublisher -->|"Notifie (in-process,\naprès commit)"| EventListeners
     
     SecurityComponent -->|"Lit/Écrit"| DB
     PaymentController -->|"Appelle l'API"| PayPalAPI
@@ -143,7 +136,7 @@ graph TB
     classDef client fill:#1168bd,stroke:#333,color:#ffffff
 
     class SalesController,ProductController,PaymentController,UserController,AnalyticsController controller
-    class SecurityComponent,RabbitConfig,EventListeners component
-    class Queue,DB,PayPalAPI,OpenFoodAPI external
+    class SecurityComponent,EventPublisher,EventListeners component
+    class DB,PayPalAPI,OpenFoodAPI external
     class WebApp,MobileApp client
 ```
