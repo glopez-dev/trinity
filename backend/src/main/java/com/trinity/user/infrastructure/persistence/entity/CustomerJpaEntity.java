@@ -1,11 +1,7 @@
 package com.trinity.user.infrastructure.persistence.entity;
 
-import java.time.Instant;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -21,19 +17,6 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class CustomerJpaEntity extends AbstractUserJpaEntity {
-
-    @Column(unique = true)
-    private String stripeUserId;
-
-    @Column
-    private Instant tokenExpiresAt;
-
-    @Column
-    private String stripeAccessToken;
-
-    @Column
-    private String stripeRefreshToken;
 }

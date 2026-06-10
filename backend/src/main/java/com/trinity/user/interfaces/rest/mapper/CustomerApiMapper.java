@@ -14,7 +14,6 @@ import java.util.List;
 /**
  * Maps Customer domain entities to their API representation, and REST requests
  * to application commands.
- * {@code tokenExpired} is derived from {@link Customer#isTokenExpired()} by name.
  */
 @Mapper(componentModel = "spring")
 public interface CustomerApiMapper {

@@ -50,14 +50,14 @@ class CustomerRepositoryAdapterTest {
         port.save(Customer.builder()
                 .email("bob@example.com")
                 .hashedPassword("hash")
-                .stripeUserId("stripe-1")
+                .firstName("Bob")
                 .build());
 
         assertThat(port.findByEmail("bob@example.com"))
                 .isPresent()
                 .get()
                 .satisfies(c -> {
-                    assertThat(c.getStripeUserId()).isEqualTo("stripe-1");
+                    assertThat(c.getFirstName()).isEqualTo("Bob");
                     assertThat(c.getStatus()).isEqualTo(UserStatus.ACTIVE);
                     assertThat(c.getType()).isEqualTo(UserType.CUSTOMER);
                 });

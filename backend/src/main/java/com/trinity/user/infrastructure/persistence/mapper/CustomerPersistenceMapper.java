@@ -32,10 +32,6 @@ public class CustomerPersistenceMapper {
             .lastLoginAt(d.getLastLoginAt())
             .status(d.getStatus())
             .version(d.getVersion())
-            .stripeUserId(d.getStripeUserId())
-            .tokenExpiresAt(d.getTokenExpiresAt())
-            .stripeAccessToken(d.getStripeAccessToken())
-            .stripeRefreshToken(d.getStripeRefreshToken())
             .build();
     }
 
@@ -55,10 +51,6 @@ public class CustomerPersistenceMapper {
             .createdAt(e.getCreatedAt())
             .updatedAt(e.getUpdatedAt())
             .version(e.getVersion())
-            .stripeUserId(e.getStripeUserId())
-            .tokenExpiresAt(e.getTokenExpiresAt())
-            .stripeAccessToken(e.getStripeAccessToken())
-            .stripeRefreshToken(e.getStripeRefreshToken())
             .build();
     }
 
@@ -71,9 +63,5 @@ public class CustomerPersistenceMapper {
         target.setType(source.getType());
         target.setLastLoginAt(source.getLastLoginAt());
         target.setStatus(source.getStatus());
-        target.setStripeUserId(source.getStripeUserId());
-        target.setTokenExpiresAt(source.getTokenExpiresAt());
-        target.setStripeAccessToken(source.getStripeAccessToken());
-        target.setStripeRefreshToken(source.getStripeRefreshToken());
     }
 }

@@ -29,9 +29,6 @@ public class CustomerResponse {
     @Schema(description = "Customer's email address")
     private String email;
 
-    @Schema(description = "Customer's token duration")
-    private Instant tokenExpiresAt;
-
     @Schema(description = "Customer's last login timestamp")
     private Instant lastLoginAt;
 
@@ -47,6 +44,4 @@ public class CustomerResponse {
     @Schema(description = "Timestamp of last customer update")
     private Instant updatedAt;
 
-    @Schema(description = "Customer's token expiration status boolean")
-    private boolean tokenExpired;
 }
