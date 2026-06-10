@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.trinity.user.interfaces.rest.dto.CreateCustomerRequest;
 import com.trinity.user.interfaces.rest.dto.CustomerResponse;
 import com.trinity.user.interfaces.rest.dto.UpdateCustomerRequest;
+import com.trinity.user.interfaces.rest.mapper.CustomerApiMapper;
 import com.trinity.user.application.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,6 +35,7 @@ public class CustomerController {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
     private final CustomerService customerService;
+    private final CustomerApiMapper customerApiMapper;
 
     @Operation(summary = "Create a new customer")
     @ApiResponses(value = {
@@ -43,7 +45,10 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<CustomerResponse> createCustomer(@Valid @RequestBody CreateCustomerRequest customerCreateDTO) {
         logger.info("Creating customer");
-        return new ResponseEntity<>(customerService.createCustomer(customerCreateDTO), HttpStatus.CREATED);
+        return new ResponseEntity<>(
+                customerApiMapper.toResponse(
+                        customerService.createCustomer(customerApiMapper.toCommand(customerCreateDTO))),
+                HttpStatus.CREATED);
     }
 
     @Operation(summary = "Get customer by ID")
@@ -54,7 +59,7 @@ public class CustomerController {
     @GetMapping("/{customerId}")
     public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable UUID customerId) {
         logger.info("Fetching customer with ID: {}", customerId);
-        return ResponseEntity.ok(customerService.getCustomerById(customerId));
+        return ResponseEntity.ok(customerApiMapper.toResponse(customerService.getCustomerById(customerId)));
     }
 
     @Operation(summary = "Get customer by email")
@@ -65,7 +70,7 @@ public class CustomerController {
     @GetMapping("/email/{email}")
     public ResponseEntity<CustomerResponse> getCustomerByEmail(@PathVariable String email) {
         logger.info("Fetching customer with email: {}", email);
-        return ResponseEntity.ok(customerService.getCustomerByEmail(email));
+        return ResponseEntity.ok(customerApiMapper.toResponse(customerService.getCustomerByEmail(email)));
     }
 
     @Operation(summary = "Get all customers")
@@ -73,7 +78,7 @@ public class CustomerController {
     @GetMapping
     public ResponseEntity<List<CustomerResponse>> getAllCustomers() {
         logger.info("Fetching all customers");
-        return ResponseEntity.ok(customerService.getAllCustomers());
+        return ResponseEntity.ok(customerApiMapper.toResponseList(customerService.getAllCustomers()));
     }
 
     @Operation(summary = "Update a customer")
@@ -87,7 +92,8 @@ public class CustomerController {
             @PathVariable UUID id,
             @Valid @RequestBody UpdateCustomerRequest customerUpdateDTO) {
         logger.info("Updating customer with ID: {}", id);
-        return ResponseEntity.ok(customerService.updateCustomer(id, customerUpdateDTO));
+        return ResponseEntity.ok(customerApiMapper.toResponse(
+                customerService.updateCustomer(id, customerApiMapper.toCommand(customerUpdateDTO))));
     }
 
     @Operation(summary = "Delete a customer")
@@ -109,6 +115,6 @@ public class CustomerController {
     })
     @PostMapping("/{id}/activate")
     public ResponseEntity<CustomerResponse> activateCustomer(@PathVariable UUID id) {
-        return ResponseEntity.ok(customerService.activateCustomer(id));
+        return ResponseEntity.ok(customerApiMapper.toResponse(customerService.activateCustomer(id)));
     }
 }

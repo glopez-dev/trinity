@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import com.trinity.user.interfaces.rest.dto.CreateEmployeeRequest;
 import com.trinity.user.interfaces.rest.dto.EmployeeResponse;
 import com.trinity.user.interfaces.rest.dto.UpdateEmployeeRequest;
+import com.trinity.user.interfaces.rest.mapper.EmployeeApiMapper;
 import com.trinity.user.application.EmployeeService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +30,7 @@ public class EmployeeController {
 
     private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
     private final EmployeeService employeeService;
+    private final EmployeeApiMapper employeeApiMapper;
 
     @Operation(summary = "Create a new employee")
     @ApiResponses(value = {
@@ -38,7 +40,8 @@ public class EmployeeController {
     @PostMapping()
     public ResponseEntity<EmployeeResponse> createEmployee(@Valid @RequestBody CreateEmployeeRequest request) {
         logger.info("Creating employee");
-        EmployeeResponse body = employeeService.createEmployee(request);
+        EmployeeResponse body = employeeApiMapper.toResponse(
+                employeeService.createEmployee(employeeApiMapper.toCommand(request)));
         return ResponseEntity.ok(body);
     }
 
@@ -47,7 +50,7 @@ public class EmployeeController {
     @GetMapping()
     public ResponseEntity<List<EmployeeResponse>> getAllEmployees() {
         logger.info("Fetching all employees");
-        List<EmployeeResponse> body = employeeService.getAllEmployees();
+        List<EmployeeResponse> body = employeeApiMapper.toResponseList(employeeService.getAllEmployees());
         return ResponseEntity.ok(body);
     }
 
@@ -59,7 +62,7 @@ public class EmployeeController {
     @GetMapping("/{employeeId}")
     public ResponseEntity<EmployeeResponse> getEmployee(@PathVariable UUID employeeId) {
         logger.info("Fetching employee with ID: {}", employeeId);
-        EmployeeResponse body = employeeService.getEmployee(employeeId);
+        EmployeeResponse body = employeeApiMapper.toResponse(employeeService.getEmployee(employeeId));
         return ResponseEntity.ok(body);
     }
 
@@ -75,7 +78,8 @@ public class EmployeeController {
         @Valid @RequestBody UpdateEmployeeRequest request
     ) {
         logger.info("Updating employee with ID: {}", employeeId);
-        EmployeeResponse body = employeeService.updateEmployee(employeeId, request);
+        EmployeeResponse body = employeeApiMapper.toResponse(
+                employeeService.updateEmployee(employeeId, employeeApiMapper.toCommand(request)));
         return ResponseEntity.ok(body);
     }
 

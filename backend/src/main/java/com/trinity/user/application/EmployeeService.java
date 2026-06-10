@@ -1,7 +1,6 @@
 package com.trinity.user.application;
 
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,11 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.trinity.common.domain.exception.NotFoundException;
+import com.trinity.user.application.command.CreateEmployeeCommand;
+import com.trinity.user.application.command.UpdateEmployeeCommand;
 import com.trinity.user.domain.model.UserStatus;
-import com.trinity.user.interfaces.rest.dto.CreateEmployeeRequest;
-import com.trinity.user.interfaces.rest.dto.EmployeeResponse;
-import com.trinity.user.interfaces.rest.dto.UpdateEmployeeRequest;
-import com.trinity.user.interfaces.rest.mapper.EmployeeApiMapper;
 import com.trinity.user.domain.model.Employee;
 import com.trinity.user.domain.port.EmployeeRepositoryPort;
 
@@ -27,7 +24,6 @@ public class EmployeeService {
     private static final String NOT_FOUND_MESSAGE = "Employee not found";
     private final EmployeeRepositoryPort employeeRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmployeeApiMapper employeeApiMapper;
 
     private Employee findById(UUID employeeId) {
         return employeeRepository.findById(employeeId)
@@ -35,55 +31,42 @@ public class EmployeeService {
     }
 
     @Transactional
-    public EmployeeResponse createEmployee(CreateEmployeeRequest employeeDTO) {
+    public Employee createEmployee(CreateEmployeeCommand command) {
 
         Employee newEmployee = Employee.builder()
-            .email(employeeDTO.getEmail())
-            .hashedPassword(passwordEncoder.encode(employeeDTO.getPassword()))
-            .firstName(employeeDTO.getFirstName())
-            .lastName(employeeDTO.getLastName())
+            .email(command.email())
+            .hashedPassword(passwordEncoder.encode(command.rawPassword()))
+            .firstName(command.firstName())
+            .lastName(command.lastName())
             .hireDate(Instant.now())
-            .role(employeeDTO.getRole())
+            .role(command.role())
             .build();
 
-        newEmployee = employeeRepository.save(newEmployee);
-
-        return employeeApiMapper.toResponse(newEmployee);
+        return employeeRepository.save(newEmployee);
     }
 
     @Transactional(readOnly = true)
-    public List<EmployeeResponse> getAllEmployees() {
-        List<Employee> employees = employeeRepository.findAll();
-
-        if (employees.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return employees.stream()
-            .map(employeeApiMapper::toResponse)
-            .toList();
+    public List<Employee> getAllEmployees() {
+        return employeeRepository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public EmployeeResponse getEmployee(UUID employeeId) {
-        Employee employee = findById(employeeId);
-        return employeeApiMapper.toResponse(employee);
+    public Employee getEmployee(UUID employeeId) {
+        return findById(employeeId);
     }
 
     @Transactional
-    public EmployeeResponse updateEmployee(UUID employeeId, UpdateEmployeeRequest request) {
+    public Employee updateEmployee(UUID employeeId, UpdateEmployeeCommand command) {
         Employee employee = findById(employeeId);
 
-        request.getEmail().ifPresent(employee::setEmail);
+        command.email().ifPresent(employee::setEmail);
         employee.rename(
-                request.getFirstName().orElse(null),
-                request.getLastName().orElse(null));
-        request.getRole().ifPresent(employee::changeRole);
-        request.getStatus().ifPresent(status -> applyStatus(employee, status));
+                command.firstName().orElse(null),
+                command.lastName().orElse(null));
+        command.role().ifPresent(employee::changeRole);
+        command.status().ifPresent(status -> applyStatus(employee, status));
 
-        Employee updatedEmployee = employeeRepository.save(employee);
-
-        return employeeApiMapper.toResponse(updatedEmployee);
+        return employeeRepository.save(employee);
     }
 
     @Transactional
