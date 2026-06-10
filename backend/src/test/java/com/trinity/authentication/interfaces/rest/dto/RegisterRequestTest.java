@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.trinity.user.domain.model.EmployeeRole;
-
 
 class RegisterRequestTest {
 
@@ -18,7 +16,6 @@ class RegisterRequestTest {
                 .password("password")
                 .firstName("John")
                 .lastName("Doe")
-                .role(EmployeeRole.EMPLOYEE)
                 .build();
     }
 
@@ -119,33 +116,9 @@ class RegisterRequestTest {
     }
 
     @Test
-    void testGetrole() {
-        // Given
-        EmployeeRole expectedRole = EmployeeRole.EMPLOYEE;
-
-        // When
-        EmployeeRole actualRole = registerRequest.getRole();
-
-        // Then
-        assertEquals(expectedRole, actualRole);
-    }
-
-    @Test
-    void testSetRole() {
-        // Given
-        EmployeeRole newRole = EmployeeRole.MANAGER;
-
-        // When
-        registerRequest.setRole(newRole);
-
-        // Then
-        assertEquals(newRole, registerRequest.getRole());
-    }
-
-    @Test
     void testToString() {
         // Given
-        String expectedString = "RegisterRequest(email=test@example.com, password=password, firstName=John, lastName=Doe, role=EMPLOYEE)";
+        String expectedString = "RegisterRequest(email=test@example.com, password=password, firstName=John, lastName=Doe)";
 
         // When
         String actualString = registerRequest.toString();
@@ -162,7 +135,6 @@ class RegisterRequestTest {
                 .password("password")
                 .firstName("John")
                 .lastName("Doe")
-                .role(EmployeeRole.EMPLOYEE)
                 .build();
 
         // When & Then
@@ -177,7 +149,6 @@ class RegisterRequestTest {
                 .password("password")
                 .firstName("John")
                 .lastName("Doe")
-                .role(EmployeeRole.EMPLOYEE)
                 .build();
 
         // When & Then

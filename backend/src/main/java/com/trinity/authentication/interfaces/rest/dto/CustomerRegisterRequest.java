@@ -1,6 +1,5 @@
 package com.trinity.authentication.interfaces.rest.dto;
 
-import com.trinity.user.domain.model.UserType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -39,8 +38,5 @@ public class CustomerRegisterRequest {
     @Schema(description = "User's password")
     @NotEmpty(message = "Password is required")
     private String password;
-
-    @Schema(hidden = true)
-    private UserType type = UserType.CUSTOMER;
 
 }

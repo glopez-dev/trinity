@@ -61,14 +61,13 @@ class AuthenticationServiceTest {
         request.setPassword("password");
         request.setFirstName("John");
         request.setLastName("Doe");
-        request.setRole(EmployeeRole.EMPLOYEE);
 
         Employee employee = Employee.builder()
                 .email(request.getEmail())
                 .hashedPassword("encodedPassword")
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
-                .role(request.getRole())
+                .role(EmployeeRole.EMPLOYEE)
                 .type(UserType.EMPLOYEE)
                 .build();
 

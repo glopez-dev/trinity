@@ -1,7 +1,5 @@
 package com.trinity.authentication.interfaces.rest.dto;
 
-import com.trinity.user.domain.model.EmployeeRole;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -34,7 +32,4 @@ public class RegisterRequest {
     @Schema(description = "User's last name", example = "Doe")
     @NotEmpty(message = "Last name cannot be empty")
     private String lastName;
-
-    @Schema(description = "User's role in the system", example = "EMPLOYEE")
-    private EmployeeRole role = EmployeeRole.EMPLOYEE;
 }
