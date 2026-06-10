@@ -1,4 +1,4 @@
-package com.trinity.common.dto;
+package com.trinity.common.interfaces.rest.dto;
 
 import lombok.Data;
 

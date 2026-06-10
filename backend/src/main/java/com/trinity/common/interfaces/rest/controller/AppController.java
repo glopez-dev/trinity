@@ -1,13 +1,12 @@
-package com.trinity.common.controller;
+package com.trinity.common.interfaces.rest.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.trinity.common.config.AppConfig;
-import com.trinity.common.dto.ConfigResponse;
+import com.trinity.common.interfaces.rest.dto.ConfigResponse;
 
 import lombok.AllArgsConstructor;
 
@@ -19,7 +18,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class AppController {
 
-    @Autowired
     private final AppConfig appConfig;
 
     /**
