@@ -73,7 +73,7 @@ public class ProductService {
         logger.info("Deleted product with ID: {}", productId);
     }
 
-    @Transactional(readOnly = true)
+    // No transaction: pure external HTTP call, nothing is read or written locally.
     public List<ProductResponse> searchProducts(String searchTerm) {
         return productCatalogGateway.search(searchTerm).stream()
             .map(productMapper::toDTO)
@@ -95,7 +95,11 @@ public class ProductService {
         }
     }
 
-    @Transactional
+    // No method-level transaction: the OpenFoodFacts lookup is an external HTTP
+    // call that must not hold a DB connection. Note that createProduct() below is
+    // a self-invocation, so its @Transactional proxy does not apply on this path;
+    // the underlying JpaRepository.save is transactional on its own, which is
+    // enough for this single-aggregate write.
     public ProductResponse scanProduct(String barcode) {
         Optional<Product> existingProduct = productRepository.findByBarcode(barcode);
 

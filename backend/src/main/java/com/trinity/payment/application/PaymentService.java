@@ -9,7 +9,6 @@ import com.trinity.payment.domain.model.PaymentResult;
 import com.trinity.payment.domain.model.PaymentStatus;
 import com.trinity.payment.domain.port.PaymentGateway;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -29,7 +28,10 @@ public class PaymentService {
         gatewayList.forEach(g -> gateways.put(g.provider(), g));
     }
 
-    @Transactional
+    // No @Transactional here: these methods perform no DB writes today, and the
+    // gateway call is an external HTTP request that must never hold a DB
+    // connection. When persistence lands, keep the saves in short transactions
+    // around the gateway call — never spanning it.
     public Payment charge(Money amount, PaymentProvider provider, String paymentMethodToken) {
         Payment payment = Payment.initiate(amount, provider);
         PaymentResult result = gatewayFor(provider).charge(payment, paymentMethodToken);
@@ -37,7 +39,6 @@ public class PaymentService {
         return payment;
     }
 
-    @Transactional
     public PaymentResult createCheckout(PaymentProvider provider, List<PaymentLineItem> items,
                                         String successUrl, String cancelUrl) {
         return gatewayFor(provider).createCheckout(items, successUrl, cancelUrl);
