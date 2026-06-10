@@ -1,10 +1,11 @@
 package com.trinity.authentication.application;
 
-import com.trinity.authentication.interfaces.rest.dto.CustomerRegisterRequest;
+import com.trinity.authentication.application.command.LoginCommand;
+import com.trinity.authentication.application.command.RegisterCustomerCommand;
+import com.trinity.authentication.application.command.RegisterEmployeeCommand;
 import com.trinity.authentication.infrastructure.security.AppUserDetails;
 import com.trinity.user.domain.model.Customer;
 import com.trinity.user.domain.port.CustomerRepositoryPort;
-import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,9 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.trinity.authentication.interfaces.rest.dto.AuthenticationResponse;
-import com.trinity.authentication.interfaces.rest.dto.LoginRequest;
-import com.trinity.authentication.interfaces.rest.dto.RegisterRequest;
 import com.trinity.user.domain.model.Employee;
 import com.trinity.user.domain.port.EmployeeRepositoryPort;
 
@@ -32,69 +30,59 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
 
+    /** @return the JWT for the newly registered employee */
     @Transactional
-    public AuthenticationResponse registerEmployee(RegisterRequest request) {
+    public String registerEmployee(RegisterEmployeeCommand command) {
 
-        if (employeeRepository.existsByEmail(request.getEmail())) {
+        if (employeeRepository.existsByEmail(command.email())) {
             throw new IllegalArgumentException("Email already in use");
         }
 
         Employee employee = Employee.builder()
-                .email(request.getEmail())
-                .hashedPassword(passwordEncoder.encode(request.getPassword()))
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .email(command.email())
+                .hashedPassword(passwordEncoder.encode(command.rawPassword()))
+                .firstName(command.firstName())
+                .lastName(command.lastName())
                 .build();
 
         Employee savedEmployee = employeeRepository.save(employee);
 
-        String jwtToken = jwtService.generateToken(new AppUserDetails(savedEmployee));
-
-        return AuthenticationResponse.builder()
-                .jwt(jwtToken)
-                .build();
-
+        return jwtService.generateToken(new AppUserDetails(savedEmployee));
     }
 
+    /** @return the JWT for the newly registered customer */
     @Transactional
-    public AuthenticationResponse registerCustomer(@Valid CustomerRegisterRequest request) {
+    public String registerCustomer(RegisterCustomerCommand command) {
 
-        if (customerRepository.existsByEmail(request.getEmail())) {
+        if (customerRepository.existsByEmail(command.email())) {
             throw new IllegalArgumentException("Email already in use");
         }
 
         Customer customer = Customer.builder()
-                .email(request.getEmail())
-                .hashedPassword(passwordEncoder.encode(request.getPassword()))
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .email(command.email())
+                .hashedPassword(passwordEncoder.encode(command.rawPassword()))
+                .firstName(command.firstName())
+                .lastName(command.lastName())
                 .build();
 
         Customer savedCustomer = customerRepository.save(customer);
 
-        String jwtToken = jwtService.generateToken(new AppUserDetails(savedCustomer));
-
-        return AuthenticationResponse.builder()
-                .jwt(jwtToken)
-                .build();
+        return jwtService.generateToken(new AppUserDetails(savedCustomer));
     }
 
-    public AuthenticationResponse login(LoginRequest request) {
+    /** @return the JWT for the authenticated user */
+    public String login(LoginCommand command) {
 
         this.authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
-                request.getEmail(),
-                request.getPassword()
+                command.email(),
+                command.password()
             )
         );
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+        UserDetails userDetails = userDetailsService.loadUserByUsername(command.email());
 
-        String jwtToken = jwtService.generateToken(userDetails);
-
-        return AuthenticationResponse.builder()
-                .jwt(jwtToken)
-                .build();
+        return jwtService.generateToken(userDetails);
     }
 
 }

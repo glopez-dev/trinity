@@ -16,6 +16,9 @@ import com.trinity.authentication.interfaces.rest.dto.AuthenticationResponse;
 import com.trinity.authentication.interfaces.rest.dto.LoginRequest;
 import com.trinity.authentication.interfaces.rest.dto.RegisterRequest;
 import com.trinity.authentication.application.AuthenticationService;
+import com.trinity.authentication.application.command.LoginCommand;
+import com.trinity.authentication.application.command.RegisterCustomerCommand;
+import com.trinity.authentication.application.command.RegisterEmployeeCommand;
 
 import jakarta.validation.Valid;
 
@@ -38,7 +41,9 @@ public class AuthenticationController {
     )
     @PostMapping("/register/employee")
     public ResponseEntity<AuthenticationResponse> registerEmployee(@Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(authService.registerEmployee(request));
+        String jwt = authService.registerEmployee(new RegisterEmployeeCommand(
+                request.getEmail(), request.getPassword(), request.getFirstName(), request.getLastName()));
+        return ResponseEntity.ok(AuthenticationResponse.builder().jwt(jwt).build());
     }
 
     @Operation(summary = "Register a new customer")
@@ -49,7 +54,9 @@ public class AuthenticationController {
     )
     @PostMapping("/register/customer")
     public ResponseEntity<AuthenticationResponse> registerCustomer(@Valid @RequestBody CustomerRegisterRequest request) {
-        return ResponseEntity.ok(authService.registerCustomer(request));
+        String jwt = authService.registerCustomer(new RegisterCustomerCommand(
+                request.getEmail(), request.getPassword(), request.getFirstName(), request.getLastName()));
+        return ResponseEntity.ok(AuthenticationResponse.builder().jwt(jwt).build());
     }
 
     @Operation(summary = "Login to the application")
@@ -60,7 +67,8 @@ public class AuthenticationController {
     )
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody LoginRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+        String jwt = authService.login(new LoginCommand(request.getEmail(), request.getPassword()));
+        return ResponseEntity.ok(AuthenticationResponse.builder().jwt(jwt).build());
     }
 
 }

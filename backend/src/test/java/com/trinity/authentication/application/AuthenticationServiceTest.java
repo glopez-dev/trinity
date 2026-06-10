@@ -12,9 +12,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.trinity.authentication.interfaces.rest.dto.AuthenticationResponse;
-import com.trinity.authentication.interfaces.rest.dto.RegisterRequest;
-import com.trinity.authentication.interfaces.rest.dto.LoginRequest;
+import com.trinity.authentication.application.command.LoginCommand;
+import com.trinity.authentication.application.command.RegisterEmployeeCommand;
 import com.trinity.user.domain.model.EmployeeRole;
 import com.trinity.user.domain.model.UserType;
 import com.trinity.authentication.infrastructure.security.AppUserDetails;
@@ -56,43 +55,37 @@ class AuthenticationServiceTest {
     @Test
     void testRegisterEmployee() {
         // Given
-        RegisterRequest request = new RegisterRequest();
-        request.setEmail("test@example.com");
-        request.setPassword("password");
-        request.setFirstName("John");
-        request.setLastName("Doe");
+        RegisterEmployeeCommand request = new RegisterEmployeeCommand(
+                "test@example.com", "password", "John", "Doe");
 
         Employee employee = Employee.builder()
-                .email(request.getEmail())
+                .email(request.email())
                 .hashedPassword("encodedPassword")
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .firstName(request.firstName())
+                .lastName(request.lastName())
                 .role(EmployeeRole.EMPLOYEE)
                 .type(UserType.EMPLOYEE)
                 .build();
 
-        when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPassword");
-        when(employeeRepository.existsByEmail(request.getEmail())).thenReturn(false);
+        when(passwordEncoder.encode(request.rawPassword())).thenReturn("encodedPassword");
+        when(employeeRepository.existsByEmail(request.email())).thenReturn(false);
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
         when(jwtService.generateToken(any(AppUserDetails.class))).thenReturn("jwtToken");
         // When
-        AuthenticationResponse response = authenticationService.registerEmployee(request);
+        String jwt = authenticationService.registerEmployee(request);
 
         // Then
-        assertNotNull(response);
-        assertEquals("jwtToken", response.getJwt());
+        assertEquals("jwtToken", jwt);
         verify(employeeRepository, times(1)).save(any(Employee.class));
     }
 
     @Test
     void testLogin() {
         // Given
-        LoginRequest request = new LoginRequest();
-        request.setEmail("test@example.com");
-        request.setPassword("password");
+        LoginCommand request = new LoginCommand("test@example.com", "password");
 
         Employee employee = Employee.builder()
-                .email(request.getEmail())
+                .email(request.email())
                 .hashedPassword("encodedPassword")
                 .firstName("John")
                 .lastName("Doe")
@@ -100,16 +93,15 @@ class AuthenticationServiceTest {
                 .build();
 
         UserDetails userDetails = new AppUserDetails(employee);
-        when(userDetailsService.loadUserByUsername(request.getEmail())).thenReturn(userDetails);
+        when(userDetailsService.loadUserByUsername(request.email())).thenReturn(userDetails);
         when(jwtService.generateToken(userDetails)).thenReturn("jwtToken");
 
         // When
-        AuthenticationResponse response = authenticationService.login(request);
+        String jwt = authenticationService.login(request);
 
         // Then
-        assertNotNull(response);
-        assertEquals("jwtToken", response.getJwt());
+        assertEquals("jwtToken", jwt);
         verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(userDetailsService, times(1)).loadUserByUsername(request.getEmail());
+        verify(userDetailsService, times(1)).loadUserByUsername(request.email());
     }
 }
