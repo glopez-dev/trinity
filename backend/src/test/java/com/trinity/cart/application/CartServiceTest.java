@@ -1,7 +1,7 @@
 package com.trinity.cart.application;
 
-import com.trinity.cart.interfaces.rest.dto.CartItemRequest;
-import com.trinity.cart.interfaces.rest.dto.CartRequest;
+import com.trinity.cart.domain.model.Cart;
+import com.trinity.cart.domain.model.CartItem;
 import com.trinity.common.domain.exception.BusinessRuleViolation;
 import com.trinity.common.domain.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,13 +16,13 @@ class CartServiceTest {
 
     private CartService cartService;
     private UUID customerId;
-    private CartItemRequest cartItemRequest;
+    private CartItem cartItem;
 
     @BeforeEach
     void setUp() {
         cartService = new CartService(new InMemoryCartRepositoryPort());
         customerId = UUID.randomUUID();
-        cartItemRequest = CartItemRequest.builder()
+        cartItem = CartItem.builder()
                 .productId(UUID.randomUUID())
                 .productName("Test Product")
                 .quantity(1)
@@ -33,32 +33,32 @@ class CartServiceTest {
     @Test
     void testCreateCart() {
         cartService.createCart(customerId);
-        CartRequest cartRequest = cartService.getCart(customerId);
-        assertNotNull(cartRequest);
-        assertEquals(customerId, cartRequest.getCustomerId());
+        Cart cart = cartService.getCart(customerId);
+        assertNotNull(cart);
+        assertEquals(customerId, cart.getCustomerId());
     }
 
     @Test
     void testAddItemToCart() {
         cartService.createCart(customerId);
-        cartService.addItemToCart(customerId, cartItemRequest);
-        CartRequest cartRequest = cartService.getCart(customerId);
-        assertEquals(1, cartRequest.getItems().size());
+        cartService.addItemToCart(customerId, cartItem);
+        Cart cart = cartService.getCart(customerId);
+        assertEquals(1, cart.getItems().size());
     }
 
     @Test
     void testRemoveItemFromCart() {
         cartService.createCart(customerId);
-        cartService.addItemToCart(customerId, cartItemRequest);
-        cartService.removeItemFromCart(customerId, cartItemRequest);
-        CartRequest cartRequest = cartService.getCart(customerId);
-        assertEquals(0, cartRequest.getItems().size());
+        cartService.addItemToCart(customerId, cartItem);
+        cartService.removeItemFromCart(customerId, cartItem);
+        Cart cart = cartService.getCart(customerId);
+        assertEquals(0, cart.getItems().size());
     }
 
     @Test
     void testValidateCart() {
         cartService.createCart(customerId);
-        cartService.addItemToCart(customerId, cartItemRequest);
+        cartService.addItemToCart(customerId, cartItem);
         cartService.validateCart(customerId);
         assertThrows(NotFoundException.class, () -> cartService.getCart(customerId));
     }
@@ -74,8 +74,8 @@ class CartServiceTest {
     void testCancelCart() {
         cartService.createCart(customerId);
         cartService.cancelCart(customerId);
-        CartRequest cartRequest = cartService.getCart(customerId);
-        assertTrue(cartRequest.getItems().isEmpty());
+        Cart cart = cartService.getCart(customerId);
+        assertTrue(cart.getItems().isEmpty());
     }
 
     @Test

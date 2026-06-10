@@ -1,9 +1,11 @@
 package com.trinity.cart.interfaces.rest.controller;
 
 import com.trinity.cart.interfaces.rest.dto.CartItemRequest;
-import com.trinity.cart.interfaces.rest.dto.CartRequest;
+import com.trinity.cart.interfaces.rest.dto.CartResponse;
+import com.trinity.cart.interfaces.rest.mapper.CartApiMapper;
 import com.trinity.cart.application.CartService;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,13 +14,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/V1/carts")
+@RequiredArgsConstructor
 public class CartController {
 
     private final CartService cartService;
-
-    public CartController(CartService cartService) {
-        this.cartService = cartService;
-    }
+    private final CartApiMapper cartApiMapper;
 
     // Create a new cart
     @PostMapping("/{customerId}")
@@ -29,15 +29,15 @@ public class CartController {
 
     // Retrieve a customer's cart
     @GetMapping("/{customerId}")
-    public ResponseEntity<CartRequest> getCart(@PathVariable UUID customerId) {
-        return ResponseEntity.ok(cartService.getCart(customerId));
+    public ResponseEntity<CartResponse> getCart(@PathVariable UUID customerId) {
+        return ResponseEntity.ok(cartApiMapper.toResponse(cartService.getCart(customerId)));
     }
 
     // Add an item to the cart
-    @PutMapping("/{customerId}/items") 
+    @PutMapping("/{customerId}/items")
     public ResponseEntity<Void> addItemToCart(
         @PathVariable UUID customerId, @RequestBody CartItemRequest cartItem) {
-        cartService.addItemToCart(customerId, cartItem);
+        cartService.addItemToCart(customerId, cartApiMapper.toDomain(cartItem));
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -45,7 +45,7 @@ public class CartController {
     @DeleteMapping("/{customerId}/items")
     public ResponseEntity<Void> removeItemFromCart(
             @PathVariable UUID customerId, @RequestBody CartItemRequest cartItem) {
-        cartService.removeItemFromCart(customerId, cartItem);
+        cartService.removeItemFromCart(customerId, cartApiMapper.toDomain(cartItem));
         return ResponseEntity.ok().build();
     }
 

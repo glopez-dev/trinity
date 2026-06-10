@@ -3,8 +3,6 @@ package com.trinity.cart.application;
 import com.trinity.cart.domain.model.Cart;
 import com.trinity.cart.domain.model.CartItem;
 import com.trinity.cart.domain.port.CartRepositoryPort;
-import com.trinity.cart.interfaces.rest.dto.CartItemRequest;
-import com.trinity.cart.interfaces.rest.dto.CartRequest;
 import com.trinity.common.domain.exception.BusinessRuleViolation;
 import com.trinity.common.domain.exception.NotFoundException;
 import com.trinity.common.domain.vo.Money;
@@ -13,10 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,24 +31,18 @@ public class CartService {
     }
 
     @Transactional(readOnly = true)
-    public CartRequest getCart(UUID customerId) {
-        Cart cart = loadCart(customerId);
-        return CartRequest.builder()
-                .customerId(cart.getCustomerId())
-                .items(setCartItemToSetCartItemRequest(cart.getItems()))
-                .totalAmount(cart.getTotalAmount().amount())
-                .currency(cart.getTotalAmount().currency())
-                .build();
+    public Cart getCart(UUID customerId) {
+        return loadCart(customerId);
     }
 
     @Transactional
-    public void addItemToCart(UUID customerId, CartItemRequest cartItem) {
-        mutate(customerId, cart -> cart.addItem(toCartItem(cartItem)));
+    public void addItemToCart(UUID customerId, CartItem item) {
+        mutate(customerId, cart -> cart.addItem(item));
     }
 
     @Transactional
-    public void removeItemFromCart(UUID customerId, CartItemRequest cartItem) {
-        mutate(customerId, cart -> cart.removeItem(toCartItem(cartItem)));
+    public void removeItemFromCart(UUID customerId, CartItem item) {
+        mutate(customerId, cart -> cart.removeItem(item));
     }
 
     @Transactional
@@ -89,29 +79,5 @@ public class CartService {
     private Cart loadCart(UUID customerId) {
         return cartRepository.findByCustomerId(customerId)
                 .orElseThrow(() -> new NotFoundException("Cart not found for customer: " + customerId));
-    }
-
-    private Set<CartItemRequest> setCartItemToSetCartItemRequest(Set<CartItem> cartItems) {
-        return cartItems.stream()
-                .map(this::cartItemtoCartItemRequest)
-                .collect(Collectors.toSet());
-    }
-
-    private CartItemRequest cartItemtoCartItemRequest(CartItem cartItem) {
-        return CartItemRequest.builder()
-                .productId(cartItem.getProductId())
-                .productName(cartItem.getProductName())
-                .quantity(cartItem.getQuantity())
-                .unitPrice(cartItem.getUnitPrice())
-                .build();
-    }
-
-    private CartItem toCartItem(CartItemRequest cartItemRequest) {
-        return CartItem.builder()
-                .productId(cartItemRequest.getProductId())
-                .productName(cartItemRequest.getProductName())
-                .quantity(cartItemRequest.getQuantity())
-                .unitPrice(cartItemRequest.getUnitPrice())
-                .build();
     }
 }
