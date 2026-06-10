@@ -56,6 +56,11 @@ class ArchitectureTest {
             "cart", new String[]{
                     "com.trinity.product.application..",
                     "com.trinity.product.domain.model.."
+            },
+            // payment prices checkout lines the same way: identity in, price out.
+            "payment", new String[]{
+                    "com.trinity.product.application..",
+                    "com.trinity.product.domain.model.."
             }
     );
 

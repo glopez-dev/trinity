@@ -1,8 +1,7 @@
 package com.trinity.payment.interfaces.rest.controller;
 
-import com.trinity.common.domain.vo.Money;
+import com.trinity.payment.application.command.CheckoutLine;
 import com.trinity.payment.infrastructure.config.PaymentProperties;
-import com.trinity.payment.domain.model.PaymentLineItem;
 import com.trinity.payment.domain.model.PaymentProvider;
 import com.trinity.payment.domain.model.PaymentResult;
 import com.trinity.payment.interfaces.rest.dto.CheckoutLineItemRequest;
@@ -31,17 +30,13 @@ public class ProductCheckoutController {
 
     @PostMapping("/checkout")
     public ResponseEntity<CheckoutResponse> checkoutProducts(@Valid @RequestBody CheckoutRequest request) {
-        List<PaymentLineItem> items = request.items().stream()
-                .map(this::toLineItem)
+        List<CheckoutLine> lines = request.items().stream()
+                .map(item -> new CheckoutLine(item.productId(), item.quantity()))
                 .toList();
-        PaymentResult result = paymentService.createCheckout(
-                PaymentProvider.STRIPE, items, properties.getSuccessUrl(), properties.getCancelUrl());
+        PaymentResult result = paymentService.checkoutProducts(
+                PaymentProvider.STRIPE, lines, properties.getDefaultCurrency(),
+                properties.getSuccessUrl(), properties.getCancelUrl());
         return ResponseEntity.ok(new CheckoutResponse(
                 result.status().name(), result.externalRef(), result.redirectUrl()));
-    }
-
-    private PaymentLineItem toLineItem(CheckoutLineItemRequest item) {
-        return new PaymentLineItem(
-                Money.of(item.unitAmount(), item.currency()), item.quantity(), item.name());
     }
 }

@@ -7,8 +7,11 @@ import com.trinity.payment.domain.model.PaymentLineItem;
 import com.trinity.payment.domain.model.PaymentProvider;
 import com.trinity.payment.domain.model.PaymentResult;
 import com.trinity.payment.domain.model.PaymentStatus;
+import com.trinity.common.domain.exception.NotFoundException;
+import com.trinity.payment.application.command.CheckoutLine;
 import com.trinity.payment.domain.port.PaymentGateway;
 import com.trinity.payment.domain.port.PaymentRepositoryPort;
+import com.trinity.payment.domain.port.ProductPricingPort;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumMap;
@@ -29,10 +32,27 @@ public class PaymentService {
 
     private final Map<PaymentProvider, PaymentGateway> gateways = new EnumMap<>(PaymentProvider.class);
     private final PaymentRepositoryPort paymentRepository;
+    private final ProductPricingPort productPricingPort;
 
-    public PaymentService(List<PaymentGateway> gatewayList, PaymentRepositoryPort paymentRepository) {
+    public PaymentService(List<PaymentGateway> gatewayList, PaymentRepositoryPort paymentRepository,
+                          ProductPricingPort productPricingPort) {
         gatewayList.forEach(g -> gateways.put(g.provider(), g));
         this.paymentRepository = paymentRepository;
+        this.productPricingPort = productPricingPort;
+    }
+
+    /**
+     * Hosted checkout from product identities: every price is resolved
+     * server-side against the catalogue — client-supplied amounts are gone.
+     */
+    public PaymentResult checkoutProducts(PaymentProvider provider, List<CheckoutLine> lines,
+                                          String currency, String successUrl, String cancelUrl) {
+        List<PaymentLineItem> items = lines.stream().map(line -> {
+            ProductPricingPort.PricedProduct product = productPricingPort.findById(line.productId())
+                    .orElseThrow(() -> new NotFoundException("Product not found: " + line.productId()));
+            return new PaymentLineItem(Money.of(product.unitPrice(), currency), line.quantity(), product.name());
+        }).toList();
+        return createCheckout(provider, items, successUrl, cancelUrl);
     }
 
     public Payment charge(Money amount, PaymentProvider provider, String paymentMethodToken) {

@@ -7,8 +7,11 @@ import com.trinity.payment.domain.model.PaymentLineItem;
 import com.trinity.payment.domain.model.PaymentProvider;
 import com.trinity.payment.domain.model.PaymentResult;
 import com.trinity.payment.domain.model.PaymentStatus;
+import com.trinity.common.domain.exception.NotFoundException;
+import com.trinity.payment.application.command.CheckoutLine;
 import com.trinity.payment.domain.port.PaymentGateway;
 import com.trinity.payment.domain.port.PaymentRepositoryPort;
+import com.trinity.payment.domain.port.ProductPricingPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,12 +40,15 @@ class PaymentServiceTest {
     @Mock
     private PaymentRepositoryPort paymentRepository;
 
+    @Mock
+    private ProductPricingPort productPricingPort;
+
     private PaymentService paymentService;
 
     @BeforeEach
     void setUp() {
         when(stripeGateway.provider()).thenReturn(PaymentProvider.STRIPE);
-        paymentService = new PaymentService(List.of(stripeGateway), paymentRepository);
+        paymentService = new PaymentService(List.of(stripeGateway), paymentRepository, productPricingPort);
     }
 
     @Test
@@ -164,5 +170,42 @@ class PaymentServiceTest {
         assertThat(captor.getValue().getExternalRef()).isEqualTo("cs_1");
         assertThat(captor.getValue().getAmount()).isEqualTo(Money.of(new BigDecimal("20.00"), "USD"));
         assertThat(captor.getValue().getStatus()).isEqualTo(PaymentStatus.PENDING);
+    }
+
+    @Test
+    void checkoutProducts_resolvesPricesServerSide() {
+        java.util.UUID productId = java.util.UUID.randomUUID();
+        when(productPricingPort.findById(productId)).thenReturn(java.util.Optional.of(
+                new ProductPricingPort.PricedProduct(productId, "Coffee", new BigDecimal("10.00"))));
+        when(stripeGateway.createCheckout(any(), any(), any()))
+                .thenReturn(new PaymentResult("cs_9", PaymentStatus.PENDING, "https://pay", null));
+
+        PaymentResult result = paymentService.checkoutProducts(
+                PaymentProvider.STRIPE,
+                List.of(new CheckoutLine(productId, 2)),
+                "USD", "https://ok", "https://cancel");
+
+        assertThat(result.externalRef()).isEqualTo("cs_9");
+        org.mockito.ArgumentCaptor<List<PaymentLineItem>> captor =
+                org.mockito.ArgumentCaptor.forClass(List.class);
+        verify(stripeGateway).createCheckout(captor.capture(), eq("https://ok"), eq("https://cancel"));
+        PaymentLineItem item = captor.getValue().get(0);
+        assertThat(item.unitAmount()).isEqualTo(Money.of(new BigDecimal("10.00"), "USD"));
+        assertThat(item.quantity()).isEqualTo(2);
+        assertThat(item.name()).isEqualTo("Coffee");
+    }
+
+    @Test
+    void checkoutProducts_unknownProduct_throwsNotFoundAndNeverCallsTheGateway() {
+        java.util.UUID productId = java.util.UUID.randomUUID();
+        when(productPricingPort.findById(productId)).thenReturn(java.util.Optional.empty());
+
+        assertThatThrownBy(() -> paymentService.checkoutProducts(
+                PaymentProvider.STRIPE,
+                List.of(new CheckoutLine(productId, 1)),
+                "USD", "https://ok", "https://cancel"))
+                .isInstanceOf(NotFoundException.class);
+
+        org.mockito.Mockito.verify(stripeGateway, org.mockito.Mockito.never()).createCheckout(any(), any(), any());
     }
 }

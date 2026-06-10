@@ -15,8 +15,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,8 +39,8 @@ class ProductCheckoutControllerTest {
     @Test
     void checkoutProducts_returnsCheckoutResponseWithRealStatus() {
         CheckoutRequest request = new CheckoutRequest(List.of(
-                new CheckoutLineItemRequest(new BigDecimal("10.00"), "USD", 2, "Coffee")));
-        when(paymentService.createCheckout(eq(PaymentProvider.STRIPE), any(), any(), any()))
+                new CheckoutLineItemRequest(UUID.randomUUID(), 2)));
+        when(paymentService.checkoutProducts(eq(PaymentProvider.STRIPE), any(), any(), any(), any()))
                 .thenReturn(new PaymentResult("cs_test_1", PaymentStatus.PENDING,
                         "https://checkout.stripe.com/cs_test_1", null));
 
