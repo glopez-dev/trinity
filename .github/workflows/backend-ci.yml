@@ -76,10 +76,7 @@ jobs:
         working-directory: backend
         run: |
           chmod +x mvnw
-          ./mvnw -B verify sonar:sonar \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.organization=glopez-dev \
-            -Dsonar.projectKey=glopez-dev_trinity
+          ./mvnw -B verify sonar:sonar
 
       - name: Skip notice
         if: env.SONAR_TOKEN == ''
