@@ -60,7 +60,7 @@ ENV ENV="prod"
 # Install postgresql-client and curl for healthcheck
 #########################################################################################
 RUN apt-get update && \
-    apt-get install -y postgresql-client curl && \
+    apt-get install -y --no-install-recommends postgresql-client curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -98,7 +98,7 @@ ENV ENV="dev"
 #########################################################################################
 ## Update and install inotify-tools and curl
 #########################################################################################
-RUN apt update && apt install -y inotify-tools postgresql-client curl && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends inotify-tools postgresql-client curl && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 #########################################################################################
 ## Copy the startup script
