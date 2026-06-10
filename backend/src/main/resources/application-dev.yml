@@ -94,7 +94,7 @@ jwt:
 #####################################
 app:
   cors:
-    allowed-origins: ${SPRING_CORS_ALLOWED_ORIGINS}
+    allowed-origins: ${SPRING_CORS_ALLOWED_ORIGINS:http://localhost:3000,http://host.docker.internal:3000}
 
 #####################################
 # Swagger Configuration

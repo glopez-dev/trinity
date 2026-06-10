@@ -21,6 +21,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -67,19 +68,16 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // from application-dev.yml
-    @Value("${app.cors.allowed-origins}")
-    private String allowedOrigins;
+    // Comma-separated list; Spring splits it. The default keeps the test
+    // profile (which has no CORS key) bootable.
+    @Value("${app.cors.allowed-origins:http://localhost:3000}")
+    private List<String> allowedOrigins;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList(
-            "http://localhost:3000",
-            "http://host.docker.internal:3000",
-            this.allowedOrigins
-        ));
+        configuration.setAllowedOrigins(this.allowedOrigins);
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")); // OPTIONS est nécessaire pour les requêtes pré-vol
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
