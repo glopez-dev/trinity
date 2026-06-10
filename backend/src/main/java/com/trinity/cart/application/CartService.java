@@ -1,5 +1,6 @@
 package com.trinity.cart.application;
 
+import com.trinity.cart.domain.event.CartValidatedEvent;
 import com.trinity.cart.domain.model.Cart;
 import com.trinity.cart.domain.model.CartItem;
 import com.trinity.cart.domain.port.CartRepositoryPort;
@@ -7,9 +8,11 @@ import com.trinity.common.domain.exception.BusinessRuleViolation;
 import com.trinity.common.domain.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -18,6 +21,7 @@ import java.util.function.Consumer;
 public class CartService {
 
     private final CartRepositoryPort cartRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void createCart(UUID customerId) {
@@ -53,7 +57,9 @@ public class CartService {
     public void validateCart(UUID customerId) {
         Cart cart = loadCart(customerId);
         cart.validate();
-        // TODO: notify the payment service before clearing the cart
+        // Published inside the transaction: @TransactionalEventListener(AFTER_COMMIT)
+        // consumers only run if the validation and deletion actually commit.
+        eventPublisher.publishEvent(CartValidatedEvent.from(cart, Instant.now()));
         cartRepository.deleteByCustomerId(customerId);
     }
 
