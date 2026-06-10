@@ -52,6 +52,12 @@ d'architecture. Décision actée dans
 - `docs/adr/0001-evenements-de-domaine-in-process.md` : décision « événements
   in-process, pas de RabbitMQ » avec critères de réouverture explicites.
 - Test de non-régression `OpenApiDocIT` sur le document OpenAPI généré.
+- **Spring Modulith** : chaque module déclare ses dépendances autorisées
+  (`package-info.java`, named interfaces `user::model`, `user::ports`,
+  `cart::events`, `cart::ports`, `product::api`, `product::model` ; `common`
+  en module ouvert). `ModularityTest.verify()` rejette tout cycle et toute
+  dépendance non déclarée, et `Documenter` génère les diagrammes C4 réels du
+  graphe de modules dans `target/spring-modulith-docs`.
 
 ### Corrigé
 
@@ -90,6 +96,10 @@ d'architecture. Décision actée dans
 - Documentation DDD réalignée sur le code : les diagrammes C4 ne montrent
   plus de broker RabbitMQ (jamais implémenté) mais les événements in-process
   réels.
+- L'adaptateur `ProductInfoAdapter` (port produit du panier) est hébergé par
+  le module `product` : le graphe de modules devient acyclique
+  (product → cart, payment → product, authentication → user), condition de la
+  vérification Modulith.
 
 ### Supprimé
 

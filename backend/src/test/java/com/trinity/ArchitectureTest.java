@@ -62,9 +62,12 @@ class ArchitectureTest {
 
     @Test
     void domainPackagesAreFreeOfFrameworks() {
+        // package-info pseudo-classes are excluded: they carry only the Spring
+        // Modulith @NamedInterface architecture metadata, never domain logic.
         for (String context : PURE_DOMAIN_CONTEXTS) {
             ArchRule rule = noClasses()
                     .that().resideInAPackage("..%s.domain..".formatted(context))
+                    .and().doNotHaveSimpleName("package-info")
                     .should().dependOnClassesThat()
                     .resideInAnyPackage(
                             "jakarta.persistence..",
