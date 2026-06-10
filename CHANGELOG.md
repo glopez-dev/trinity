@@ -31,12 +31,21 @@ d'architecture. Décision actée dans
 
 ### Ajouté
 
-- **CI de publication d'image** : workflow GitHub Actions
-  (`.github/workflows/backend-docker.yml`) qui construit l'image Docker de
-  l'API (cible `prod`) et la publie sur GHCR
-  (`ghcr.io/<owner>/<repo>/backend`) — tags `prod-<sha>`, nom de branche et
-  `latest` sur `main` ; sur les pull requests l'image est construite sans
-  être publiée.
+- **Pipeline CI GitHub Actions** (`.github/workflows/backend-ci.yml`) :
+  tests (unitaires, ArchUnit, Modulith, intégration) avec rapports JUnit et
+  JaCoCo en artefacts ; lint du Dockerfile (hadolint) ; construction de
+  l'image Docker de l'API (cible `prod`) et publication sur GHCR
+  (`ghcr.io/<owner>/<repo>/backend`) — tags `prod-<sha>`, nom de branche,
+  `latest` sur `main` et SemVer sur les tags `v*`, avec attestations SBOM et
+  provenance ; scan de vulnérabilités Trivy remonté dans l'onglet Security ;
+  analyse SonarCloud (si `SONAR_TOKEN` est configuré). Sur les pull requests
+  l'image est construite et scannée sans être publiée ; la publication exige
+  des tests verts.
+- **CI frontend** (`.github/workflows/frontend-docker.yml`) : même pipeline
+  image (hadolint, build `prod`, Trivy, publication GHCR) pour le frontend.
+- **Dependabot** (`.github/dependabot.yml`) : veille hebdomadaire sur les
+  actions GitHub, les dépendances Maven et npm, et les images de base
+  Docker.
 - **Flux d'achat serveur** : la validation du panier publie l'événement de
   domaine `CartValidatedEvent` ; un écouteur transactionnel dans `product`
   décrémente le stock vendu après commit (`CartValidationStockIT` prouve le
@@ -67,6 +76,10 @@ d'architecture. Décision actée dans
 
 ### Corrigé
 
+- **Les tests d'intégration `*IT` s'exécutent désormais sous Maven** : faute
+  de `maven-failsafe-plugin`, `CartValidationStockIT`, `FlywayMigrationIT` et
+  `OpenApiDocIT` ne tournaient que depuis l'IDE — `./mvnw verify` les
+  exécute maintenant pendant la phase `integration-test`.
 - **Filtre JWT** : la chaîne de filtres continue toujours sur le chemin
   nominal ; un token expiré/malformé ou un utilisateur inconnu renvoie un
   **401** propre (auparavant : requête avalée ou erreur 500).
