@@ -45,6 +45,11 @@ class ArchitectureTest {
             "authentication", new String[]{
                     "com.trinity.user.domain.model..",
                     "com.trinity.user.domain.port.."
+            },
+            // product consumes the cart-validated domain event to deduct stock;
+            // events belong to their producer, consumers import them, never the reverse.
+            "product", new String[]{
+                    "com.trinity.cart.domain.event.."
             }
     );
 

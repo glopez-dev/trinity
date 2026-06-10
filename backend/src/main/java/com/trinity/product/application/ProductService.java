@@ -58,6 +58,14 @@ public class ProductService {
         return updatedProduct;
     }
 
+    /** Deducts a sold quantity from the stock; rejects going negative. */
+    @Transactional
+    public Product deductStock(UUID productId, int quantity) {
+        Product product = findProductById(productId);
+        product.adjustStock(-quantity);
+        return productRepository.save(product);
+    }
+
     @Transactional
     public void deleteProduct(UUID productId) {
         Product product = findProductById(productId);
