@@ -7,7 +7,7 @@
 ## cache. This way, when the source code changes but the pom.xml file remains unchanged,
 ## we don’t have to wait for the dependencies to be downloaded again.
 #########################################################################################
-FROM eclipse-temurin:21-jdk-jammy AS build
+FROM eclipse-temurin:25-jdk-jammy AS build
 WORKDIR /app/backend
 
 #########################################################################################
@@ -51,7 +51,7 @@ RUN if [ "$SKIP_TESTS" = "false" ]; then \
 ## Java Runtime Environment (JRE)
 # The JRE is the runtime portion of Java software, it doesn't include the development tools.
 #########################################################################################
-FROM eclipse-temurin:21-jre-jammy AS prod
+FROM eclipse-temurin:25-jre-jammy AS prod
 WORKDIR /app/backend
 EXPOSE 8080
 ENV ENV="prod"
@@ -90,7 +90,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=5 \
 #########################################################################################
 ## Java Development Kit (JDK)
 #########################################################################################
-FROM eclipse-temurin:21-jdk-jammy AS dev
+FROM eclipse-temurin:25-jdk-jammy AS dev
 WORKDIR /app/backend
 EXPOSE 8080
 ENV ENV="dev"
