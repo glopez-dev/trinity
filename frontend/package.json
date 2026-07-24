@@ -24,7 +24,7 @@
     "next": "15.1.2",
     "next-router-mock": "^0.9.13",
     "react": "^19.0.0",
-    "react-data-table-component": "^7.6.2",
+    "react-data-table-component": "^8.8.0",
     "react-day-picker": "^9.5.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.15.0",
