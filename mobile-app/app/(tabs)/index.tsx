@@ -1,9 +1,11 @@
-import {View, Text} from "react-native";
+import {View, Text, SafeAreaView} from "react-native";
 
-export default function Home() {
+export default function Cart() {
     return (
-        <View>
-            <Text>Home</Text>
-        </View>
+        <SafeAreaView style={{flex: 1}}>
+            <Text>
+                Cart
+            </Text>
+        </SafeAreaView>
     )
 }

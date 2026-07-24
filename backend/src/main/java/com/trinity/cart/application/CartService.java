@@ -1,0 +1,92 @@
+package com.trinity.cart.application;
+
+import com.trinity.cart.domain.event.CartValidatedEvent;
+import com.trinity.cart.domain.model.Cart;
+import com.trinity.cart.domain.model.CartItem;
+import com.trinity.cart.domain.port.CartRepositoryPort;
+import com.trinity.cart.domain.port.ProductInfoPort;
+import com.trinity.common.domain.exception.BusinessRuleViolation;
+import com.trinity.common.domain.exception.NotFoundException;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.UUID;
+import java.util.function.Consumer;
+
+@Service
+@RequiredArgsConstructor
+public class CartService {
+
+    private final CartRepositoryPort cartRepository;
+    private final ProductInfoPort productInfoPort;
+    private final ApplicationEventPublisher eventPublisher;
+
+    @Transactional
+    public void createCart(UUID customerId) {
+        if (cartRepository.existsByCustomerId(customerId)) {
+            throw new BusinessRuleViolation("A cart already exists for customer: " + customerId);
+        }
+        cartRepository.save(Cart.builder()
+                .customerId(customerId)
+                .build());
+    }
+
+    @Transactional(readOnly = true)
+    public Cart getCart(UUID customerId) {
+        return loadCart(customerId);
+    }
+
+    @Transactional
+    public void addItemToCart(UUID customerId, UUID productId, int quantity) {
+        ProductInfoPort.ProductInfo info = productInfoPort.findById(productId)
+                .orElseThrow(() -> new NotFoundException("Product not found: " + productId));
+        mutate(customerId, cart -> cart.addItem(CartItem.builder()
+                .productId(productId)
+                .productName(info.name())
+                .unitPrice(info.unitPrice())
+                .quantity(quantity)
+                .build()));
+    }
+
+    @Transactional
+    public void removeItemFromCart(UUID customerId, UUID productId, int quantity) {
+        mutate(customerId, cart -> cart.removeItem(productId, quantity));
+    }
+
+    @Transactional
+    public void cancelCart(UUID customerId) {
+        mutate(customerId, Cart::cancel);
+    }
+
+    @Transactional
+    public void validateCart(UUID customerId) {
+        Cart cart = loadCart(customerId);
+        cart.validate();
+        // Published inside the transaction: @TransactionalEventListener(AFTER_COMMIT)
+        // consumers only run if the validation and deletion actually commit.
+        eventPublisher.publishEvent(CartValidatedEvent.from(cart, Instant.now()));
+        cartRepository.deleteByCustomerId(customerId);
+    }
+
+    @Transactional
+    public void removeCart(UUID customerId) {
+        loadCart(customerId);
+        cartRepository.deleteByCustomerId(customerId);
+    }
+
+    /** Load the domain aggregate, apply a domain mutation, persist it back. */
+    private void mutate(UUID customerId, Consumer<Cart> mutation) {
+        Cart cart = loadCart(customerId);
+        mutation.accept(cart);
+        cartRepository.save(cart);
+    }
+
+    private Cart loadCart(UUID customerId) {
+        return cartRepository.findByCustomerId(customerId)
+                .orElseThrow(() -> new NotFoundException("Cart not found for customer: " + customerId));
+    }
+}

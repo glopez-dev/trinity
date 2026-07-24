@@ -9,6 +9,7 @@ import Modal from "@/components/ui/modal/Modal";
 import {useFlash} from "@/lib/contexts/FlashMessagesContext";
 import {deleteProduct, getProductById} from "@/lib/api/products/productsProvider";
 import ProductCardSkeleton from "@/components/ui/cards/product/ProductCardSkeleton";
+import EAN13Barcode from "@/components/features/product/EAN13Barcode";
 
 export default function ProductDetailPage({params}: Readonly<{
     params: Promise<{ slug: string }>
@@ -82,10 +83,13 @@ export default function ProductDetailPage({params}: Readonly<{
             <div className={styles.productContainer}>
                 {product ? (
                     <ProductCard product={product}/>
-                ): (
+                ) : (
                     <ProductCardSkeleton/>
                 )}
             </div>
+            {product && product.barcode && (
+                <EAN13Barcode value={product.barcode} height={90} />
+            )}
             <Modal
                 title={'Supprimer ce produit'}
                 body={<h4>Êtes-vous sur de bien vouloir supprimer ce produit ?</h4>}

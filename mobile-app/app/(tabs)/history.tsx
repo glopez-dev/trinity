@@ -1,11 +1,11 @@
-import {View, Text} from "react-native";
+import {View, Text, SafeAreaView} from "react-native";
 
 export default function History() {
     return (
-        <View>
+        <SafeAreaView style={{flex: 1}}>
             <Text>
                 History
             </Text>
-        </View>
+        </SafeAreaView>
     )
 }

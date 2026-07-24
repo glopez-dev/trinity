@@ -19,3 +19,4 @@ devops/ansible/variables.yml
 .secrets/
 
 .scannerwork/
+.gitnexus

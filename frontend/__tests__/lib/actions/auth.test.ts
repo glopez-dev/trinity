@@ -34,7 +34,7 @@ describe('login', () => {
 
         const result = await login(mockFormData);
 
-        expect(api.post).toHaveBeenCalledWith('/auth/login', mockFormData);
+        expect(api.post).toHaveBeenCalledWith('/api/v1/auth/login', mockFormData);
         expect(result).toEqual(mockSuccessResponse.data);
     });
 

@@ -86,7 +86,7 @@ graph TB
     - Le module Sales (`Customer`) dépend fortement des données produits (`Supplier`)
     - Cette relation est critique car elle impacte directement le processus de vente
     - **Contrat :** API interne pour la consultation des stocks et prix.
-    - **Intégration :** Events RabbitMQ pour les mises à jour de stock.
+    - **Intégration :** événements de domaine in-process pour les mises à jour de stock (cf. [ADR-0001](../../adr/0001-evenements-de-domaine-in-process.md)).
 
 - Pattern avec Payment Module : `Customer/Supplier`
     - Relation critique car le processus de vente dépend du succès du paiement
@@ -103,7 +103,7 @@ graph TB
 - Pattern avec Sales Module : `Conformist`
     - Relation unidirectionnelle où Analytics s'adapte aux données de vente
     - **Contrat** : Lecture seule des données de vente
-    - **Intégration** : Events RabbitMQ pour les mises à jour
+    - **Intégration** : événements de domaine in-process pour les mises à jour (cf. [ADR-0001](../../adr/0001-evenements-de-domaine-in-process.md))
 
 Les autres interactions entre modules peuvent simplement utiliser des mécanismes d'intégration standards sans nécessiter de pattern particulier, par exemple :
 

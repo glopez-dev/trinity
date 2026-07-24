@@ -7,7 +7,7 @@ export const searchOFFProducts = async (productName: string | number): Promise<P
     try {
         const token = Cookies.get('auth_token');
 
-        const response = await api.post('/product/search', {
+        const response = await api.post('/api/v1/product/search', {
                 'searchTerm': productName,
             }, {
                 headers: {
@@ -29,7 +29,7 @@ export const createProduct = async (product: ProductResponse): Promise<ProductRe
     try {
         const token = Cookies.get('auth_token');
 
-        const response = await api.post('/product', product, {
+        const response = await api.post('/api/v1/product', product, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -49,7 +49,7 @@ export const getProducts = async (): Promise<ProductResponse[]> => {
     try {
         const token = Cookies.get('auth_token');
 
-        const response = await api.get('/product', {
+        const response = await api.get('/api/v1/product', {
             headers: {
                 'Authorization': `Bearer ${token}`
             },
@@ -68,7 +68,7 @@ export const getProductById = async (productId: string): Promise<ProductResponse
     try {
         const token = Cookies.get('auth_token');
 
-        const response = await api.get(`/product/${productId}`, {
+        const response = await api.get(`/api/v1/product/${productId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             },
@@ -87,7 +87,7 @@ export const updateProduct = async (updateProduct: UpdateProductSchemaType, prod
     try {
         const token = Cookies.get('auth_token');
 
-        const response = await api.put(`/product/${productId}`, updateProduct, {
+        const response = await api.put(`/api/v1/product/${productId}`, updateProduct, {
             headers: {
                 'Authorization': `Bearer ${token}`
             },
@@ -106,7 +106,7 @@ export const deleteProduct = async (productId: string): Promise<void> => {
     try {
         const token = Cookies.get('auth_token');
 
-        await api.delete(`/product/${productId}`, {
+        await api.delete(`/api/v1/product/${productId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             },

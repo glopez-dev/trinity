@@ -1,29 +1,39 @@
-#############################
-# Spring Boot Configuration #
-#############################
+#####################################
+# Spring Boot Configuration
+#####################################
 spring:
   application:
-    name: ${SPRING_APP_NAME:t-dev-701-backend-api}
+    name: ${SPRING_APP_NAME}
     version: ${SPRING_APP_VERSION:0.0.1-SNAPSHOT}
-  
-  # Database Configuration
+
+  #####################################
+  ### Database Configuration
+  #####################################
   datasource:
-    url: jdbc:postgresql://${POSTGRES_DB_HOST:localhost}:${POSTGRES_DB_PORT:5432}/${POSTGRES_DB:trinity}
-    username: ${POSTGRES_USER:trinity}
-    password: ${POSTGRES_PASSWORD:trinity}
+    url: ${SPRING_DATASOURCE_URL} 
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
-  
+
+  #####################################
   # JPA/Hibernate Configuration
+  #####################################
   jpa:
     open-in-view: false
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  # DevTools Configuration
+  # Schema is owned by Flyway migrations (db/migration), Hibernate only validates.
+  flyway:
+    enabled: true
+
+  #####################################
+  ### DevTools Configuration
+  #####################################
   devtools:
     restart:
       enabled: true
@@ -32,10 +42,17 @@ spring:
     livereload:
       enabled: true
 
-  # Web Configuration
+  #####################################
+  ### Web Configuration
+  #####################################
   web:
     resources:
       add-mappings: false
+  
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
 
 ########################
 # Server Configuration #
@@ -54,6 +71,9 @@ management:
     health:
       show-details: always
 
+#####################################
+# Logging Configuration
+#####################################
 logging:
   level:
     org:
@@ -62,15 +82,23 @@ logging:
         security: TRACE
       hibernate: ERROR
 
+#####################################
+# JWT Configuration
+#####################################
 jwt:
-  secret: ${JWT_SECRET:your_jwt_secret_key_here}
-  expiration: ${JWT_EXPIRATION:86400000}  # 24 hours in milliseconds
+  secret: ${SPRING_JWT_SECRET}
+  expiration: ${SPRING_JWT_EXPIRATION}
 
+#####################################
+# CORS Configuration
+#####################################
 app:
   cors:
-    allowed-origins: ${SPRING_CORS_ALLOWED_ORIGINS:*}
+    allowed-origins: ${SPRING_CORS_ALLOWED_ORIGINS:http://localhost:3000,http://host.docker.internal:3000}
 
-
+#####################################
+# Swagger Configuration
+#####################################
 springdoc:
   api-docs:
     path: /api/v1/api-docs
@@ -81,8 +109,27 @@ springdoc:
     config-url: /api/v1/api-docs/swagger-config
   pathsToMatch: /api/v1/**
 
+#####################################
+# Paypal Configuration
+#####################################
 paypal:
   client:
-    id: ${PAYPAL_CLIENT_ID}
-    secret: ${PAYPAL_SECRET}
+    id: ${SPRING_PAYPAL_CLIENT_ID}
+    secret: ${SPRING_PAYPAL_CLIENT_SECRET}
   mode: sandbox
+
+#####################################
+# Stripe Configuration
+#####################################
+stripe:
+  api:
+    key: ${SPRING_STRIPE_SECRET_KEY}
+
+#####################################
+# Payment Checkout Configuration
+#####################################
+payment:
+  checkout:
+    success-url: ${PAYMENT_SUCCESS_URL:http://localhost:8080/success}
+    cancel-url: ${PAYMENT_CANCEL_URL:http://localhost:8080/cancel}
+    default-currency: USD
